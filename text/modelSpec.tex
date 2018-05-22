@@ -1,0 +1,217 @@
+
+When individuals decide what time to leave for work, they take into consideration how it will influence their afternoon. If they leave ten minutes later it means that they get ten minutes less for activities in the afternoon. The difference in how they value afternoon-time versus morning-time will therefore be one factor determining when they leave for work. Even people with flexible working hours seem to prefer to go to work during rush hours, when roads and public transport are heavily congested. Probably they have other time-constraints -- they might have to pick up their children from school, have a gym-class or are meeting friends -- or time preferences of some other sort -- they might value having dinner with their family at $6\unit{p.m}$. Whatever the reasons, it is clear that the timing of trips in the morning is influenced by their plans for the afternoon, and that the benefits of travelling at less congested times would not outweigh the costs of changing these plans. The decision on when, where and how to travel should therefore be explained by trade-off's on how a limited amount of time should be spent and a correct representation of time is crucial in activity-based travel demand models. 
+
+A daily schedule of trips and activities could be represented by a path between states where a state $s_t$ defines the location and time of day $t$ among other things. An action $a_t$, defining activity, duration and mode of transport, gives a new state $s_{t+1}$, and a sequence of such actions starting in the morning and ending in the evening is what we will call a day-path. A day-path defines a travel pattern or schedule but further contains information of the sequence of actions and states that have been traversed. The way in which the action $a_t$ in state $s_t$ yields a new state might contain randomness, caused by for example day-to-day variations in travel times. The state might further only be partially visible, where uncertainty might account for unexpected opportunities or needs. For example, a friend might suddenly call or a meeting is delayed, demanding a replanning of the travel schedule. 
+
+The environment is thus stochastic. A rational agent in an uncertain environment that starts in a state $s$ would behave according to a policy $\pi$, determining the action $a_t$ to take when in state $s_t$, that maximizes the expected future utility:
+\begin{equation}\label{eq:vf}
+V(s_0) = \max_{\pi} E_s \left\{ \sum_{t=0}^T \beta^{t} u(s_t,a_t)\middle | s_0 = s \right\}
+\end{equation}
+for some one-stage utility function $u(s_t,a_t)$ and discount factor $\beta$, assuming that the utility is additively separable between decision stages. 
+
+Finding the utility maximizing decision rule is a daunting task. Consider, for example, an individual with $10\unit{h}$ of free time during a day. If there are 8 different activities that can be conducted at 100 alternative locations and 4 available modes of transport, and each activity-travel episode is at least $1\unit{h}$ long, there are $(8 \cdot100 \cdot 4)^{10} \approx 10^{35}$ alternative sequences of actions. The problem is thus immense, and we do not propose that people actually consider all these options. For one thing, a specific individual probably only considers a small set of locations for each activity. However, constructing consistent models for how individuals are constructing their choice sets is a very complex problem, and considering the universal choice set is thus a tractable option. Fortunately, even this immense problem can be solved with dynamic programming. 
+
+The value function $V(s)$ in \refeq{eq:vf} can be defined recursively through Bellman's equation as \citep{Rust87}:
+\begin{equation} \label{eq:vfbellman}
+V(s_t) = \max_{a_t} \left\{u(s_t,a_t) + \beta \int V(s_{t+1})p(ds_{t+1}|s_t,a_t) \right\}
+\end{equation}
+where $p(s_{t+1}|s_t,a_t)$ is the probability to reach state $s_{t+1}$ when taking action $a_t$ in state $s_t$. 
+ To make \refeq{eq:vfbellman} computationally tractable, \citet{Rust87} introduces a number of assumptions. Firstly, the state $s_t$ is divided into $(x_t,\epsilon_t)$, where $x_t$ is known to both the econometricians and the individual whereas $\epsilon_t$ is unknown for the econometricians but known by the individual for the current period $t$. The unknown part $\epsilon_t$ is further assumed to be Gumbel distributed and i.i.d. over alternatives and time. We will assume that the error term is translated to $\epsilon \sim G(-\gamma,1)$, where the location is $-\gamma$ to ensure that the mean of $\epsilon$ is zero rather than $\gamma$. The utility function $u(s_t,a_t)$ is assumed to be additively separable into a known and unknown part: $u(s_t,a_t) = u(x_t,a_t) + \epsilon_t$. 
+  
+%Continue here!
+
+We will make two additional restrictions that give a more tractable specification. Firstly, individuals are not assumed to discount within the day, so $\beta=1$. As the time frame of decisions is short, we do not see this as a big restriction. We will, secondly, assume that all uncertainty in the state transitions is captured by $\epsilon_t$. This means that, e.g., travel time uncertainty is cannot be taken into account by individuals. Being able to explicitly model travel time uncertainty would definitely be of great value, and we will attempt to overcome this restriction in future work. 
+
+With these two additional restrictions (and $\epsilon_t \sim G(-\gamma,1)$), the expected value of the value function (the \emph{expected value function}) becomes:%XXXX CHECK THIS!!!
+\begin{equation} \label{eq:EV}
+\begin{aligned}
+\eutil(x_t) &= \int V(s_{t+1})p(ds_{t+1}|s_t,a_t) \\&= \log\left(\sum_{a\in A(x_t)}e^{u(x_t,a) + \eutil(x_{t+1})}\right)
+\end{aligned}
+\end{equation}
+and the probability that an alternative $a$ is choosen when in state $x$ is given by the well-known MNL-formula:
+\begin{align}
+P(a_t|x_t) &= \frac{e^{u(a_t,x_t) + \eutil(x_{t+1})} }{\sum\limits_{a_t'\in A(x_t)} e^{u(a_t',x_t) + \eutil(x_{t+1}')}} \label{eq:MNL} \\
+&=e^{u(a_t,x_t) + \eutil(x_{t+1})- \eutil(x_t)}\label{eq:MNLv2}
+\end{align}
+where \refeq{eq:EV} together with \refeq{eq:MNL} gives \refeq{eq:MNLv2}.
+
+When modelling daily planning, there is logical terminal time $T$ in the end of the day. We will restrict ourselves to a single feasible state $x_T$ in the end of day with $\eutil(x_T) = 0$. This is not a restriction per se; multiple states in the end of the day could be included by adding a link from all of these states to a common fictive terminal state $x_T$. With $\eutil(x_T)$ defined, it is possible to use backward induction to calculate $\eutil$ in all states using \refeq{eq:EV}.
+
+%-End states, start states. How to solve EV.
+%-equal to a mnl over seq.
+%-Compare with nested logit.
+
+%Since, by construction, there are unique and known initial and final state for each individual, we can fix the expected value function in the final state and use \refeq{eq:eutil} to calculate the expected value function in all states and thus use \refeq{eq:MNL} to calculate the probability of a choice. Doing this for the model specified above takes around $9\unit{s}$ for a single individual. Using this for estimation is therefore infeasible. Instead we use that a sequence of MNL-choices is equivalent to a MNL-choice among sequences \citep{fosgerau11}.
+
+
+
+
+
+%Influence their mode of transport. For example, if public transport becomes cheaper, some people will switch from car to public transport for their work-trips. This means that they do not have a car available at work and that chaining trips on the way home possibly becomes more cumbersome. They might therefore return home before taking the car to go shopping.
+%
+%Since the peak 
+%
+%Should I go shop on the way from work or go home first? If I need to shop on the way from work and also 
+%
+%%
+%\subsection{ii}
+%In this section we will present how the choice of a daily activity schedule can be represented as a dynamic discrete choice problem. We will start by presenting a general formulation of and then discuss how it is 
+
+
+%Dynamic discrete choice models are describing agents that act as if they maximized the long-term expected utility in an uncertain environment. With $u(\theta,a)$ being the one-stage utility function of an action $a$ in a state $s$ and $\beta(s,a)$ being the discount function, rational agent will behave according to a decision rule $\ve{a}$
+%\begin{equation}
+%V = \max_\ve{a} (\sum_{a \in \ve{a}} u(\theta,a))
+%\end{equation}
+
+%although it is likely that individuals do discount future time even within a day (very much so when snoozing for another half hour), 
+%
+%We model. The daily activity scheduling problem will be treated as a sequential decision making process in an uncertain environment. 
+
+%Through their actions, individuals move through a network of states, and a sequence of such actions constitutes a daily activity schedule. A state includes information about time and location that determines the options an individual. Someone that is at home at 7:40am and needs to be at work for a meeting at 8:00am cannot first go to the gym. Their choice set at that specific time is constrained by time-space constraints. 
+\subsection{Specification}
+%Limitations
+We restrict the model to working days and people that arrive at work between $6\unit{a.m.}$ and $11\unit{a.m.}$ and return home before $11\unit{p.m}$. We also omit lunch activities and business trips. Car ownership, work location, working time and whether people have fixed or flexible working schedules is exogenous in the current implementation. Escort trips of children to or from school/daycare are mandatory for individuals that do the trip on the survey day, and drop off/pick up location is exogenous. 
+
+Below we will first describe the state space and choice set, and then how time-space constraints can be expressed in terms of restrictions on either the state space or on a state specific choice set.
+
+\subsubsection{States and actions}
+A state should include the information needed to determine available actions and utility of these actions. Here a state $x$ consists of:
+\begin{description}[style=multiline,leftmargin=4cm,font=\normalfont]
+\item[{Time $t \in [5\unit{am},11\unit{pm}] $}:] Continuous variable for time of day. A day starts at $5\unit{am}$ and ends at $11\unit{pm}$
+\item[{Location $L \in [1,1240]$:}] Current location. One of 1240 zones in the region of Stockholm. 
+\item[Activity $A$:] New activity, end activity, social, recreational, shop, home, work and escorting children are the alternative activity states. 
+
+The activity must be included in the state since the individual can choose to continue with the same activity for yet another time-period, but have to travel (possibly within the zone) to change activity. The purpose of the new activity and end activity states will be discussed below.
+\item[{Errand indicator $E \in [0,3]$:}] A state keeping track of the number of finished mandatory activities. The number of mandatory activities varies from 1 to 3 depending on the individual, as will be explained later. 
+\item[Car dummy $\delta_{car} \in \{true,false\}$:] Dummy for car availability. An individual have to travel with car if $\delta_{car} = true$ and if out of home and cannot travel with car if $\delta_{car} = false$.
+\end{description}
+%\begin{tabular*}{\textwidth}{p{0.3\textwidth} p{0.7\textwidth}}
+%Time $t \in [5\unit{am},11\unit{pm}] $ & Time of day. Restricted to start at $5\unit{am}$ and end at $11\unit{pm}$.\\ \noalign{\smallskip} 
+%Location $l \in [1,1240]$ & Current location. One of 1240 zones. \\ \noalign{\smallskip} 
+%Activity $A$ & Activity that is being conducted. Must be included in the state since the individual can choose to continue with the same activity for yet another time-period, but have to travel to change activity. \\ \noalign{\smallskip} 
+%Errand indicator $E \in [0,3]$ & A state keeping track of the number of finished mandatory activities. The number of mandatory activities varies from 1 to 3. \\ \noalign{\smallskip} 
+%Car dummy & Dummy for car availability. An individual must use car if $\delta_{car} = true$ and the location is not the home-location.
+%\end{tabular*}
+
+% Specifying the model includes defining: (i) the state space; (ii) the available actions in each state. Time-space constraints are included as \emph{state constraints}, that restrict the state space to enforce that mandatory activities are finished, and \emph{choice constraints}, specifying in what state different actions can be chosen. This distinction is practical rather than theoretical, and most constraints could be specified as either a choice or a state constraint. However, one of the constraint types is usually easier to implement in practice. 
+
+
+%\paragraph{(i) State space}
+%A state $s$ consists of: Time of day $T$, which is continuous variable. A day start at 05:00am and ends at 11:00pm. Current location $L$, which is one of $\sim1240$ alternative zones; current activity $A$; errand indicator $E$ keeping track of finished mandatory activities; and a dummy for car availability $\delta_{car}$.
+
+%
+%\paragraph{(ii) Alternative actions}
+The set of actions $a$ that are available in a state $x$ for individual $n$ is denoted $A_n(x)$. The universal choice set consists of any combination of activity $A$, mode $M$ and location $L$:
+\begin{description}[style=multiline,leftmargin=4cm,font=\normalfont]
+\item[{Activity $A$}:] Activity for new action.
+\item[{Location $L$}:] New location. 
+\item[{Mode}:] Car, public transport, bike and walk are the modelled modes. When continuing with the same activity, the mode of the action is ``no-mode''.
+\end{description}
+% The available actions depend on the current state. If in a "new activity" state, it is possible to start one of free time activities, i.e., social, recreational or shopping. Starting a work, home or escort activity is only possible if the destination are correct. In a "end activity" state it is possible to go to a "new activity" state or to go to work, home or do an escort trip. The work and escort duration is fixed, so in these states it is only possible to continue with the same activity
+
+When starting a new activity with flexible duration it is initially conducted for one time-step, which we have chosen to be $10\unit{minutes}$. Depending on the activity and on time-space constraints it can be possible to continue with the same activity for another time step. The action-space is thus discrete and finite. This means that every 10th minute individuals can decide whether to continue with the current activity for another $10\unit{minutes}$. Travel times are not divisible by these time step lengths, and it therefore makes sense to have a continuous state variable for time. Since there are a finite number of actions in each state there will still only be a finite number of reachable states. It is sometimes argued that activity length should be a continuous variable, as it is included in, e.g., \citep{Habib11RUM}, \citep{Pinjari10} and \citep{Recker13}, but from a behavioural perspective we think it makes at least as much sense to assume that people are considering whether to, e.g., spend 10, 20 or $30\unit{minutes}$ shopping as to assume that they decide to spend exactly $17.3123\unit{minutes}$. 
+
+%The alternative activities (or trip purposes) $A$ are work, home, escort children to/from school, grocery shopping, social, recreational and other. Shopping is in turn divided into three categories: small, medium and large. There is thus a total of 9 alternative activities. 
+
+Work and child errands have fixed duration (10 minutes for dropping off children and working hours as observed). The remaining alternatives can be continued for any number of time steps. Most computations come from calculating the log-sums in \refeq{eq:EV} for all states, and as activities and locations are both states and alternatives in each state, the computational time will increase quadratic with both the number of locations and the number of activities. To reduce computational time, the ``start-activity'' and ``end-activity'' states are added. The reason for this can be illustrated with an example. In each state, an individual can choose to either continue with the same activity or start a new activity at any location. This gives $1 + N_{act}\cdot N_{m}\cdot N_{loc}$ alternatives, and calculating $\eutil$ in a state therefore requires summing up $1 + N_{act}\cdot N_{m}\cdot N_{loc}$ factors. In each time step, there are approximately $N_{act}\cdot N_{loc}$ states for which this operation is performed. In a ``start-activity''-state, the only available alternatives are to start one of the available activities, so there are approximately $N_{act}$ factors that needs to be summed together. Once we have $\eutil$ in this state, we can divide the choice of a new activity into two steps, firstly the choice of a new location and mode, and secondly the choice of activity. This will not change the choice probability when they are given by \refeq{eq:MNL}. With this new state, the number of terms reduces to $1 + N_{m}\cdot N_{loc}$ (where 1 is the alternative to continue with the same activity), and approximately decreases with a factor $N_{act}$. This comes at the expense of calculating the log-sum of $N_{act}$ in $N_{loc}$ states. When considering a new action, the future utility is independent of the current activity, and it is therefore possible to create an ``end-activity'' where the sums of all possible ``start-activity'' states is calculated. Instead of having to sum up $1 + N_{act}\cdot N_{m}\cdot N_{loc}$ factors in $N_{act}\cdot N_{loc}$ states we sum up the $N_{m}\cdot N_{loc}$ ``start-activity'' factors in $N_{loc}$ ``end-activity'' states, so the computational savings can be significant. This also means that increasing the number of activities only have a minor effect on the computation time.
+
+% The expected value function $\eutil$ in the ``start-activity'' state is given by the log-sum of all free-time activities available that could be started in that state. If there are $N_A$ free time activities, calculating $\eutil$ requires the summation of $N_A$ factors. Calculating $\eutil$ in a ``end-activity'' state requires the calculation of 
+%
+% each activity separately for each location. Instead, they are first considering to go to a specific location and start a new activity, and then, in a second choice, which activity to start. As we have specified the model, this does not influence the choice probability of the combined location-activity choice. In the same way, the choice to go somewhere else is preceded by the choice to change activity after the next choice step. Introducing ``start-activity'' and ``end-activity'' states can therefore reduce computation time at the expense of slightly higher memory usage. As long as the number of locations is much larger than the number of activities, the main computational burden will be to calculate $\eutil$ in each ``end-activity'' state as this is a log-sum of all ``start-activity'' states. Increasing the number of alternative activities will therefore mainly influence the memory usage. %How many activities are usually modelled?
+
+We currently do not consider any mixed modes, or mode chains, such as taking the bike to the train station. This would definitely be possible conceptually, but would further increase the computation time and has therefore not been included at this stage. Car is only a possible choice if the individual has a car available at home. Further, if a car is used for a trip away from home, all consecutive trips on the same tour must be done using car. This is controlled through the car-dummy $\delta_{car}$. Certainly it happens that individuals use a car for only some trips in a tour. They might leave their car at work and pick it up the next day or leave it for another family member. To correctly include the possibility to leave a car at any location, another state variable would be needed that remembered the location where the car was parked and the state space would become 1000-times larger. Since that kind of behaviour is quite uncommon, we think this restriction on car usage is reasonable. %How is this done in other papers?
+
+Each individual is considering all possible locations for each new action. before, locations are both state variables and alternative actions so the computation time increases quadratically with the number of locations. Restricting the choice set of locations for individuals is therefore extremely tempting, but combining an activity scheduling model with a location choice set model in a consistent way seems extremely complex. This curse of dimensionality connected to the number of zones is sometimes solved by sampling a number of zones through some auxiliary model (see e.g., \citep{liao13}), or by approximating the log-sums through importance sampling (similar to how \citealt{Bradley10} does in a nested framework). We want to avoid such approximations if possible. However, if the zones would be refined or increase for other reasons, we would likely have to resolve to some sort of sampling. \citet{Rust97} shows how randomization can be used to approximate $\eutil$ in dynamic discrete choice models, and it would be one possible way to decrease computation time.
+
+%This paragraph is based on that we have already introduced dynp. Could be good to start with dynp, then go to sequences and then explain how time-space constraints are treated, so that the problems that backward induction and dynp can solve becomes clearer.
+\subsubsection{Time as a continuous variable.}
+
+Time is modelled as a continuous variable, but the number of states in which \eutil can be calculated is limited by computation time. It is therefore not possible to exactly calculate the expected value functions in all reachable states. Instead, \eutil is calculated on a discretized time-grid containing every 10:th minute and linear interpolation is used to approximate the value between these points. The linear interpolation approximation in a state $x$ is denoted \laeutil(x). The calculation of \eutil will therefore be based on approximations of \eutil in future states. We will therefore never know the exact expected value function in any state, but rather the (1:st order) approximate expected value function \aeutil, given by:
+\begin{equation} \label{eq:linap1}
+\aeutil(x_t) = \log\left(\sum_{a\in A(x_t)}e^{u(x_t,a) + \laeutil(x_{t'})}\right)
+\end{equation}
+where $t_{k-1} \leq t' \leq t_k $ gives: 
+\begin{equation}\label{eq:linap2}
+\laeutil(x_{t'}) = \alpha_1 \aeutil(x_{t_k}) + \alpha_2 \aeutil(x_{t_{k+1}})
+\end{equation}
+where $\alpha_1 = \frac{t_{k+1}-t'}{t_{k+1}-t_k}$ and $\alpha_2 = \frac{t'-t_k}{t_{k+1}-t_k}$.
+
+This approximation makes the order in which \eutil is calculated important. When backward induction is used to calculate \eutil, it is updated one time step at a time starting in the end of the day $T$ and moving backward. If an action is less than $10\unit{minutes}$ long, the approximation in \refeq{eq:linap2} will be based on \aeutil in the current time step, causing self-dependence which would require value iteration or the solution to an equation system. The only way this can occur with the current discretization and activity durations is if the new action involves a trip to a ``new activity'' state. As the only available alternative in a ``new activity'' state is to start an activity, \aeutil in these states can be calculated first without risking self dependence. After \aeutil has been calculated in the ``new activity'' states, it can be calculated in the remaining states for that time step. Note that for this reason, it is important that the shortest possible activity duration is longer than the duration between time-steps.
+%This 1:st order approximation of the value function greatly increases the computation time. Without this approximation, one can calculate $e^{\eutil}$ directly and thereby avoiding the logarithms and exponents of \refeq{eq:EV}, and calculating $\eutil$ therefore mainly consists of sums and products. To get $e^{\eutil}$ from the 1:st order approximation in \refeq{eq:linap1} and \refeq{eq:linap2} one either must use two logarithms to obtain \eutil and finally an exponent to obtain $e^{\eutil}$, or take the power of $e^{\eutil}$ with $\alpha$ for the two states and multiply the result.
+
+
+
+\subsubsection{Time-space constraints.} Time space constraints define when and where an individual can participate in different activities and thereby impose a structure on the day. Time-space constraints can be of the type ``I have to be at work by $7\unit{a.m.}$'', and both explicitly determine where an individual will be at $7\unit{a.m.}$ (at work) and implicitly influence where they can be at $6:50\unit{a.m.}$ (not more than $10\unit{minutes}$ away from work with available modes of transport). To check that a specific trip is possible, one must look multiple future trips into the future to ensure that all time-space constraints can be satisfied if that specific trip is carried out. Finding feasible activity schedules in a dynamic discrete choice model is trivial since expected value function $\eutil = -\infty$ in any explicitly or implicitly infeasible state, as by definition there are no actions leading from such a state to another state with $\eutil \neq -\infty$. Actions that are implicitly infeasible due to time-space constraints will therefore have zero probability.%How is time-space constraints usually modelled? Does usually not influence choices on higher levels.
+
+Some activities are time constrained. Time constraints on when activities can be started or when they must be completed can easily be included by restricting the choice set at times that do not meet these constraints. Location constraints, i.e., constraints specifying where different activities can take place, are treated in the same way.
+
+People can have fixed or flexible working hours. People with fixed working hours must arrive at work when the workday start and leave when the workday ends. %Specify how this is done: +-10minutes is ok.
+People with flexible working hours can choose to arrive between $6\unit{a.m.}$ and $10\unit{a.m.}$, but the length of a working day is still fixed. The individual specifications on working hour type, working length, start and end hours must be provided from elsewhere. Children can be dropped off between $6:30\unit{a.m.}$ and $12:00\unit{a.m.}$. Pick up trips must be completed between $12\unit{a.m.}$ and $6:30\unit{p.m.}$
+All individuals must start and end their days at home. There is no need to restrict the state space in the start of the day. Such restrictions are ensured by the choice of the initial state used when, e.g., simulating day paths.
+
+
+Picking up and dropping of children at school as well as going to work are considered mandatory activities with fixed location and time constraints. These three activities further have an internal order: dropping of children is done before going to work which must be done before picking up the children again. To model this order of activities, we introduce the errand indicator $E$. When $E=0$, only dropping of children is possible. After having finished a drop-off activity, $E$ increases by one and the only available activity in the group is work. Enforcing that all activities are finished during the day is done by restricting $E$ in the end of the day, and time-constraints are treated as above.
+
+More generally, a constraint could impose that some activity or a group of activities must be conducted a number of times $N$ during a day. This can be modeled by introducing an errand indicator state variable, say $Q$, for each such group of mandatory activities and setting the expected value function to $-\infty$ whenever $Q\neq N$ in the end of the day. Whenever an activity in the group is started, $Q$ is increased by one. If the day is started in a state with $Q=0$, all feasible activity schedules will do activities in the group exactly $N$ times. Introducing an extra state variable is not without costs. The number of states will increase linearly with $N$ and the number of actions in each state will not decrease substantially, so the computation time will increase almost linearly with $N$ in each basic activity constraint. If there are multiple groups of mandatory activities where the activities in a group $i$ must be conducted $N_i$ times, the number of states will increase with a factor $\prod_i (N_i+1)$ times. 
+
+
+%activities are remembered through the errand indicator $E$. The mandatory errands covered by this indicator must be done in a specific order. A person have to drop of their children before they go to work and go to work before they pick them up again. When $E=0$, the possible mandatory errand is to drop-off children, when $E=1$, the only going to work is possible, and when $E=2$, only picking up children is possible. 
+
+%Have parameter for having children at school. 
+%
+%If we also want to enforce other activities, such as grocery shopping, we can add another state variable that keeps track on if a shopping activity has been conducted yet. That it is easy to include these kind of constraints in the model is a great feature of the model, since it allows us to investigate how the need to do a specific activity during a day influence the expected utility of all the possible activity schedules of that day. This expected utility is likely to influence how people choose to react to policy changes, where they choose to work, if they choose to have a car, etc. 
+
+
+%\paragraph{(iii) Choice probability}
+%We assume that individuals act as if they maximized the expected utility gained throughout the day, when the one-stage utility of all actions at all time steps are given by a known term and an unknown (random) term, and the individual only observes the unknown term in the current time step. The random terms are assumed Gumbel distributed with zero mean and i.i.d. over alternatives and time.
+%
+
+
+%From dynamic discrete choice theory \citep{rust87} we know that, for an individual $n$, long-term expected utility maximization is equivalent to in each state maximizing the sum of the one-stage utility $v_n$ and the expected value function $\eutil_n$ in the reached state:
+%\begin{equation*}\label{eq:valfuncdef}
+%a^*= \argmax_{a\in C(s)} v_n(s,a,\epsilon)+ \eutil_n(s'(a))
+%\end{equation*} 
+%where the one-stage utility is given by:
+%\begin{equation*}
+%v_n(s,a,\epsilon) = u_n(a,s) + \epsilon(a,s).
+%\end{equation*}
+%Our specification differ from a usual dynamic discrete choice model in the absence of discounting and uncertainty in state transitions, besides what is captured by the error term. It is worth noting that in this special case, a dynamic discrete choice model is equivalent to a nested logit model where all nest-parameters are equal.
+%
+%The probability that individual $n$ choose action $a$ in state $s$ is given by the well-known MNL-formula:
+%\begin{equation}
+%P_n(a|s) = \frac{e^{u_n(a,s) + \eutil_n(s'(a))} }{\sum\limits_{k\in C_n(s)} e^{u_n(k,s) + \eutil_n(s'(k))}}.\label{eq:MNL}
+%\end{equation}
+%The expected value function is the expected maximum utility from in a state when all future error components are unknown:
+%\begin{equation}
+%\eutil_n(s) = \log \sum\limits_{k\in C_n(s)} e^{u_n(k,s) + \eutil_n(s'(k))}.\label{eq:eutil}
+%\end{equation}
+%and if $ C_n(s)$ is empty, $\eutil_n(s) = -\infty$, which together with state and choice constraints is enough to define all time-space constraints.
+%
+%So far, the one-stage utility function we have considered takes the form:
+%\begin{equation} \label{eq:onestagespec}
+%v_c= \theta_m t_{m,l_o,l_d} + \theta_c c_{m,l_o,l_d} + \text{Const.}_m + \theta_a t_a + \text{Const.}_a
+%\end{equation}
+%where $t_{m,l_o,l_d}$ and $c_{m,l_o,l_d}$ is travel time and cost for mode $m$ from location $l_o$ to $l_d$, $t_a$ is time spent on activity $a$ and $Const$ are constants for starting a trip respectively activity episode. When continuing an activity, the one stage utility becomes $v_c = \theta_a t_a$. The parameters and their estimates are listed in the result in table \ref{tab:est}.
+% 
+
+%\section{Estimation}\label{seq:est}
+%
+%
+%The number of alternative action sequences is immense, so we use sampling of alternatives, similar to what \citet{frejinger09} use in a route-choice context. We have tested our way to a set of parameters for the one-stage utility that give realistic alternatives and use \refeq{eq:MNL} for sampling of alternative sequences. For each observation a choice set is created by sampling $M$ alternatives with replacement and finally adding the observed choice. With $k_i$ being the number of times alternative $i$ occurs in the choice set (so that $\sum k_i = M+1$) and $q_i$ being the sampling probability, the correction term that should be added to the utility of each alternative is $\log(k_i / q_i)$ \citep{frejinger09}.
+%
+%Since the time always adds up to a constant, all time parameters cannot be identified and we have chosen to fix the Home PM time parameter to zero. Further, since each trip have both a mode-specific constant and an activity-specific constant, at least one mode- or activity-specific constant must be fixed. We have chosen to set the constant for Home PM to zero. Setting one constant to zero is enough since there always is an alternative to not do any more trips.
+%
+%\section{Result and conclusion}\label{seq:result}
+% We have estimated the model on a travel survey from Stockholm in 2004. The resulting estimates of the parameters in \refeq{eq:onestagespec} can be found in Table \ref{tab:est}. We have tested to simulate data with the estimated parameters and get the aggregated travel times, mode shares, activity sessions and average duration and thus also number of trips and tours correct within a few percentages. We have further estimated the same model with simulated data and tried a number of different values on the sampling parameters and received unbiased estimates. We are thus confident that the proposed estimation procedure works and give us the correct estimates.
+%
+% To conclude, we have presented a dynamic discrete choice activity based model that included all possible sequences of actions throughout a day. It is capable of simultaneously determine mode, location, trip start time, purpose and activity duration for a complete daily activity schedule in a dynamically consistent way. We estimate the model using sampling of alternatives and estimate the model on a travel survey conducted in Stockholm 2004. 
+\subsection{One-stage utility functions}
+\input{text/Utility.tex}
+\subsection{Computation time}\label{seq:computationTime}
+\newcommand{\zdel }{\,}
+\newcommand{\units}[1]{\,\text{#1}}
+With the current implementation, calculating the value function in all states and thus evaluating the probability of a path once for a single individual takes between $4-10\units{s}$. Almost all ($98\%$) of the computation time is consumed by the function calculating the value function in all end-activity states when summing up the alternative trips that can be started. When excluding working hours, an example individual have 11\,h of free time left between 5:00AM and 23:00PM. The value function is evaluated on a 10\,minute grid, giving 65 grid points in which it will be evaluated. In each of these grid points, there are a total of 4 modes available for a car owner and 1\zdel 240 locations that are both states and destinations. This gives a total of $65 \cdot 4 \cdot 1\zdel 240 \cdot 1\zdel 240 \sim 4 \cdot 10^8$ links. For each of these links, one must calculate the travel time (taking $16\%$ of the time), one-stage utilities ($23\%$), obtain the future expected value function and sum this with the utility ($41\%$) and finally perform the exponent $e^{u_i + EV_j}$ for all links ($20\%$). All-in-all, this takes around 4-10\,s when using a single core on a Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHZ. The main program is written in C\# but Intel MKL has been used for vector mathematics when applicable and C++ routines has been used for other time consuming parts. As a comparison, simply performing $e^x$ in MATLAB for a vector $x$ with $10^8$ elements on the same computer takes 1\,s. 
+
+As discussed above, the from-all-to-all destinations operation is currently the limiting computational factor. One possible way to speed up the program would be to sample locations. If 100 locations were sampled, the computation time could potentially decrease to 0.05\units{s/individual}.  
+
+The program is parallelized using MPI and could potentially benefit from hundreds of cores reducing the computation time to days. A possible future solution to obtain efficient estimates and allow for nested logit or GEV formulations would be to use inefficient estimates obtained using sampling of locations or some alternative approximative or possibly biased estimation technique to find a good enough specification of the model and then finally obtain full-information estimates using a cluster. 

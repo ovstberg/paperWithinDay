@@ -1,0 +1,91 @@
+[1] A. R. Pinjari and C. R. Bhat, Activity-based travel demand analysis, in A Handbook of Transport
+Economics (A. De Palma, R. Lindsey, E. Quinet, and R. Vickerman, eds.), ch. 10, pp. 213 -
+248, Edward Elgar Publishing, 2011.
+
+[2] S. Rasouli and H. Timmermans, Activity-based models of travel demand: Promises, progress and
+prospects, International Journal of Urban Sciences, vol. 18, no. 1, pp. 31 - 60, 2014.
+
+[3] J. L. Bowman and M. E. Ben-Akiva, Activity-based disaggregate travel demand model system
+with activity schedules, Transportation Research Part A: Policy and Practice, vol. 35, no. 1,
+pp. 1 - 28, 2001.
+
+[4] P. Vovsha and M. Bradley, Hybrid discrete choice departure-time and duration model for scheduling
+travel tours, Transportation Research Record, vol. 1894, no. 1, pp. 46 ? 56, 2004.
+
+[5] M. Bradley, J. L. Bowman, and B. Griesenbeck, SACSIM: An applied activity-based model system
+with fine-level spatial and temporal resolution,Journal of Choice Modelling, vol. 3, no. 1, pp. 5
+- 31, 2010.
+
+[6] K. M. N. Habib, A random utility maximization (RUM) based dynamic activity scheduling model:
+Application in weekend activity scheduling,? Transportation, vol. 38, no. 1, pp. 123 -151, 2011.
+
+[7] T. Arentze, F. Hofman, H. van Mourik, and H. Timmermans, ALBATROSS: Multiagent, rule-
+based model of activity pattern decisions,? Transportation Research Record, vol. 1706, no. 1,
+pp. 136 - 144, 2000.
+
+[8] M. Balmer, B. Raney, and K. Nagel, ?Adjustment of activity timing and duration in an agent-based
+traffic flow simulation, in Progress in Activity-Based Analysis (H. Timmermans, ed.), ch. 5,
+pp. 91 - 114, Elsevier, 2005.
+
+[9] A. Horni, K. Nagel, and K. W. Axhausen, High-resolution destination choice in agent-based demand
+models. Eidgenössische Technische Hochschule Zürich, IVT, Institut für Verkehrsplanung und
+Transportsysteme, 2011.
+
+[10] W. Recker, A bridge between travel demand modeling and activity-based travel analysis, Trans-
+portation Research Part B: Methodological, vol. 35, no. 5, pp. 481 - 506, 2001.
+
+[11] W. Recker, J. Duan, and H. Wang, Development of an estimation procedure for an activity-based
+travel demand model, Computer-Aided Civil and Infrastructure Engineering, vol. 23, no. 7,
+pp. 483 ? 501, 2008.
+
+[12] J. E. Kang and W. Recker, The location selection problem for the household activity pattern
+problem,? Transportation Research Part B: Methodological, vol. 55, no. 0, pp. 75 - 97, 2013.
+
+[13] K. Geurs, B. Zondag, G. de Jong, and M. de Bok, Accessibility appraisal of land-use/transport
+policy strategies: More than just adding up travel-time savings, Transportation Research Part
+D: Transport and Environment, vol. 15, no. 7, pp. 382 - 393, 2010.
+
+[14] X. Dong, M. E. Ben-Akiva, J. L. Bowman, and J. L. Walker, Moving from trip-based to activity-
+based measures of accessibility, Transportation Research Part A: Policy and Practice, vol. 40,
+no. 2, pp. 163 - 180, 2006.
+
+[15] D. R. Jonsson, A. Karlström, M. Fadaei Oshyani, and P. J. Olsson, Reconciling user bene?t and
+time-geography based individual accessibility measures, Environment and Planning Part B,
+accepted, 2013.
+
+[16] A. Karlström, ?A dynamic programming approach for the activity generation and scheduling prob-
+lem, in Progress in Activity-Based Analysis (H. Timmermans, ed.), ch. 3, pp. 25 - 42, Elsevier,
+2005.
+
+[17] J. Rust, Optimal replacement of GMC bus engines: An empirical model of Harold Zurcher,
+Econometrica, vol. 55, no. 5, pp. 999 - 1033, 1987.
+
+[18] J. Rust, Maximum likelihood estimation of discrete control processes, SIAM Journal on Control
+and Optimization, vol. 26, no. 5, pp. 1006-1024, 1988.
+
+[19] M. Fosgerau, E. Frejinger, and A. Karlström, A link based network route choice model with
+unrestricted choice set, Transportation Research Part B: Methodological, vol. 56, no. 0, pp. 70
+- 80, 2013.
+
+[20] A. R. Pinjari and C. Bhat, A multiple discrete-continuous nested extreme value (MDCNEV) model:
+Formulation and application to non-worker activity time-use and timing behavior on weekdays,
+Transportation Research Part B: Methodological, vol. 44, no. 4, pp. 562 - 583, 2010.
+
+[21] F. Liao, T. Arentze, and H. Timmermans, Incorporating space-time constraints and activity-travel
+time profiles in a multi-state supernetwork approach to individual activity-travel scheduling,
+Transportation Research Part B: Methodological, vol. 55, no. 0, pp. 41 - 58, 2013.
+
+[22] J. Rust, Using randomization to break the curse of dimensionality, Econometrica, vol. 65, no. 3,
+pp. 487 - 516, 1997.
+
+[23] M. Ben-Akiva and M. Bierlaire, ?Discrete choice methods and their applications to short term travel
+decisions, in Handbook of transportation science, ch. 2, pp. 5-33, Springer, 1999.
+
+[24] C. A. Guevara and M. E. Ben-Akiva, Sampling of alternatives in logit mixture models, Trans-
+portation Research Part B: Methodological, vol. 58, pp. 185-198, 2013.
+
+[25] D. McFadden, Modelling the choice of residential location. Institute of Transportation Studies,
+University of California, 1978.
+
+[26] E. Frejinger, M. Bierlaire, and M. Ben-Akiva, Sampling of alternatives for route choice modeling,
+Transportation Research Part B: Methodological, vol. 43, no. 10, pp. 984 - 994, 2009.

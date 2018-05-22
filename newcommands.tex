@@ -1,0 +1,158 @@
+%------------------------------------ Set new commands ---------
+
+%%%%%% General %%%%%%%%%%%%%%%%%%%%
+\newcommand{\ve}[1] %make vector notation
+{{\bf #1}}
+
+\newcommand{\unit}[1] %Units
+{\, \mathrm{#1}}
+
+\newcommand{\Bl} % Big left
+{{\Big ( }}
+\newcommand{\bl} % Big left
+{{\big ( }}
+
+\newcommand{\Bh} % Big left
+{{\Big ) }}
+\newcommand{\bh} % Big left
+{{\big ) }} 
+
+
+%%%%%% Theorems %%%%%%%%%%%%%%%%%%
+\usepackage{amsmath}               
+  {
+      \theoremstyle{plain}
+      \newtheorem{assumption}{Assumption}
+  }
+\usepackage{amsmath}               
+  {
+      \theoremstyle{plain}
+      \newtheorem{theorem}{Theorem}
+  }
+  
+  \usepackage{amsmath}               
+  {
+  	\theoremstyle{plain}
+  	\newtheorem{lemma}{Lemma}
+  }
+\newcommand{\refas}[1]
+{A(\ref{#1})}
+
+%%%%%% Mathematics %%%%%%%%%%%%%%%%%%
+\newcommand{\abs}[1]{\lvert#1\rvert} %Abs
+\newcommand{\norm}[1]{\lVert#1\rVert} %Norm
+
+%Case 
+\newcommand{\cif}  %If in cases
+{\text{ if }}
+
+\newcommand{\celse}  %If in cases
+{\text{ else}}
+
+%Partial derivatives
+\newcommand{\dxdy}[2] %make a dx/dy with d as normally done
+{\frac{\text{d}#1}{\text{d}#2}}
+
+\newcommand{\ddxdy}[2] %make a dx/dy with d as normally done
+{\frac{\partial \, #1}{\partial#2}}
+
+
+
+
+\newcommand{\dx}[1] %make a dx
+{{\Delta#1}}
+
+\newcommand{\ud}{\,\mathrm{d}} %make nice dx in integral
+
+\newcommand{\dder}[2] %discrete derivate notation
+{ #2^* }
+%Other
+\newcommand{\nint}[1]
+{\text{nint} \, #1}
+\newcommand{\bsigma}
+{\bold{\sigma}}
+\newcommand{\lse}[1]
+{\mathrm{lse} \, #1}
+
+\DeclareMathOperator*{\argmax}{arg\,max}
+
+%\newcommand{\unit}[1] %make vector notation
+%{\, \mathrm{#1}}
+
+%%%%% References to equations, tables%%%%
+\newcommand{\refeq}[1]
+{(\ref{#1})}
+
+%%%%% Notations for estimation%%%%%%%
+\newcommand{\Ll} % Likelihood notation
+{\mathscr{L}}
+\newcommand{\LL} % Log-likelihood notation
+{\mathscr{LL}}
+\newcommand{\pp} % Probability
+{\mathscr{P}}
+\newcommand{\obs} % Observation set
+{\mathscr{O}}
+
+%%%% Dynp %%%%%%%%%%%
+% General dynp notations
+\newcommand{\EV} % Expected utility notation
+{\eutil}
+% Notations for state spaces in dynp
+\newcommand{\Cc} %Write choice set
+{\mathbb{C}}
+\newcommand{\Ccsamp}
+{\tilde{\Cc}}
+\newcommand{\Uu} %write U set
+{\mathbb{U}}
+\newcommand{\xx} %write x set
+{\mathbb{X}}
+\newcommand{\uu} % write u set
+{\mathbb{U}}
+\newcommand{\rr} % write R set
+{\mathbb{R}}
+\newcommand{\Agood} % write action-sequence set
+{\mathscr{A}}
+\newcommand{\seqspace} % Write statespace
+{\mathscr{S}}
+\newcommand{\eutil} % Expected utility notation
+{\ensuremath{EV}}
+\newcommand{\param}[1]
+{{\ensuremath{\theta_{\text{#1}}}\xspace}}
+\newcommand{\laeutil} % Expected utility notation
+{\ensuremath{\overline{\eutil}}\xspace}
+\newcommand{\aeutil} % Expected utility notation
+{\ensuremath{\widetilde{\eutil}}\xspace}
+
+
+\newcommand{\med}[1]
+{ \bar{#1}}
+
+\newcommand{\TB}{T_{\beta}}
+%FOR TIKZ%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{tikz}
+\usetikzlibrary{decorations.markings}
+\usetikzlibrary{shapes.geometric}
+
+\pgfdeclarelayer{edgelayer}
+\pgfdeclarelayer{nodelayer}
+\pgfsetlayers{edgelayer,nodelayer,main}
+
+\tikzstyle{none}=[inner sep=0pt]
+\tikzstyle{rn}=[circle,fill=blue!40,draw=black,line width=0.8 pt]
+\tikzstyle{gn}=[circle,fill=yellow!40,draw=black,line width=0.8 pt]
+\tikzstyle{yn}=[circle,fill=red!40,draw=black,line width=0.8 pt]
+\tikzstyle{rnn}=[circle,fill=blue!40,draw=black,line width=0.3 pt,inner sep=0pt, minimum size=0.10cm]
+\tikzstyle{gnn}=[circle,fill=yellow!40,draw=black,line width=0.3pt,inner sep=0pt, minimum size=0.10cm]
+\tikzstyle{ynn}=[circle,fill=red!40,draw=black,line width=0.3 pt,inner sep=0pt, minimum size=0.10cm]
+\tikzstyle{enn}=[circle,fill=black!40,draw=black,line width=0.3 pt,inner sep=0pt, minimum size=0.10cm]
+\tikzstyle{wn}=[circle,fill=white,draw=black,line width=0.8 pt]
+\tikzstyle{simple}=[->,dashed,draw=black!80,line width=0.400]
+\tikzstyle{arrow}=[->,draw=black,line width=1.000]
+\tikzstyle{tick}=[-,draw=black, line width = 0.6]
+\tikzstyle{simpleSmall}=[->,dashed,draw=black!80,line width=0.100]
+\tikzstyle{arrowSmall}=[->,draw=black!80,line width=0.2000]
+\tikzstyle{arrowMedium}=[->,draw=black,line width=0.4000]
+\tikzstyle{arrowTiny}=[->,draw=black!30,line width=0.1000]
+\tikzstyle{tickSmall}=[-,draw=black, line width = 0.2]
+\tikzstyle{block} = [draw=white, fill=white!20, rectangle,text centered,opacity=0,text opacity = 1,font=\scriptsize ]
+\tikzstyle{onlytext}=[block,text width=1.5cm]

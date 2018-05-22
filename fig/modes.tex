@@ -1,0 +1,92 @@
+% This file was created by matlab2tikz.
+%
+%The latest updates can be retrieved from
+%  http://www.mathworks.com/matlabcentral/fileexchange/22022-matlab2tikz-matlab2tikz
+%where you can also make suggestions and rate matlab2tikz.
+%
+\begin{tikzpicture}
+
+\begin{axis}[%
+width=4.521in,
+height=3.566in,
+at={(0.758in,0.481in)},
+scale only axis,
+xmin=1,
+xmax=9,
+ymode=log,
+ymin=1e-06,
+ymax=1,
+yminorticks=true,
+axis background/.style={fill=white},
+legend style={legend cell align=left, align=left, draw=white!15!black}
+]
+\addplot [color=red, mark=o, mark options={solid, red}]
+  table[row sep=crcr]{%
+2	0.6111\\
+3	0.2021\\
+4	0.1319\\
+5	0.03848\\
+6	0.01345\\
+7	0.001121\\
+8	0.0003736\\
+};
+\addlegendentry{Trips obs}
+
+\addplot [color=red, dashed, mark=x, mark options={solid, red}]
+  table[row sep=crcr]{%
+2	0.6105\\
+3	0.1943\\
+4	0.128\\
+5	0.03754\\
+6	0.0147\\
+7	0.003676\\
+8	0.001087\\
+9	0.0002663\\
+};
+\addlegendentry{Trips sim}
+
+\addplot [color=green, mark=o, mark options={solid, green}]
+  table[row sep=crcr]{%
+1	0.8771\\
+2	0.1177\\
+3	0.004856\\
+4	0.0003736\\
+};
+\addlegendentry{Tours obs}
+
+\addplot [color=green, dashed, mark=x, mark options={solid, green}]
+  table[row sep=crcr]{%
+1	0.8634\\
+2	0.1168\\
+3	0.009439\\
+4	0.0004586\\
+5	1.479e-05\\
+};
+\addlegendentry{Tours sim}
+
+\addplot [color=blue, mark=o, mark options={solid, blue}]
+  table[row sep=crcr]{%
+2	0.8252\\
+3	0.2323\\
+4	0.05491\\
+5	0.01307\\
+6	0.001121\\
+7	0.0003736\\
+};
+\addlegendentry{Trips per tour obs}
+
+\addplot [color=blue, dashed, mark=x, mark options={solid, blue}]
+  table[row sep=crcr]{%
+2	0.8327\\
+3	0.2287\\
+4	0.05356\\
+5	0.01047\\
+6	0.001491\\
+7	0.0002145\\
+8	3.699e-05\\
+9	3.699e-06\\
+};
+\addlegendentry{Trips per tour sim}
+
+\end{axis}
+\end{tikzpicture}%

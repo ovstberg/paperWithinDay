@@ -1,0 +1,70 @@
+For an individual $n$, the instantaneous utility $u_n(a|s)$ is the sum of the (dis)utility of traveling $u_{n,m}$ and the utility of participating in an activity $u_{n,p}$. The utility of traveling is dependent on the travel cost, travel time and mode, which in turn will be dependent on time of day, origin and destination. The current state is given by $s = (t,l,p,e,c)$, where $t$ is the time, $l$ the location, $p$ the activity (or purpose), $e$ the errand indicator and $c$ the car dummy; and the action is $a=(p',l',m)$ where $p'$ is the new activity, $l'$ the new location and $m$ the mode of transport. The utility of travelling with mode $m$ for individual $n$ can then be written as $u_{n,m}(a|s) = u_{n,m}(l,l',t)$, as it is dependent on the individual, the origin, destination, time of day and mode. For respectively mode it is specified as:
+\newcommand{\car}{\text{car}}
+\newcommand{\pt}{\text{PT}}
+\newcommand{\walk}{\text{walk}}
+\newcommand{\bike}{\text{bike}}
+\newcommand{\dummy}[1]{\delta_{#1}}
+\newcommand{\hi}{\text{h.i}}
+\newcommand{\wait}{\text{wait}}
+\newcommand{\geqfive}{\text{same zone}}
+\newcommand{\mc}{c}
+\newcommand{\ac}{c}
+\newcommand{\dura}[1]{\Delta t_#1}
+\newcommand{\TT}{TT}
+\begin{align*}
+u_{n,\car}(l,l',t) &= \mc_\car + \theta_{\car,t} \TT_\car(l,l',t) + \theta_{c} C_\car(l,l',t) \\
+u_{n,\pt}(l,l',t) &= \mc_\pt + \theta_{\pt,t} \TT_\pt(l,l',t) + \theta_{c}  C_\pt(l,l',t) \\
+u_{n,\bike}(l,l',t) &= \mc_\bike + \theta_{\bike,t} \TT_\bike(l,l',t) \\
+u_{n,\walk}(l,l',t) &= \mc_\walk + \theta_{\walk,t} \TT_\walk(l,l',t) + \theta_{\geqfive} \dummy{\geqfive}
+\end{align*}
+where $\TT_m(l_1,l_2,t)$ and $C_m(l_1,l_2,t)$ denote the travel time and cost with mode $m$ at time $t$ for a trip from origin $l_1$ to destination $l_2$ , $\dummy{same zone}$ is a dummy indicating if the trip is done within the same zone and $\mc_m$ are mode specific constants.
+
+When arriving at the destination $l'$ at time $t' = t+\TT_m(l,l',t)$, the new activity $p$ is started and performed for an activity dependent duration $\dura{p}$. Starting the activity gives a time-of-day dependent constant utility $\ac_p(t)$ and a duration and time-of-day dependent utility $U_{n,p}(t,\dura{p})$. Choosing to continue with the same activity for another time step only gives the duration utility $U_{n,p}(t,\dura{p})$. Not all activities have time-of-day specific parameters. In order to keep down the number of parameters, the constant utility $\ac_p(t)$ is only time dependent for the work activity and the duration utility $U_{n,p}(t,\dura{p})$ is only time dependent for the home activity. Time-of-day varying parameters are specified on discrete time steps $T_k$ with values $\theta_{p,T_k}$ and $\ac_{p,T_k}$. The activity specific constant is given by linear interpolation between the closest defined parameters:
+\begin{equation*}
+\ac_p(t) = \frac{\ac_{p,T_k}(T_{k+1}-t)+\ac_{p,T_{k+1}}(t-T_k)}{T_{k+1}-T_{k}}
+\end{equation*}
+where $t\in(T_k,T_{k+1})$. For the duration utility we specify the \emph{marginal} utility of activity participation at time $t$ as given by linearly interpolation between the closest parameters, so:
+\begin{equation*}
+u_t(t,p) = \frac{\theta_{p,T_k}(T_{k+1}-T_k)+\theta_{p,T_{k+1}}(t-T_k) }{T_{k+1}-T_{k}}.
+\end{equation*}
+The utility of an activity episode of duration $\dura{p}$, when $T_k\leq t$ and $t+\dura{p}\leq T_{k+1}$, then becomes:
+\begin{equation} \label{eq:uacttime}
+\begin{aligned}
+U_p(t,\dura{p}) &= \int_t^{t+\dura{p}} u_t(\tau,p) % \frac{\theta_{p,T_k}(T_{k+1}-\tau)+\theta_{p,T_{k+1}}(\tau-T_k) }{T_{k+1}-T_{k}}
+\ud{\tau} = \alpha_{T_k}\theta_{p,T_k} + \alpha_{T_{k+1}}\theta_{p,T_{k+1}}% \\
+%&= \frac{\theta_{p,T_k}T_{k+1}-\theta_{p,T_{k+1}}T_k + (\theta_{p,T_{k+1}} - \theta_{p,T_{k}}) (2t\dura{p} + \dura{p}^2)}{T_{k+1}-T_{k}}.
+\end{aligned}
+\end{equation}
+where:
+\begin{align*}
+\alpha_{T_k}&=\dura{p}\frac{T_{k+1} - t - 0.5 \dura{p}}{T_{k+1}-T_{k}}\\
+\alpha_{T_{k+1}}&=\dura{p}\frac{t + 0.5\dura{p} - T_k}{T_{k+1}-T_{k}}.
+\end{align*}
+Observe that  $\alpha_{T_k} + \alpha_{T_{k+1}} = \dura{p}$, so if $\theta_{p,T_k} = \theta_{p,T_{k+1}}$ the duration utility becomes $\dura{p}\theta_{p,T_{k+1}}$.
+If $t+\dura{p}> T_{k+1}$, $u_t(\tau,p)$ in \refeq{eq:uacttime} becomes a stepwise linear function but is otherwise treated in the same way.
+
+Besides activity specific constants, each location $l$ has size parameters representing the number of available opportunities for each activity at that location. This utility is given by:
+\begin{equation*}
+u_{p,\text{size}}(l) =\theta_{p,\text{size}}\log \left( \sum_{s=1}^{s=S_p} x_{p,l,s}e^{\theta_{p,s}} \right)
+\end{equation*}
+where $S_p$ is the number of size variables for activity $p$, and the size variables $x_{p,l,s}$ can be, e.g., the number of employees in a specific sector at location $l$. Since the model contains activity specific constants, one of the parameters $\theta_{p,s}$ should be fixed for all activities. This also provides an alternative interpretation of the activity specific constants as scales for the size variables $x_{p,l,s}$. A complete list of size variables included for respectively activity is given in table \ref{tab:est2}. 
+
+%\subsection{Normalization of parameters}
+%Many of the parameters specified above are linearly dependent and a number of them must therefore be fixed in order to obtain unique estimates. Firstly, the duration related utility is linear in time spent at an activity or travelling with a mode and could be written as: $u_{time} = \sum_a t_a \cdot \theta_a + \sum_m t_m \cdot \theta_m$. Since $\sum_a t_a + \sum_m t_m = T$ for all day-paths, changing the value of all linear time parameters by a constant $\delta$ will change the utility all day-paths by the same amount ($T\cdot \delta$). To normalize these parameters, $\theta_{\text{Rec Time}}$ is set to zero. All time parameters should thus be compared against $\theta_{\text{Rec Time}}$.
+%
+
+
+%\subsection{Identiciation}
+%Work ASC
+%
+%Time 
+%
+%Other ASC
+
+% DISCUSS IDENTIFICATION
+
+%
+%in the state $s$ consist of the (dis)utility of transportation with mode $m$ and the utility of participating in an activity $p$. If we let $a = (m,p)$ we can write
+%\begin{equation}
+%u(a,s) = u(m,s) + u(p,s)
+%\end{equation}

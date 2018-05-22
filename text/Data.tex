@@ -1,0 +1,17 @@
+\subsection{Data}
+We have estimated the model using the Stockholm travel survey from 2004, where individuals report a full day travel diary. Estimating using full day-paths puts a high demand on the reported diaries, since the information for all trips in an observation must be correct in order for it to be usable. Further, travel times as reported in the diaries are rarely the same as the data we have on travel times or the travel times we calculate for the same origin-destination, and sometimes the discrepancy is huge. This is always a problem, since the observed travel times only are available for the observed origin-destination pair with the observed mode. One common way of dealing with this is to use the calculated travel times rather than reported travel times, and this is how we choose to proceed. A static traffic assignment model with a nested-logit based travel demand model gives the travel times and costs used for peak and off-peak periods. It is worth noting that when considering day-paths changing the travel time of an observed trip will influence the starting time and/or duration of all remaining actions in the same day. Travel cost with car is calculated as $1.4\unit{kr/km}$, travel times with bike is calculated assuming a speed of $15\unit{km/h}$ and walk travel times assuming a speed of $4\unit{km/h}$.
+
+We have so far restricted the model to individuals that go to work on a weekday. This leaves us with 5200 observations with sufficient information. Out of these, 3300 behave in a way that fits the model. The $\sim 2000$ observations that are removed at this stage behave in ways that the model cannot handle, for example by ending the work day with a business trip, and therefore not ending the work day at their work location; having longer than $2h$ breaks in the middle of their work day; working late (later than 8pm) or starting early (earlier than 6am); leaving the car somewhere or not returning home.
+
+We have demanded that car should be used for either all or no trips on a tour. As passengers and drivers has been treated in the same way, this means that observations with passengers are likely to be removed. Besides individuals reporting that they were passengers, $3\%$ of the observations included a trip of this kind. It is hard to say what is happening here. It is possible that the individual is being dropped off or is being picked up but is driving the car to/from the activity. It is also possible that individuals leave their car for a later day. Parameterizing this behaviour without knowing if the car will be picked up on a later occasion or if someone else is driving it back, and thereby not knowing the attributes associated with such a choice, is likely make the model responds incorrectly to changes in traffic conditions. We have therefore chosen to exclude these observations.
+
+
+
+
+
+
+%\subsection{Network data}
+
+
+%\subsection{Travel diaries to day-paths}
+%How are activity durations, arrival and departure time calculated from the travel diaries?

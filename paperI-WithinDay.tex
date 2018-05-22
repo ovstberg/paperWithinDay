@@ -1,0 +1,150 @@
+
+%Anders version:
+%\documentclass[11pt]{article}
+%\renewcommand{\baselinestretch}{1.4}
+
+\documentclass[final,pdftex]{Oskarthesis}
+\usepackage[dvipsnames,cmyk]{xcolor}
+\usepackage{etex} %Must be first!
+\usepackage{geometry}
+\usepackage{lmodern}
+
+%\documentclass[a4paper,12pt]{article}
+%\usepackage{etex} %Must be first!
+\usepackage[font=footnotesize, margin=1cm]{caption}
+\usepackage[swedish,english]{babel}
+
+%\usepackage[garamondx,cmbraces]{newtxmath}
+
+%\usepackage[erewhon,vvarbb,bigdelims]{newtxmath}
+\usepackage[T1]{fontenc}
+
+
+\usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
+
+\usepackage{nomencl}
+%\usepackage[bw]{mcode}
+%\usepackage[latin1]{inputenc}
+\usepackage[colorlinks]{hyperref}
+\usepackage{booktabs} %Nice tabular
+\usepackage{marvosym}
+\usepackage[dvipsnames]{xcolor}
+\usepackage{xspace}
+\hypersetup{
+    bookmarks=true,         % show bookmarks bar?
+    unicode=false,          % non-Latin characters in Acrobat’s bookmarks
+    pdftoolbar=true,        % show Acrobat’s toolbar?
+    pdfmenubar=true,        % show Acrobat’s menu?
+    pdffitwindow=false,     % window fit to page when opened
+    pdfstartview={FitH},    % fits the width of the page to the window
+    pdftitle={},    % title
+    pdfauthor={Oskar B. V\"astberg},     % author
+    pdfsubject={},   % subject of the document
+    pdfnewwindow=true,      % links in new window
+    colorlinks=true,       % false: boxed links; true: colored links
+    linkcolor=black,          % color of internal links
+    citecolor=black,        % color of links to bibliography
+    filecolor=black,      % color of file links
+    urlcolor=black           % color of external links
+}
+\usepackage{listings, courier}
+\usepackage{float}
+\usepackage{amssymb, graphicx, fancyhdr}
+%\usepackage{units}
+\usepackage{amsmath}
+\numberwithin{equation}{section}
+\usepackage{amsthm}
+\usepackage{mathrsfs} %To get P from mathscr
+\usepackage{subfig}
+\usepackage{multirow}
+\usepackage{caption}
+\usepackage{natbib, hypernat}
+\usepackage{apalike}
+\usepackage{paralist} %for inline lists!
+\usepackage{enumitem}
+\usepackage{lscape}
+
+% Make it possible to force floats to occur before a specific point
+\usepackage{placeins}
+
+%for tikz pictures ---------\textemdash-
+\usepackage{tikz,pgfplots}
+\usetikzlibrary{decorations}
+\usetikzlibrary{calc,shapes,arrows}
+
+\tikzset{
+	font={\fontsize{8pt}{12}\selectfont}}
+
+\pgfplotsset{compat=newest} %for plots
+\pgfplotsset{plot coordinates/math parser=false} %and for speed
+
+%%ONLY WORKINPROGRESS%%%%%%%%%%%%%%%%
+%\usepackage{showlabels}
+%\usepackage{pifont} % Use to create funny things in todo list :)	
+\input{newcommands.tex}
+
+\newcommand{\footremember}[2]{%
+   \footnote{#2}
+    \newcounter{#1}
+    \setcounter{#1}{\value{footnote}}%
+}
+\newcommand{\footrecall}[1]{%
+    \footnotemark[\value{#1}]%
+} 
+
+\begin{document}
+\begin{frontmatter}
+	\title{A dynamic discrete choice activity based travel demand model}
+	\runtitle{A DDCM of travel demand}
+	
+	
+	\begin{aug}
+		\author{\fnms{Oskar} \snm{Blom V\"astberg}\ead[label=e1]{oskar.vastberg@abe.kth.se}}
+		\author{\fnms{Anders} \snm{Karlstr\"om}}
+		\author{\fnms{Daniel} \snm{Jonsson}}
+		\author{\fnms{Marcus} \snm{Sundberg}}
+		\vspace{0.2cm}
+		
+		{\centering \footnotesize\emph{KTH Royal Institute of Technology, SE-100 44 Stockholm, Sweden}}
+		
+		\runauthor{O. B. V\"astberg et. al.}
+		
+		\address{Corresponding author: \printead{e1}}
+
+	\end{aug}
+	\def\abstractname{}
+	\begin{abstract}
+During the last decades, many activity-based models have been developed in the literature. However, especially in random utility based models timing decisions are often treated poorly or inconsistently with other choice dimensions. In this paper we show how dynamic discrete choice can be used to overcome this problem. In the proposed model, trip decisions are made sequentially in time, starting at home in the morning and ending at home in the evening. At each decision stage, the utility of an alternative is the sum of the one-stage utility of the action and the expected future utility in the reached state.
+
+The model generates full daily activity schedules with any number of trips that each is a combination of one of 6 activities, 1240 locations and 4 modes. The ability to go from all to all locations makes evaluating the model very time consuming and sampling of alternatives were therefore used for estimation. The model is estimated on travel diaries and simulation results indicates that it is able to reproduce timing decisions, trip lengths and distribution of the number trips within sample. 
+
+To explain when people perform different activities, two sets of parameters are used: firstly, the utility of being at home varies depending on the time of day; and secondly, constants determine the utility of arriving to work at specific times. This was enough to also obtain a good distribution of the starting times for free-time activities. 
+
+	\end{abstract}
+\end{frontmatter}
+\section{Introduction}
+\input{text/LittReview.tex}
+\section{Model}\label{seq:model} 
+\input{text/modelSpec.tex}
+\section{Estimation}
+\input{text/estimation.tex}
+\input{text/Data.tex}
+\input{text/EstResult.tex}
+\section{Simulation result}
+\input{text/Simulation.tex}
+\FloatBarrier
+
+
+\section{Conclusions}
+\input{text/Conclusion.tex}
+
+\section*{Acknowledgments}
+The work was conducted with financial support from the Centre for Transport Studies, Royal Institute of Technology, Sweden. The computations were performed on resources provided by the Swedish National Infrastructure for Computing (SNIC) at the National Supercomputer Centre at Link\"oping University (NSC). Earlier versions of this paper has been presented at the Transportation Research Board 93rd Annual Meeting (2014), at IRUC seminars at DTU (2014,2015) and at the Workshop on Discrete Choice Models at EPFL (2013). The work presented in this paper has greatly benefited from comments received from the participants of these conferences and workshops.
+
+\footnotesize
+\bibliographystyle{apalike}
+\bibliography{transport,transport2,kappa,car,mixed}
+%\bibliographystyle{plain}
+
+%\bibliographystyle{../ref/apalike-doi}
+\end{document} 
