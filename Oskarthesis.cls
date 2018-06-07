@@ -52,7 +52,6 @@
 
 %%%%%%%% set size of page
 
-\PassOptionsToPackage{paperwidth=169mm, paperheight=239mm,heightrounded,top=30mm, bottom=33mm,left=2.3cm,right=2.3cm}{geometry}
 
 \RequirePackage[cmyk,dvipsnames]{xcolor}
 \RequirePackage{lmodern}
@@ -114,7 +113,7 @@
 % Set draft to default
 %\ExecuteOptions{draft}
 
-\PassOptionsToClass{fleqn,leqno,twoside}{article}
+\PassOptionsToClass{fleqn,leqno}{article}
 \PassOptionsToPackage{fleqn,leqno}{amsmath}
 
 \DeclareOption*{\PassOptionsToClass{\CurrentOption}{article}}

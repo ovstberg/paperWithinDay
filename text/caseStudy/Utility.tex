@@ -1,4 +1,4 @@
-For an individual $n$, the instantaneous utility $u_n(a|s)$ is the sum of the (dis)utility of traveling $u_{n,m}$ and the utility of participating in an activity $u_{n,p}$. The utility of traveling is dependent on the travel cost, travel time and mode, which in turn will be dependent on time of day, origin and destination. The current state is given by $s = (t,l,p,e,c)$, where $t$ is the time, $l$ the location, $p$ the activity (or purpose), $e$ the errand indicator and $c$ the car dummy; and the action is $a=(p',l',m)$ where $p'$ is the new activity, $l'$ the new location and $m$ the mode of transport. The utility of travelling with mode $m$ for individual $n$ can then be written as $u_{n,m}(a|s) = u_{n,m}(l,l',t)$, as it is dependent on the individual, the origin, destination, time of day and mode. For respectively mode it is specified as:
+The one-stage utility $u(a_k,x_k)$ of taking an action $a_k$ in the state $x_k$ can be decomposed into the is (dis)utility of travelling $u_{trav}(a_k,x_k)$ and the utility of derived from participating or starting activity $u_{act}$. The utility of travelling is dependent on the travel cost, travel time and mode, which in turn will be dependent on time of day, origin and destination. The current state is given by $x_k = (t_x,o_x,p_x,e_x,c_x)$, where $t_x$ is the time, $l_x$ the location, $p_x$ the activity (or purpose), $e_x$ the errand indicator and $c_x$ the car dummy; and the action is $a_k=(activity_a,dest_a,mode_a)$ where $p_a$ is the new activity, $d_a$ the destination and $m_a$ the chosen mode of transport. The utility of travelling with mode $m_a$  $u_{n,m}(a_k,x_k) = u_{n,m}(l,l',t)$, as it is dependent on the individual, the origin, destination, time of day and mode. For respectively mode it is specified as:
 \newcommand{\car}{\text{car}}
 \newcommand{\pt}{\text{PT}}
 \newcommand{\walk}{\text{walk}}
@@ -7,10 +7,14 @@ For an individual $n$, the instantaneous utility $u_n(a|s)$ is the sum of the (d
 \newcommand{\hi}{\text{h.i}}
 \newcommand{\wait}{\text{wait}}
 \newcommand{\geqfive}{\text{same zone}}
-\newcommand{\mc}{c}
+\newcommand{\mc}{\theta}
 \newcommand{\ac}{c}
 \newcommand{\dura}[1]{\Delta t_#1}
 \newcommand{\TT}{TT}
+\begin{equation}
+    u_{trav}(a_k,x_k) = \mc_{{mode}_a} + \theta_{\text{time},{mode}_a} \TT({mode}_a,{orig}_x,{dest}_a)
+\end{equation}
+
 \begin{align*}
 u_{n,\car}(l,l',t) &= \mc_\car + \theta_{\car,t} \TT_\car(l,l',t) + \theta_{c} C_\car(l,l',t) \\
 u_{n,\pt}(l,l',t) &= \mc_\pt + \theta_{\pt,t} \TT_\pt(l,l',t) + \theta_{c}  C_\pt(l,l',t) \\

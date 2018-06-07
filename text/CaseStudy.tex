@@ -1,0 +1,29 @@
+We restrict the model to working days and people that arrive at work between $6\unit{a.m.}$ and $11\unit{a.m.}$ and return home before $11\unit{p.m}$. We also omit lunch activities and business trips. Car ownership, work location, working time and whether people have fixed or flexible working schedules is exogenous in the current implementation. Escort trips of children to or from school/daycare are mandatory for individuals that do the trip on the survey day, and drop off/pick up location is exogenous. 
+
+We currently do not consider any mixed modes, or mode chains, such as taking the bike to the train station. This would definitely be possible conceptually, but would further increase the computation time and has therefore not been included at this stage. Car is only a possible choice if the individual has a car available at home. Further, if a car is used for a trip away from home, all consecutive trips on the same tour must be done using car. This is controlled through the car-dummy $\delta_{car}$. Certainly it happens that individuals use a car for only some trips in a tour. They might leave their car at work and pick it up the next day or leave it for another family member. To correctly include the possibility to leave a car at any location, another state variable would be needed that remembered the location where the car was parked and the state space would become 1000-times larger. Since that kind of behaviour is quite uncommon, we think this restriction on car usage is reasonable. %How is this done in other papers?
+
+Below we will first describe the state space and choice set, and then how time-space constraints can be expressed in terms of restrictions on either the state space or on a state specific choice set.
+
+
+
+\subsection{Specification}
+\subsubsection{State and action space}
+\input{text/caseStudy/StateAndActions.tex}
+\subsubsection{Time-space constraint}
+\input{text/caseStudy/TimeSpaceConstraints.tex}
+\subsubsection{One-stage utility functions}
+\input{text/caseStudy/Utility.tex}
+
+\subsection{Data}
+\input{text/caseStudy/Data.tex}
+
+\subsection{Computation details}
+\input{text/caseStudy/compTime.tex}
+
+\subsection{Estimation results}
+\input{text/caseStudy/EstResult.tex}
+
+\subsection{Simulation result}
+\input{text/caseStudy/Simulation.tex}
+
+

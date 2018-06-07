@@ -18,6 +18,7 @@
 
 %\usepackage[erewhon,vvarbb,bigdelims]{newtxmath}
 \usepackage[T1]{fontenc}
+\usepackage{mathtools}
 
 
 \usepackage[utf8]{inputenc} % set input encoding (not needed with XeLaTeX)
@@ -31,7 +32,6 @@
 \usepackage[dvipsnames]{xcolor}
 \usepackage{xspace}
 \hypersetup{
-    bookmarks=true,         % show bookmarks bar?
     unicode=false,          % non-Latin characters in Acrobat’s bookmarks
     pdftoolbar=true,        % show Acrobat’s toolbar?
     pdfmenubar=true,        % show Acrobat’s menu?
@@ -82,6 +82,7 @@
 %\usepackage{showlabels}
 %\usepackage{pifont} % Use to create funny things in todo list :)	
 \input{newcommands.tex}
+\newcommand{\zdel }{\,}
 
 \newcommand{\footremember}[2]{%
    \footnote{#2}
@@ -122,19 +123,20 @@ To explain when people perform different activities, two sets of parameters are 
 
 	\end{abstract}
 \end{frontmatter}
+\section{test}
+\input{text/Introduction.tex}
 \section{Introduction}
 \input{text/LittReview.tex}
-\section{Model}\label{seq:model} 
-\input{text/modelSpec.tex}
-\section{Estimation}
-\input{text/estimation.tex}
-\input{text/Data.tex}
-\input{text/EstResult.tex}
-\section{Simulation result}
-\input{text/Simulation.tex}
+\section{Method}\label{seq:model}
+\input{text/Method.tex}
+\section{Estimation and computation details}
+\input{text/Estimation.tex}
+\section{Case study}
+\input{text/CaseStudy.tex}
 \FloatBarrier
 
-
+\section{Discussion}
+\input{text/Discussion.tex}
 \section{Conclusions}
 \input{text/Conclusion.tex}
 

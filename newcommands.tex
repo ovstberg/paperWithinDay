@@ -1,3 +1,9 @@
+\usepackage{bbm}
+
+\newcommand{\indicator}[1]
+{\mathbbm{1}_{#1}}
+\newcommand{\ks}[1]{^{(#1)}}
+
 %------------------------------------ Set new commands ---------
 
 %%%%%% General %%%%%%%%%%%%%%%%%%%%
@@ -6,7 +12,8 @@
 
 \newcommand{\unit}[1] %Units
 {\, \mathrm{#1}}
-
+\newcommand{\units}[1] %Units
+{\, \mathrm{#1}}
 \newcommand{\Bl} % Big left
 {{\Big ( }}
 \newcommand{\bl} % Big left
@@ -116,6 +123,8 @@
 {\mathscr{S}}
 \newcommand{\eutil} % Expected utility notation
 {\ensuremath{EV}}
+\newcommand{\ev} % Expected utility notation
+{\ensuremath{\bar{V}}}
 \newcommand{\param}[1]
 {{\ensuremath{\theta_{\text{#1}}}\xspace}}
 \newcommand{\laeutil} % Expected utility notation
@@ -156,3 +165,12 @@
 \tikzstyle{tickSmall}=[-,draw=black, line width = 0.2]
 \tikzstyle{block} = [draw=white, fill=white!20, rectangle,text centered,opacity=0,text opacity = 1,font=\scriptsize ]
 \tikzstyle{onlytext}=[block,text width=1.5cm]
+
+
+
+
+
+
+\newcommand{\act}[1]{\bar{#1}}
+\newcommand{\amem}{\xi}
+\newcommand{\atime}{\tau}

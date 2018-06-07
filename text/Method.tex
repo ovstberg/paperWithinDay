@@ -1,0 +1,118 @@
+When individuals decide what time to leave for work, they take into consideration how this will influence it will influence their afternoon. If they arrive ten minutes later it means that they have to spend less time at work and/or less time performing activities in the afternoon. The difference in how they value afternoon-time versus morning-time will therefore influence their departure time for work. Even people with flexible working hours seem to prefer to go to work during rush hours, when roads and public transport are heavily congested. Probably they have other time-constraints -- they might have to pick up their children from school, have a gym-class or are meeting friends -- or time preferences -- they might value having dinner with their family at $6\unit{p.m}$. Whatever the reasons, it is clear that the timing of trips in the morning is influenced by their plans for the afternoon, and that the benefits of travelling at less congested times would not outweigh the costs of changing these plans. The decision on when, where and how to travel should therefore be explained by trade-off's on how a limited amount of time should be spent and a correct representation of time is crucial in activity-based travel demand models. 
+
+The importance of modelling the choice of a daily travel pattern interdependently has been argued by multiple authors \citep[see, e.g.,][]{recker86starchild1,kitamura1996Sams}. A natural way to represent this is by assuming that individuals act as if they were utility maximizers, and choose the utility maximising travel pattern $tp$ among the set $TP$ of all feasible travel patterns:
+\begin{equation}
+\label{eq:opt}
+	\begin{aligned}
+	& \underset{tp}{\text{maximize}}
+	& & U_{tp} \\
+	& \text{subject to}
+	& & tp \in TP
+\end{aligned}
+\end{equation}
+Formulating a model based on \eqref{eq:opt} is by no means trivial, and several models have been proposed based on this assumption, see e.g., \citet{Adler79}, MATSim \citep{horni2016multi}, AURORA \citep{joh2003Aurora, johEstimationAurora2005}, HAPP \citep{recker01bridge,Recker13,yuan2014HAPP}. 
+
+\subsection{MDP}
+In this section we will discuss how a sequence of decisions formulated as a Markov decision process (MDP) can be used to model the choice of a daily travel pattern. The decision sequence will include the choice of the number of trips to perform during a day as well as their their timing, destination, purpose and mode of transport. One could conceptually extend such a decision sequence to incorporate route choice in a multi-modal network but that is not the focus of this paper.
+% It is simple to represent a travel pattern as a set of states and decisions.
+% However, in a markov decision process, it is necessary that the relevant part of the history is also caputred by $s$. On the other hand, in order to obtain an operational model, some part of the history has to be excluded from the state variable. One such part which would be extremely hard to include is previously visited locations. 
+% Location, $l$, as this influence. 
+% Performed activites or activities which are required to be performed during a day. 
+% In this way, it is possible to model time-space constraints. 
+
+% One could imagine stock variables which influences the need to perform certain activities during a day. 
+% There is also a need for variables keeping track of the mode used on the tour. 
+% 
+% In \citep{Arentze04,liao13}, the fact that multiple states keep track of previously performed activities motivates the name \emph{multi}-state supernetwork.
+% In each such state 
+
+% The markov property comes with a number of limitations compared to xxx. It becomes very hard to keep track on the time spent on each activity or with each model during a day. However, the most commong implementation of XX is as sum_Utravel + sum Uact and this can included
+
+\newcommand{\bs}{\mathbf{s}}
+\newcommand{\ba}{\mathbf{a}}
+
+
+The choice of a daily travel pattern is represented by a sequence of actions forming a path between states where a state $s_k$ may define the location $l$ and time of day $t$ among other things. The set of all states is denoted by $S$ and the set of states available at a specific point in time $t$ for $S_t$. We will let the time $t$ be a continuous variable but assume that decisions are taken at discrete points in time. The index $k$ is used to denote the order of the state $s_k$ in the sequence of states that are traversed during the day. In each state, an individual can choose an action $a_k \in C(s_k)$ where $C(s_k) \subset C$ defines the subset of discrete actions which are feasible in the specific state $s_k$. An action may define, e.g., type and duration of an activity or destination and mode of transport of a trip. 
+
+If the environment is stochastic, the state $s_{k+1}$ reached when choosing $a_k$ in state $s_k$ may be uncertain and given by some probability density function $q(s_{k+1}|a_k,s_k)$. Such uncertainty may be caused by daily variations in travel times. It may also be that a friend suddenly calls, that a meeting is cancelled or that a family member is expected to call and ask for a lift. One could have a state which represents the need to perform an activity on a specific day and allow the stochastic process $q$ to model how this need evolves over a day. This would resemble how, e.g., the need based models of \citet{arentze11} captures how the need to perform activities evolve between days over a week. 
+
+We assume that individuals are aware of the stochasticity introduced by $q$ and take it into account when making decisions. The agents preferences for taking a decision $a_k$ in a specific state $s_k$ and reaching the state $s_{k+1}$ is represented by the one-stage utility function $u(s_k,a_k,s_{k+1})$. The utility function is dependent on factors such as the travel time (which is dependent on $s_k$ and $s_{k+1}$), travel cost, the time spent performing different activities and the time-of-day when they take place. Together the Markov decision process consists of: the state space $S$; decision space $C$ and constrained choice set $C(s_k)$; transition probabilities $q$; and one stage utility functions $u$. A travel pattern $tp$ can be defined by the sequences $\bs$ and $\ba$ of actions and states traversed during a day respectively. Similarly to the assumption of \eqref{eq:opt} we will assume that an individuals preference for an experienced travel pattern is given by the utility function $U(\bs,\ba)$:
+\begin{equation}
+    U(\bs,\ba) = \sum_{k=0}^K u(s_k,a_k,s_{k+1}).
+\end{equation}
+% sequence of such state-action pairs $\{s_k,a_k\}$ starting in the morning and ending in the evening is what we will call a day-path. A day-path defines a travel pattern or schedule but further contains information of the sequence of actions and states that have been traversed.
+A rational agent that starts in a state $s$ would behave according to a policy $\pi$, determining the action $a_k=\pi(s_k)$ to take when in state $s_k$, that maximizes the expected future utility  of a day. The expected future utility conditional on a state is the \emph{value function} in that state which is defined by: 
+\begin{equation}\label{eq:vf}
+\begin{aligned}
+V(s) & = \max_{\pi} E_\pi \left\{ \sum_{k=0}^K u(s_k,a_k,s_{k+1})\middle | s_0 = s \right\}  
+\end{aligned}
+\end{equation}
+where the expectation $E_\pi$ is with respect to the stochasticity of $s_k$ give the decision rule $a_k=\pi({s_k})$ and $K$ is the maximum number of decision stages in a day. Observe that since individuals are assumed to consider the expected value of one-stage utilities, one can without loss of generality exchange $u(s_k,a_k,s_{k+1})$ for $\bar{u}(s_k,a_k) = E_{a_k}[u(s_k,a_k,s_{k+1})]$, and we will in the future use this expected one-stage utility to simplify the notation. However, in the context of activity scheduling with stochastic travel time, the one-stage utility will in general be dependent on the stochastic process (if travel time influences utility).
+
+Observe that the transition probabilities $q$, the one-stage utility function $u$ and choice-set $C(s_k)$ all are Markovian: conditional on $s_k$ and $a_k$ they are independent of the history. This means that a state should include all the information necessary to formulate the choice set and one-stage utility functions. The Markov assumption is not a problem in theory, as the state could be defined to all previous history. However, due to the curse of dimensionality it is in practice important to limit the part of the history which is stored in a state in order to reduce the size of the state space $S$ and obtain a tractable model. For example, it is possible to introduce a state variable of a reasonable dimension related to the type of activities that has been performed during a day, but it would not be feasible to also remember where they were performed when the number of locations is large. A state variable can be introduced for mode of transport used on a previous trip, but it would be extremely complicated to introduce a state variable for the total number of minutes spent travelling with each mode. This means that, e.g., functional forms such as the logarithm of the total travel time of a day would be extremely difficult to include in the utility specification. The fact that, e.g., previous location choices are excluded from the state space should be interpreted as if they are independent in the model. Where you have been influences where you are, what you have done and how much time you have left for other activities, all of which may influence your decisions. 
+
+It can at this point be worth comparing the assumptions underlying \eqref{eq:opt} and \eqref{eq:vf} and the relationship between the choice of a travel pattern and a policy. Whereas \eqref{eq:opt} implies that individuals search for the optimal travel pattern $tp$, potentially for the expected utility of a day, \eqref{eq:vf} implies that individuals search for an optimal decision rule $a = \pi(s)$ for each state $s$. One can formulate the choice of a travel pattern $tp$ as a possible policy where the decisions are fixed before the day start. However, a policy and especially the optimal policy $\pi$ could in general not be defined as a travel pattern, as it does not necessarily contain a fixed set of decisions independently of what happens. Instead, a policy is a set of condition-action pairs, determining how an individual should act conditional on the experienced history as represented by the state.
+\subsection{RUM}
+Using \eqref{eq:vf} to directly derive an optimal policy would be extremely complicated as it would involve a multi-dimensional integral, but using dynamic programming the problem becomes much more manageable. However, in order to obtain an analytically and computationally tractable model, some additional assumptions will be imposed on the structure of the Markov process following the dynamic discrete choice framework developed as described in \citet{Rust87}.
+
+Firstly, a state variable is added to the state-space: $\epsilon_k \in R^{N_k}$ where $N_k$ is the size of the choice set at decision stage $k$. This variable models the unobserved component of the utility function and rewrite $s_k=(x_k,\epsilon_k)$. It is secondly assumed that the utility function is additively separable (AS) as: $\bar{u}(s_k,a_k)=\bar{u}(x_k,a_k) + \mu_{x_k}\cdot\epsilon_k(a_k)$, where $\mu_{x_k}$ is a state dependent scale factor. Finally a conditional independence (CI) assumption is imposed to hold so that the Markov process factors as: $q(s_{k+1}|s_k,a_k)=q(\epsilon_{k+1}|x_{k+1})q(x_{k+1}|x_k,a_k)$, meaning that $x_{t+1}$ is sufficient to determine $\epsilon_{k+1}$. The conditional probability of the random state variable $\epsilon_k(a_k)$ is further assumed to be Gumbel distributed and i.i.d. over alternatives and time. To ensure that it has a zero mean, Euler's constant $\gamms$ is subtracted from the utility specifications below.
+With the additional assumptions above, the value function $V(s)$ in \eqref{eq:vf} can be defined recursively through Bellman's equation as \citep{bellman,Rust87}:
+\begin{equation} \label{eq:vfbellman}
+\begin{aligned}
+V(x_k,\epsilon_k) &= \max_{a_k} \left\{\bar{u}(x_k,a_k) + \mu_{x_k} (\epsilon_k(a_k)-\gamma)+ \eutil(x_k,a_k) \right\} 
+\end{aligned}
+\end{equation}
+where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. As $\epsilon(a_k)$ is Gumbel distributed this is simply an Multinomial Logit (MNL) model and so the the conditional choice probabilities of an action $i$ given the state $x$ are given by:
+\newcommand{\akt}{\tilde{a_k}}
+\begin{equation} \label{eq:pcond}
+P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,a_k) + \eutil(x_k,a_k)\right)}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,\akt) + \eutil(x_k,\akt)\right)}}.
+\end{equation}
+
+The \emph{expected value function} $\ev(x_k)$ will be used to denote the expected value of the value function \emph{before} the state variables $\epsilon_k$ has been observed. $\ev$ is thus the expected future utility of being in a state as seen by the individual before the state is visited. When $\epsilon_k(a_k)$ is Gumbel distributed this is given by the log-sum:
+\begin{equation} \label{eq:evfbellman}
+\begin{aligned}
+\ev(x_k) &= E_{\epsilon_k} \left[ \max_{{a_k}\in C(x_{k})} \left\{\bar{u}(x_k,a_k) + \mu_{x_k} (\epsilon_k(a_k)-\gamma)+ \eutil(x_k,a_k) \right\}  \right] \\&= \mu_{x_k}\cdot\log\left(\sum_{a_k\in C(x_{k})} e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,a_k) + \eutil(x_k,a_k)\right)}\right).
+\end{aligned}
+\end{equation}
+Similarly, $\eutil(x_k,a_k)$ is given by:
+\begin{equation} \label{eq:vfrust}
+    \eutil(x_k,a_k) = \int_{x_{k+1}} \ev(x_{k+1})q(dx_{k+1}|x_k,a_k).
+\end{equation}
+Observe that it is $q$ in \eqref{eq:vfrust} which can be used to model, e.g., travel time uncertainty.  
+
+In order to use \eqref{eq:vfbellman} to calculate choice probabilities or simulate choices we first need to know $\eutil$ for all possible state-action pairs.  
+The standard way to obtain $\eutil$ following \citet{Rust87} has been to solve the equation system obtained when inserting \eqref{eq:evfbellman} into \eqref{eq:vfrust} and using value iteration to calculate $\eutil$ for each state-action pair.   
+If the number of such state-action pairs is large compared to the number of states, i.e, if there is a large number of actions available in each state, it can be beneficial from a computational perspective to instead calculate the expected value function $\ev$ in all $x$ and use this to calculate $\eutil$ on-the-fly when needed. Once $\eutil$ are known, 
+%Continue here!
+
+
+
+\section{Model specification}
+\input{text/Specification.tex}
+
+
+
+\subsection{Solving the value function}
+When modelling daily planning, there is logical terminal time $T$ in the end of the day. We will restrict ourselves to a single feasible state $x_T$ in the end of day with $\eutil(x) = 0$. This is not a restriction per se; multiple states in the end of the day could be included by adding a link from all of these states to a common fictive terminal state $x_k$. With $\eutil(x_k)$ defined, it is possible to use backward induction to calculate $\eutil$ in all states using \refeq{eq:EV}.
+
+
+- Continuous time 
+
+\subsection{Overlapping paths}
+In the graph describing the daily activity-travel network, multiple possible day-paths of sequences of states and actions will pass through the same state-action pair $(x,a)$. It is reasonable to assume that these day-paths share some portion of the unobserved utility component. In route choice models this is a well known problem, and there is a risk that not taking it into account will give unrealistic substitution patterns. To overcome this problem without explicitly introducing an unobserved link specific random utility component, it is common to add some deterministic correction term to the utility of a path which models the degree of overlap with other paths in the choice set. Common examples in the route choice literature include the Path Size Logit (PSL) \citep[][]{} and C-Logit \citep{}. As noted in \citet{fosgerau2013}, these correction terms are not additatively separable over links and can therefore not used in a model where choices are made sequentially over links, and they can therefore not directly be used here. In the context of route-choice, \citet{fosgerau2013} developed an alternative correction term which they called the Link Size (LS) attribute. The LS-attribute is derived by calculating the expected flow on each link according to some auxiliary model. They show that LS-attribute gives substitution patterns very similar to the PSL.
+
+The probability that a specific state-action pair will be observed is given by:
+\begin{equation}
+P(x,a) = P(x)\cdot P(a|x)
+\end{equation}
+where $P(a|x)$ are given by \eqref{eq:pcond} and where the $P(x)$ is the probability that an individual reaches state $x$ and is given by the solution to the equation system:
+\begin{align}
+P(x_{k+1}) &= \sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k)\cdot P(a_k|x_k)\cdot P(x_k) \\
+&=\sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k) e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,a_k) + \eutil(x_k,a_k)\right) - \ev(x_k}
+\cdot P(x_k)
+\end{align}
+As all actions lead forward in time, it is clear that the stationary probabilities can be obtained by starting at $t=0$ and moving forward in time once $P(a|x)$ has been calculated. 
+\begin{equation}
+P(x_{k+1}) = \sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k)\cdot \cdot P(x_k).
+\end{equation}
+
