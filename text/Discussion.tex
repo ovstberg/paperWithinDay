@@ -3,6 +3,9 @@
 We currently have linear-
 
 
+\subsection{Comparsion with recursive logit}
+Recursive Logit (RL) models has recently been developed extending the MNL case discussed in \citet{fosgerau2013} to cover Nested Logit \citep{mai2015}, MEV \citep{mai2016method} and Mixed Logit specifications \citep{mai2016decomposition}. They have also been applied in a number of scenarios, e.g., in \cite{zimmermann2017bike}  application to route choice for bikes, possibly with the largest network so far in a RL model. The number of links in these models are between 7\zdel 000-40\zdel 000. The model presented here is thus around $2\zdel 000$ times bigger, so although the models are very similar the estimation techniques used for RL-models are not feasible here. 
+
 \subsection{Correlation between alternatives}
 It is common practice in route choice modelling to add a size attribute to each link to take correlation among paths that overlap into account, e.g., using Path-Size Logit \citep{BenAkivaBier99}. For their link-based route choice model, \citet{fosgerau11} obtains a size coefficient by calculating \eutil\, in each link using some pre-specified parameters and adding that to the link-utility. In the activity-scheduling model presented here, it is not as easy to define the overlapping of paths, as the network is dynamic. If two paths are identical besides that the start time for all activities in one path is $10\unit{min}$ after the start time in the other path, there can be practically no overlapping as defined by the Path-Size Logit although the two paths would be very similar. How to address this issue in a dynamic network and in the activity-scheduling framework is therefore an open question.
 
