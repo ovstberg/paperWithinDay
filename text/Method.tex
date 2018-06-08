@@ -30,7 +30,7 @@ In this section we will discuss how a sequence of decisions formulated as a Mark
 
 \newcommand{\bs}{\mathbf{s}}
 \newcommand{\ba}{\mathbf{a}}
-
+\newcommand{\avgu}{u}
 
 The choice of a daily travel pattern is represented by a sequence of actions forming a path between states where a state $s_k$ may define the location $l$ and time of day $t$ among other things. The set of all states is denoted by $S$ and the set of states available at a specific point in time $t$ for $S_t$. We will let the time $t$ be a continuous variable but assume that decisions are taken at discrete points in time. The index $k$ is used to denote the order of the state $s_k$ in the sequence of states that are traversed during the day. In each state, an individual can choose an action $a_k \in C(s_k)$ where $C(s_k) \subset C$ defines the subset of discrete actions which are feasible in the specific state $s_k$. An action may define, e.g., type and duration of an activity or destination and mode of transport of a trip. 
 
@@ -47,31 +47,34 @@ A rational agent that starts in a state $s$ would behave according to a policy $
 V(s) & = \max_{\pi} E_\pi \left\{ \sum_{k=0}^K u(s_k,a_k,s_{k+1})\middle | s_0 = s \right\}  
 \end{aligned}
 \end{equation}
-where the expectation $E_\pi$ is with respect to the stochasticity of $s_k$ give the decision rule $a_k=\pi({s_k})$ and $K$ is the maximum number of decision stages in a day. Observe that since individuals are assumed to consider the expected value of one-stage utilities, one can without loss of generality exchange $u(s_k,a_k,s_{k+1})$ for $\bar{u}(s_k,a_k) = E_{a_k}[u(s_k,a_k,s_{k+1})]$, and we will in the future use this expected one-stage utility to simplify the notation. However, in the context of activity scheduling with stochastic travel time, the one-stage utility will in general be dependent on the stochastic process (if travel time influences utility).
+where the expectation $E_\pi$ is with respect to the stochasticity of $s_k$ give the decision rule $a_k=\pi({s_k})$ and $K$ is the maximum number of decision stages in a day. Observe that since individuals are assumed to consider the expected value of one-stage utilities, one can without loss of generality exchange $u(s_k,a_k,s_{k+1})$ for $\avgu(s_k,a_k) = E_{a_k}[u(s_k,a_k,s_{k+1})]$, and we will in the future use this expected one-stage utility to simplify the notation. However, in the context of activity scheduling with stochastic travel time, the one-stage utility will in general be dependent on the stochastic process (if travel time influences utility).
 
 Observe that the transition probabilities $q$, the one-stage utility function $u$ and choice-set $C(s_k)$ all are Markovian: conditional on $s_k$ and $a_k$ they are independent of the history. This means that a state should include all the information necessary to formulate the choice set and one-stage utility functions. The Markov assumption is not a problem in theory, as the state could be defined to all previous history. However, due to the curse of dimensionality it is in practice important to limit the part of the history which is stored in a state in order to reduce the size of the state space $S$ and obtain a tractable model. For example, it is possible to introduce a state variable of a reasonable dimension related to the type of activities that has been performed during a day, but it would not be feasible to also remember where they were performed when the number of locations is large. A state variable can be introduced for mode of transport used on a previous trip, but it would be extremely complicated to introduce a state variable for the total number of minutes spent travelling with each mode. This means that, e.g., functional forms such as the logarithm of the total travel time of a day would be extremely difficult to include in the utility specification. The fact that, e.g., previous location choices are excluded from the state space should be interpreted as if they are independent in the model. Where you have been influences where you are, what you have done and how much time you have left for other activities, all of which may influence your decisions. 
 
 It can at this point be worth comparing the assumptions underlying \eqref{eq:opt} and \eqref{eq:vf} and the relationship between the choice of a travel pattern and a policy. Whereas \eqref{eq:opt} implies that individuals search for the optimal travel pattern $tp$, potentially for the expected utility of a day, \eqref{eq:vf} implies that individuals search for an optimal decision rule $a = \pi(s)$ for each state $s$. One can formulate the choice of a travel pattern $tp$ as a possible policy where the decisions are fixed before the day start. However, a policy and especially the optimal policy $\pi$ could in general not be defined as a travel pattern, as it does not necessarily contain a fixed set of decisions independently of what happens. Instead, a policy is a set of condition-action pairs, determining how an individual should act conditional on the experienced history as represented by the state.
-\subsection{RUM}
-Using \eqref{eq:vf} to directly derive an optimal policy would be extremely complicated as it would involve a multi-dimensional integral, but using dynamic programming the problem becomes much more manageable. However, in order to obtain an analytically and computationally tractable model, some additional assumptions will be imposed on the structure of the Markov process following the dynamic discrete choice framework developed as described in \citet{Rust87}.
 
-Firstly, a state variable is added to the state-space: $\epsilon_k \in R^{N_k}$ where $N_k$ is the size of the choice set at decision stage $k$. This variable models the unobserved component of the utility function and rewrite $s_k=(x_k,\epsilon_k)$. It is secondly assumed that the utility function is additively separable (AS) as: $\bar{u}(s_k,a_k)=\bar{u}(x_k,a_k) + \mu_{x_k}\cdot\epsilon_k(a_k)$, where $\mu_{x_k}$ is a state dependent scale factor. Finally a conditional independence (CI) assumption is imposed to hold so that the Markov process factors as: $q(s_{k+1}|s_k,a_k)=q(\epsilon_{k+1}|x_{k+1})q(x_{k+1}|x_k,a_k)$, meaning that $x_{t+1}$ is sufficient to determine $\epsilon_{k+1}$. The conditional probability of the random state variable $\epsilon_k(a_k)$ is further assumed to be Gumbel distributed and i.i.d. over alternatives and time. To ensure that it has a zero mean, Euler's constant $\gamms$ is subtracted from the utility specifications below.
+
+\input{text/Specification.tex}
+
+
+\section{Dynamic discrete choice model}
+Individuals are assumed to have preferences for the full utility of a full daily travel pattern, and as \eqref{eq:vf} defines act as if they choose a decision rule which maximise this utility. However, given the large number of different state-action combinations it is extremely complicated to directly find the optimal decision rule using \eqref{eq:vf}. Using dynamic programming the problem becomes much more manageable. However, in order to obtain an analytically and computationally tractable model, some additional assumptions will be imposed on the structure of the Markov process following the dynamic discrete choice framework developed as described in \citet{Rust87}. The state space is firstly augmented by an additional state variable $\epsilon_k$ into $s_k=(x_k,\epsilon_k)$. The new state variable is a vector $\epsilon_k \in R^{N_C}$ where $N_C$ is the maximum size of the choice set, and models attributes of the alternatives which are unobserved by the decision maker before they reach the state $x_k$. It is secondly assumed that the utility function is additively separable (AS) as: $\avgu(s_k,a_k)=\avgu(x_k,a_k) + \mu_{x_k}\cdot\epsilon_k(a_k)$, where $\mu_{x_k}$ is a state dependent scale factor. Finally a conditional independence (CI) assumption is imposed to hold so that the Markov process factors as: $q(s_{k+1}|s_k,a_k)=q(\epsilon_{k+1}|x_{k+1})q(x_{k+1}|x_k,a_k)$, meaning that $x_{t+1}$ is sufficient to determine $\epsilon_{k+1}$. The conditional probability of the random state variable $\epsilon_k(a_k)$ is further assumed to be Gumbel distributed and i.i.d. over alternatives and time. To ensure that it has a zero mean, Euler's constant $\gamms$ is subtracted from the utility specifications below.
 With the additional assumptions above, the value function $V(s)$ in \eqref{eq:vf} can be defined recursively through Bellman's equation as \citep{bellman,Rust87}:
 \begin{equation} \label{eq:vfbellman}
 \begin{aligned}
-V(x_k,\epsilon_k) &= \max_{a_k} \left\{\bar{u}(x_k,a_k) + \mu_{x_k} (\epsilon_k(a_k)-\gamma)+ \eutil(x_k,a_k) \right\} 
+V(x_k,\epsilon_k) &= \max_{a_k} \left\{\avgu(x_k,a_k) + \mu_{x_k} (\epsilon_k(a_k)-\gamma)+ \eutil(x_k,a_k) \right\} 
 \end{aligned}
 \end{equation}
 where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. As $\epsilon(a_k)$ is Gumbel distributed this is simply an Multinomial Logit (MNL) model and so the the conditional choice probabilities of an action $i$ given the state $x$ are given by:
 \newcommand{\akt}{\tilde{a_k}}
 \begin{equation} \label{eq:pcond}
-P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,a_k) + \eutil(x_k,a_k)\right)}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,\akt) + \eutil(x_k,\akt)\right)}}.
+P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,\akt) + \eutil(x_k,\akt)\right)}}.
 \end{equation}
 
 The \emph{expected value function} $\ev(x_k)$ will be used to denote the expected value of the value function \emph{before} the state variables $\epsilon_k$ has been observed. $\ev$ is thus the expected future utility of being in a state as seen by the individual before the state is visited. When $\epsilon_k(a_k)$ is Gumbel distributed this is given by the log-sum:
 \begin{equation} \label{eq:evfbellman}
 \begin{aligned}
-\ev(x_k) &= E_{\epsilon_k} \left[ \max_{{a_k}\in C(x_{k})} \left\{\bar{u}(x_k,a_k) + \mu_{x_k} (\epsilon_k(a_k)-\gamma)+ \eutil(x_k,a_k) \right\}  \right] \\&= \mu_{x_k}\cdot\log\left(\sum_{a_k\in C(x_{k})} e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,a_k) + \eutil(x_k,a_k)\right)}\right).
+\ev(x_k) &= E_{\epsilon_k} \left[ \max_{{a_k}\in C(x_{k})} \left\{\avgu(x_k,a_k) + \mu_{x_k} (\epsilon_k(a_k)-\gamma)+ \eutil(x_k,a_k) \right\}  \right] \\&= \mu_{x_k}\cdot\log\left(\sum_{a_k\in C(x_{k})} e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}\right).
 \end{aligned}
 \end{equation}
 Similarly, $\eutil(x_k,a_k)$ is given by:
@@ -82,13 +85,13 @@ Observe that it is $q$ in \eqref{eq:vfrust} which can be used to model, e.g., tr
 
 In order to use \eqref{eq:vfbellman} to calculate choice probabilities or simulate choices we first need to know $\eutil$ for all possible state-action pairs.  
 The standard way to obtain $\eutil$ following \citet{Rust87} has been to solve the equation system obtained when inserting \eqref{eq:evfbellman} into \eqref{eq:vfrust} and using value iteration to calculate $\eutil$ for each state-action pair.   
-If the number of such state-action pairs is large compared to the number of states, i.e, if there is a large number of actions available in each state, it can be beneficial from a computational perspective to instead calculate the expected value function $\ev$ in all $x$ and use this to calculate $\eutil$ on-the-fly when needed. Once $\eutil$ are known, 
+If the number of such state-action pairs is large compared to the number of states, i.e, if there is a large number of actions available in each state, it can be beneficial from a computational perspective to instead calculate the expected value function $\ev$ in all $x$ and use this to calculate $\eutil$ on-the-fly when needed. Once $\eutil$ are known in each state, it is trivial to calculate the choice probabilities for each alternative action conditional on a specific state using \eqref{eq:pcond}.
 %Continue here!
 
 
 
-\section{Model specification}
-\input{text/Specification.tex}
+
+
 
 
 
@@ -108,7 +111,7 @@ P(x,a) = P(x)\cdot P(a|x)
 where $P(a|x)$ are given by \eqref{eq:pcond} and where the $P(x)$ is the probability that an individual reaches state $x$ and is given by the solution to the equation system:
 \begin{align}
 P(x_{k+1}) &= \sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k)\cdot P(a_k|x_k)\cdot P(x_k) \\
-&=\sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k) e^{\frac{1}{\mu_{x_k}}\left(\bar{u}(x_k,a_k) + \eutil(x_k,a_k)\right) - \ev(x_k}
+&=\sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k) e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right) - \ev(x_k}
 \cdot P(x_k)
 \end{align}
 As all actions lead forward in time, it is clear that the stationary probabilities can be obtained by starting at $t=0$ and moving forward in time once $P(a|x)$ has been calculated. 

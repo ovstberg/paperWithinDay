@@ -1,9 +1,8 @@
-In this section we will discuss in more detail how to specify a model for the choice of a daily travel pattern using an MDP. Remember that an MDP is defined by a tuple $(S,C,q,u)$ where: $S$ is the state space; $C$ is the set of decision for which there exist a function $C(s)$ specifying the set of available actions in a specific state; $q$ is the transition probabilities defining the probability to reach a new state reached when taking a specific action in a state; and $u$ is the one-stage utility function defining the immediate reward obtained from a specific state-action pair.
+We will in the following discuss in more detail how to specify a model for the choice of a daily travel pattern using an MDP. As discussed above, an MDP is defined by a tuple $(S,C,q,u)$ where: $S$ is the state space; $C$ is the set of decision for which there exist a function $C(s)$ specifying the set of available actions in a specific state; $q$ is the transition probabilities defining the probability to reach a new state reached when taking a specific action in a state; and $u$ is the one-stage utility function defining the immediate reward obtained from a specific state-action pair.
 
-\subsection{Actions and states}
-The decision variables which defines an actions $a_k$ are: destination $\act{d} \in L$; mode of transport $\act{m} \in M$; and purpose $\act{p} \in P$. Here $L$, $M$ and $P$ defines the set of locations, modes and purposes respectively.  The destination variable $d$ stores the index of the location among $N_L$ possible locations, so $d \in  L = \{1,2,\dots, N_L\}$. The set of modes can contain, e.g., car, public transport, walk and bike, or potentially any combination of such modes that can be used to travel between a specific origin-destination pair. Besides these modes, the set will also contain an option for staying in the current location. The number of modelled modes is denoted $N_M$ and so the set of modes is given by: $\act{m} \in M = \{m_{\text{stay}},m_1,\dots,m_{N_m}\}$, where $m_{\text{stay}}$ denotes the option to stay. We define three different types of purposes: 1) to participate in one out of $N_{act}$ activities $(p\in P_{act} = \{p_1,\dots,p_{N_P}\})$.; 2) to travel ($p=p_{\text{travel}}$) in which case the purpose of $a_{k+1}$ must be to participate in an activity $p \in P_{act}$; and 3) to end an activity ($p=p_{\text{end}}$), in which case the purpose of the $a_{k+1}$ must be to travel. The total set of purposes $P$ is thus given by $P = \{p_{\text{travel}},p_{\text{end}},p_1,\dots,p_{N_P}\}$
-
-The action $a_k$ can then be written as: 
+\subsection{Actions}
+The decision variables which defines an action $a_k$ are: destination $\act{d} \in L$; mode of transport $\act{m} \in M$; and purpose $\act{p} \in P$. Here $L$, $M$ and $P$ defines the set of locations, modes and purposes respectively.  The destination variable $d$ stores the index of the location among $N_L$ possible locations, so $d \in  L = \{1,2,\dots, N_L\}$. The set of modes can contain, e.g., car, public transport, walk and bike, or potentially any combination of such modes that can be used to travel between a specific origin-destination pair. Besides these modes, the set will also contain an option for staying in the current location. The number of modelled modes is denoted $N_M$ and so the set of modes is given by: $\act{m} \in M = \{m_{\text{stay}},m_1,\dots,m_{N_m}\}$, where $m_{\text{stay}}$ denotes the option to stay. We define three different types of purposes: 1) to participate in one out of $N_{act}$ activities $(p\in P_{act} = \{p_1,\dots,p_{N_P}\})$, where $p_\text{home}$ is an important special case; 2) to travel ($p=p_{\text{travel}}$) in which case the purpose $\act{p}$ of $a_{k+1}$ must be to participate in and thus start an activity $p \in P_{act}$; and 3) to end an activity ($p=p_{\text{end}}$), in which case the purpose of the $a_{k+1}$ must be to travel. The total set of purposes $P$ is thus given by $P = \{p_{\text{travel}},p_{\text{end}},p_1,\dots,p_{N_P}\}$
+To summarise, an action $a_k$ can be written as: 
 \begin{equation} 
     a_k = \begin{pmatrix}
     \act{d} \\
@@ -27,12 +26,10 @@ The action $a_k$ can then be written as:
     P \\
     \end{Bmatrix*}
 \end{equation}
-
-We know turn to the definition of a state. A state $x_k$ must firstly consist of the current location $l \in L$ and time-of-day $t$ which is modelled as a continuous variable between 0 and $T$, i.e., $t\in [0,T]$. A number of state variables can then be defined to represent the part of the history which may influence future choices. 
-
-A state variable $p \in P$ will be used to define the purpose of the action leading to the current state. The availability of certain modes of transport (especially car and bike) to an individual will be dependent of previously modes used during a day. Especially, that a car was used on the previous trip on a tour will indicate that the individual has a car available in their current location. We therefore include a state variable $m$ which is dependent on the last used mode of transport. 
-
-To represent previously performed activities in the state space we will firstly distinguish between two different types of activities. The first type consist of mandatory activities for which the time-space constraints are such that only a single internal order is possible. It may be that an individual during a day must both drop-of and pick-up children at school as well as go to work. With normal school and working hours, these activities must be performed in the order: drop-of, go to work, pick-up. The number of such ordered mandatory activities which has been performed during a day will be stored in the state variable $o$. For all activities that does not belong to that are not ordered mandatory, a state variable $\amem$ will be used to remember the number of times each activity has been performed. In principle, $\amem$ could further be divided into one state variable for each activity. Finally, the state $x_k$ is given by:
+\subsection{States}
+ A state $x_k$ must firstly consist of the current location $l \in L$ and time-of-day $t$ which is modelled as a continuous variable between 0 and $T$, i.e., $t\in [0,T]$. A number of state variables can then be defined to represent the part of the history which may influence future choices. 
+A state variable $p \in P$ will be used to define the purpose of the action leading to the current state. If the utility of performing an activity is dependent on the duration that is has been performed or if an activity has a maximum utility, it will be necessary to remember the amount of time that has passed since it was started. The state variable $\atime_p \in \{1,2,\dots,N_{\atime_p} \}$ stores the number of times the individual has chosen to continue the current activity since it was first started, where $N_{\atime_p}$ is the maximum memory for activity $p$. availability of certain modes of transport (especially car and bike) to an individual will be dependent of previously modes used during a day. Especially, that a car was used on the previous trip on a tour will indicate that the individual has a car available in their current location. The state variable $m \in M$ is used to store information related to the available modes of transport. It can, for example, define the main-mode of a tour or the mode of transport used on the last travel episode.
+A state variable $\amem$ stores the relevant history related to previously performed activities. This variable could in principle store the number of times each activity has been performed during the day. It could also store information about the need to perform different utilities. Let the maximum number of such different histories and/or need combinations that are modelled be $N_\amem$. Then $\amem\in\{1,\dots,N_\amem \}$. In total, the state $x_k$ is given by:
 \begin{equation}
     x_k = \begin{pmatrix}
     t \\
@@ -40,27 +37,24 @@ To represent previously performed activities in the state space we will firstly 
     p \\
     \atime_p\\
     m \\
-    o \\
     \amem
     \end{pmatrix} =
     \begin{pmatrix*}[l]
     \text{time-of-day} \\
     \text{location } \\
     \text{purpose of previous action} \\
-    \text{time spent on purpose $p$} \\
+    \text{time spent on current purpose $p$} \\
     \text{previous/main mode of transport} \\
-    \text{\# performed ordered mandatory activities} \\
     \text{activity memory} \\
     \end{pmatrix*}
     \subset
     \begin{Bmatrix*}[l]
-    T \\
-    L \\
-    P \\
-    \Tau \\
-    M \\
-    O \\
-    \Xi 
+    [0,T] \\
+    \{1,2,\dots, N_L\} \\
+    \{p_{\text{travel}},p_{\text{end}},p_1,\dots,p_{N_P}\} \\
+    \{0,N_{\atime_p}\} \\
+    \{m_{\text{stay}},m_1,\dots,m_{N_m}\} \\
+    \{ 1,\dots,N_\amem \} 
     \end{Bmatrix*}
 \end{equation}
 
@@ -79,7 +73,7 @@ $P(t,l) = \big \{ p \in P_{act} \;\text{s.t:} \; t^{\text{open}}({l,p}) \leq t \
 If $p=p_\text{end}$, the agent has ended an activity with the previous action in order to travel in the current decision stage, so $\act{p}=p_\text{travel}$. The available alternatives thus consist of any combination of destination $\act{d} \in L$ and mode $\act{m}\in M(m)\subset M$ where the available modes $M(m)$ is assumed to only depend on the state variable $m$. 
 
 
-If $p\in P_{act}$, the agent is currently performing an activity and can either continue with the same activity of another time step or end the activity and travel in the upcoming decision stage. It is possible to continue with an activity as constraints on maximum duration and opening hours are satisfied, i.e., if $t+\Delta_p t \leq t^{\text{close}}({l,p})$ and $\tau_p + \Delta_p t \leq \tau^{max}(p)$
+If $p\in P_{act}$, the agent is currently performing an activity and can either continue with the same activity for another time step or end the activity and travel in the following decision stage. It is possible to continue with an activity as constraints on maximum duration and opening hours are satisfied, i.e., if $t+\Delta_p t \leq t^{\text{close}}({l,p})$ and $\tau_p + \Delta_p t \leq \tau^{max}(p)$
 
 \begin{align}
     C(x_k) = \left \{
@@ -93,73 +87,69 @@ If $p\in P_{act}$, the agent is currently performing an activity and can either 
   }
     \right.
 \end{align}
-\subsection{Transition probabilities}
+\subsection{Conditional state transitions}
 The state $x_{k+1}$ reached when taking action $a_k$ in state $x_k$ is a possibly random variable given by the probability density function $q(x_{k+1}|x_k,a_k)$. To distinguish between the state variables in state $x_{k+1}$ and $x_k$ we will use the notation $i\ks{k}$ and $i\ks{k+1}$ for state variable $i$ in decision stage $k$ and $k+1$ respectively.
-The transitions of the state variables $l\,p,\,\atime_p,\,m$ and $o$ are deterministic given the state-action pairs. We will use $f_{i}$ to denote this transition function for respectively state variable $i$. 
+The transitions of the state variables for location $l$, purpose $p$, time spent on activity $\atime_p$ and previous mode $m$ are determined directly from the state-action pair. The new location is simply the destination of the action, so $l\ks{k+1} = \act{d}$. The state variable for purpose is likewise defined as the purpose of the previous action, so $p\ks{k+1} = \act{p}$. 
 
-\begin{equation}
-\begin{aligned}
-t\ks{k+1} & \sim q_t (\cdot | t\ks{k},l\ks{k},\act{m},\act{d}) \\
+The state variable for the time spent on an activity $\atime_p\ks{k}$ needs to store the number of times the choice has been to continue with that activity since it was last started. The counter is reset to zero whenever an activity is ending, and increases with one every time the choice is to continue for another $\Delta_p t$. An activity is continued when $\act{p} = p\ks{k}$, so the new $\atime_p\ks{k+1}$ is given by \eqref{eq:tauP}.
+
+The new mode state variable $m\ks{k+1}$ is assumed to be given by its previous value $m\ks{k}$, the mode of transport $\act{m}$ and the chosen purpose $\act{p}$ and the mapping is denoted $f_m(m\ks{k},\act{p},\act{m})$. Two examples of how the transition can be defined is discussed below in section \ref{sec:modestate}.
+
+The stochastic of the process is gathered in the transition of the state variables for time $t$ and activity history $\amem$, so $q(x_{k+1}|x_k,a_k) = q(t\ks{k+1},\amem\ks{k+1}| x_k,a_k)$. We assume that the evolution of the need to perform activities $\xi$ may be dependent on the duration that expires between two time steps, but that the distribution of $t$ is independent on that of $\amem$, so that the joint pdf factors as $q(t\ks{k+1},\amem\ks{k+1}| x_k,a_k) = q_\amem(\amem\ks{k+1} |t\ks{k+1},x_k,a_k)\cdot q_t (t\ks{k+1} |x_k,a_k)$. We further assume that the stochasticity in the time dimension only stems from uncertainty in travel times, and thus depends on the departure time, mode of transport, origin and destination. The distribution of $t\ks{k+1}$ is then given by \eqref{eq:tp}. The evolution of the activity memory $\amem$ is assumed to be depenent only on the time of day, the previous value of $\amem$ and the purpose of the action $\act{p}$, and is thus given by \eqref{eq:amemp}. 
+
+
+
+\begin{subequations}
+\begin{align}
+t\ks{k+1} & \sim q_t (\cdot | t\ks{k},l\ks{k},\act{m},\act{d}) \label{eq:tp}\\
 l\ks{k+1} &= \act{d} \\
 p\ks{k+1} &= \act{p} \\
-\atime_p\ks{k+1} &= f_{\atime_p}(\atime_p\ks{k},\act{p}) \\
-m\ks{k+1} &= f_m(m\ks{k},\act{m}) \\
-o\ks{k+1} &= f_o(o\ks{k},\act{p}) \\
-\amem\ks{k+1} & \sim q_\amem\left(\cdot | t\ks{k}, t\ks{k+1},\amem\ks{k},\act{p}\right) 
+\atime_p\ks{k+1} & = \begin{cases}
+                \min(\atime_p\ks{k} + 1,N_{\atime_p}) & \cif \act{p} = p\ks{k} \\
+                0 & \celse 
+    \end{cases} \label{eq:tauP} \\
+    m\ks{k+1} &= f_m(m\ks{k},\act{p},\act{m}) \\
+\amem\ks{k+1} & \sim q_\amem(\cdot | t\ks{k}, t\ks{k+1},\amem\ks{k},\act{p}) \label{eq:amemp}
+\end{align}
+\end{subequations}
 
-\end{aligned}
-\end{equation}
 
-
-and let $\indicator{A}(X)$ denote the indicator function:
+\subsubsection{Example: mode state variable}
+\label{sec:modestate}
+\paragraph{Last mode of transport}
+If the mode state variable $m$ denotes the last mode of transport, then:
 \begin{equation}
-\indicator{A}(X) =
-\begin{cases}
-1 \cif X\in A \\
-0 \celse
-\end{cases}
+    m\ks{k+1} = 
+    \begin{cases}
+        \bar{m} & \cif \bar{m} \neq m_\text{stay} \\
+        m_\text{stay} & \cif \act{p} = p_{\text{home}} \\
+        m\ks{k} & \celse
+    \end{cases}
 \end{equation}
+The benefit of this definition of $m$ is that the state variable $m\ks{k+1}$ of the destination state when performing a trip with mode $\act{m}$ is independent on the state at the origin $m\ks{k}$. If the utility function for different initial states is independent on the 
 
-
-We assume that the joint probability density function for respectively state variable is separable as:
-
+\paragraph{First mode on tour away from home}
+Some models, such as \citet{Bowman01}, defines a main mode of transport for an entire tour, i.e., sequence of trips that starts and ends at home. A possible way to define such a main mode would be by the first mode used on the tour, in which case:
 \begin{equation}
-    q(x_{k+1}|x_k,a_k) = \begin{pmatrix}
-    q_t(t'|t,\act{m},l,d) \\
-    \indicator{\act{d}}(l')  \\
-    \indicator{\act{p}}(p') \\
-    \indicator{f_p(\atime_p,\act{p})}(\atime_p')\\
-    \indicator{f_m(\hat{m},m)}{(m')} \\
-    o' \\
-    \amem'
-    \end{pmatrix} =
+    m\ks{k+1} = 
+    \begin{cases}
+        \bar{m} & \cif \bar{m} \neq m_\text{stay} \text{ and } m=m_\text{stay} \\
+        m_\text{stay} & \cif \act{p} = p_{\text{home}} \\
+        m\ks{k} & \celse.
+    \end{cases}
 \end{equation}
 
+\subsubsection{Example: Random travel time}
 
+\subsubsection{Example: Activity memory definition and transitions}
 
-\begin{equation}
- a_k \times x_k =  \begin{pmatrix}
-    \act{d}\ks{k} \\
-    \act{m}\ks{k} \\
-    \act{p}\ks{k}    
-    \end{pmatrix} \times \begin{pmatrix}
-    t\ks{k} \\
-    l\ks{k} \\
-    p\ks{k} \\
-    \atime_p\ks{k}\\
-    m\ks{k} \\
-    o\ks{k} \\
-    \amem\ks{k}
-    \end{pmatrix} \Rightarrow \begin{pmatrix}
-    t'\\
-    \act{d}\ks{k} \\
-    \act{p}\ks{k} \\
-    f_{\atime_p}(\atime_p\ks{k},\act{p)\ks{k})}\\
-    f_m(m\ks{k},\act{m}\ks{k}) \\
-    f_o(o\ks{k},\act{p}\ks{k}) \\
-    \amem'
-    \end{pmatrix}
-\end{equation}
-where $t'$ and $\amem'$ are random variables defined by the probability density functions $q_t(\cdot|t,m,\act{d},l)$ and $q_\amem(\cdot|t,\act{p},\tau_p,\amem)$ respectively.
 
 \subsection{One-stage utility functions}
+
+
+\subsubsection{Example: Utility of activity participation}
+\paragraph{Time of day dependent utility}
+\paragraph{Log of duration}
+\paragraph{S-shaped}
+
+\subsubsection{Example: Utility for preferred arrival time}
