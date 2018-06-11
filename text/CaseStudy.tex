@@ -1,32 +1,140 @@
-We restrict the model to working days and people that arrive at work between $6\unit{a.m.}$ and $11\unit{a.m.}$ and return home before $11\unit{p.m}$. We also omit lunch activities and business trips. Car ownership, work location, working time and whether people have fixed or flexible working schedules is exogenous in the current implementation. Escort trips of children to or from school/daycare are mandatory for individuals that do the trip on the survey day, and drop off/pick up location is exogenous. 
-
-We currently do not consider any mixed modes, or mode chains, such as taking the bike to the train station. This would definitely be possible conceptually, but would further increase the computation time and has therefore not been included at this stage. Car is only a possible choice if the individual has a car available at home. Further, if a car is used for a trip away from home, all consecutive trips on the same tour must be done using car. This is controlled through the car-dummy $\delta_{car}$. Certainly it happens that individuals use a car for only some trips in a tour. They might leave their car at work and pick it up the next day or leave it for another family member. To correctly include the possibility to leave a car at any location, another state variable would be needed that remembered the location where the car was parked and the state space would become 1000-times larger. Since that kind of behaviour is quite uncommon, we think this restriction on car usage is reasonable. %How is this done in other papers?
-
-Below we will first describe the state space and choice set, and then how time-space constraints can be expressed in terms of restrictions on either the state space or on a state specific choice set.
+This section consist of a case study where a model is specified and estimated based on the method proposed in Section \ref{seq:mdp}.
+As discussed in section XXX %TODO 
+it can be very computationally demanding to estimate a model using NFXP. We have therefore chosen to restrict this case study to the special case when there is no uncertainty in the transition of the state variables in $x_k$ and when the scale of the random state variables $\epsilon$ is the same in all $x_k$ so that $\mu(x_k)=\mu=1$. As discussed in \ref{sec:estSampling}, this special case can be estimated using sampling of alternative sequences of actions. We further use the estimates to generate statistics of, e.g., the departure time of trips. 
 
 
+% Description of what type of behaviour we set out to model in our case study.
 
-\subsection{Specification}
-\subsubsection{State and action space}
-\input{text/caseStudy/StateAndActions.tex}
-\subsubsection{Time-space constraint}
-\input{text/caseStudy/TimeSpaceConstraints.tex}
+People can have fixed or flexible working hours. People with fixed working hours must arrive at work when the workday start and leave when the workday ends. %Specify how this is done: +-10minutes is ok.
+People with flexible working hours can choose to arrive between $6\unit{a.m.}$ and $10\unit{a.m.}$, but the length of a working day is still fixed. The individual specifications on working hour type, working length, start and end hours must be provided from elsewhere. Children can be dropped off between $6:30\unit{a.m.}$ and $12:00\unit{a.m.}$. Pick up trips must be completed between $12\unit{a.m.}$ and $6:30\unit{p.m.}$
+
+\subsection{Model specification}
+In this case study we will describe the daily planning of travel and activities of individuals with fairly regular working schedules on working days. We have assumed that 
+
+
+
+\newcommand{\p}[1]{p_{\text{#1}}}
+\newcommand{\m}[1]{m_{\text{#1}}}
+\newcommand{\amemm}[1]{\amem_\text{#1}}
+
+
+An individual has a set of mandatory activities which has to be performed during a day and for which the location is fixed. For all individuals $\p{work}$ is in this set, and depending on if they are observed to drop of or pick up children during the day those activities may also be mandatory.  
+\subsubsection{Actions}
+Remember that an action consisted of the choice of a location, activity and mode. We have used the so called EMME zonal system of the region of Stockholm, which is standard to use in models in the area and for which official statics are available. The Stockholm region consist of 1240 such zones, so $N_L = 1240$. The modes modelled are car, public transport, bike and walk. Activities are divided into home, work, child (pick up or drop off), social, recreational, grocery shopping and other.
+
+\begin{equation} 
+a_k = \begin{pmatrix}
+\act{d} \\
+\act{m} \\
+\act{p}    
+\end{pmatrix}
+\subset
+\begin{Bmatrix*}[l]
+\{1,2,\dots, 1240\}, \\
+\{m_{\text{stay}},\m{car},\m{pt},\m{walk},\m{bike}\}, \\
+\{ p_{\text{travel}},p_{\text{end}},\p{home},\p{work},\p{child},\p{rec.},\p{social},\p{shop},\p{other}\} 
+\end{Bmatrix*}
+\end{equation}
+\subsubsection{States}
+We let a day start at $5\unit{am}$ and end at $11\unit{pm}$, and let $t$ define the number of $10\units{minute}$ intervals since $5\unit{am}$ so that $T=108$.
+We will for the case study let the marginal utility of activity participation be constant, so $N_\atime=\max{N_{\atime,p}}=0$. The mode history will be dependent on whether the previous car is a car or not, which will influence the availability of a car. The mode history can thus be described by three values: $m_{\text{stay}},\m{car}$ and $\m{pt}$. The activity history will be described by whether any of the mandatory activities have been performed, where $\amemm{no}$ means that no mandatory activity has been performed and $\amemm{activity}$ means that 'activity' was the last previous mandatory activity to be performed. 
+\begin{equation}
+\s{k} = \begin{pmatrix}
+t \\
+l \\
+p \\
+\atime\\
+m \\
+\amem \\
+\epsilon
+\end{pmatrix}
+\subset
+\begin{Bmatrix*}[l]
+[0,108] \\
+\{1,2,\dots, 1240\} \\
+\{ p_{\text{travel}},p_{\text{end}},\p{home},\p{work},\p{child},\p{rec.},\p{social},\p{shop},\p{other}\}  \\
+\{0\} \\
+\{m_{\text{stay}},\m{car},\m{pt} \}\\
+\{\amemm{no},\amemm{drop off}, \amemm{work},\amemm{pickup}\}\\
+\rr^{N_C}
+\end{Bmatrix*}
+\end{equation}
+
+\subsubsection{Conditional choice-set}
+The choice set $C(s_k)$ has been specified in \eqref{eq:choiceset} up to the opening hours of activities $t^{\text{open}}({l,p})$
+
+
+\subsubsection{State transitions}
+
 \subsubsection{One-stage utility functions}
-\input{text/caseStudy/Utility.tex}
-\subsection{Estimation}
-The standard method for estimating dynamic discrete choice models is the Nested Fixed Point Method (NFXP) \citep{RustML88}. This involves first calculating $\eutil$ and its gradients in each state of the network and then directly use \eqref{eq:pPath0} for estimation. Although possible to apply on the proposed model, the method would be extremely time consuming given the discussion on computation time in Section \ref{seq:computationTime}. If estimation would rely on calculating the value function and gradient of the value function in each state in each iteration, the computation time would likely be $0.4\cdot N_{\text{variables}} \cdot t$ per observation per iteration (as the gradient must be calculated for each variable, requiring at least the additional sum of the gradient of $u + EV$ for each variable). With $10\units{s/observation}$ to calculate $\eutil$, $70$ variables, $3\zdel 300$ observations and $100$ iterations before convergence, this would require $10 \cdot 0.4 \cdot  70 \cdot 3\zdel 300 \cdot 100 \units{s} \approx 1\zdel 000 \units{days}$ to estimate using a single core. 
+\newcommand{\cost}{\text{cost}}
+\newcommand{\car}{\text{car}}
+\newcommand{\pt}{\text{PT}}
+\newcommand{\walk}{\text{walk}}
+\newcommand{\bike}{\text{bike}}
+\newcommand{\dummy}[1]{\delta_{#1}}
+\newcommand{\hi}{\text{h.i}}
+\newcommand{\wait}{\text{wait}}
+\newcommand{\geqfive}{\text{s.z.,walk}}
+\newcommand{\mc}{\theta}
+\newcommand{\ac}{\theta}
+\newcommand{\dura}[1]{\Delta t_#1}
+\newcommand{\TT}{TT}
 
-Methods used to speed up estimation of dynamic discrete choice models, e.g., the method proposed in \citet{aguirregabiria2002swapping}, reduces the burden of value iterations when calculating the value function. As no iteration is needed to evaluate the value function in this model, this would likely not help. Some approximative method is therefore needed.
+The one-stage utility of a state-action pair was in \eqref{eq:mdponestage} dividable into one part for the (dis)utility of travelling and one part for the activity of utility participation. Below follows the specification of these two utility functions used in the case study, starting with the utility of travelling.
+\paragraph{Utility of travelling}
+The utility of travelling is given by:
+\begin{equation}
+u_{trav}(t,l,m,\act{d},\act{m}) = \mc_{\act{m}} + \theta_{tt,\act{m}} \cdot \TT_{\act{m}}(t,l,\act{d}) + \theta_{\cost} \cdot C_{\act{m}}(t,l,\act{d}) +\theta_{\geqfive} \dummy{\geqfive}
+\end{equation}
+where $\mc_{\act{m}}$ are mode specific constants; $\theta_{tt,\act{m}}$ are mode specific (dis)utilities for travel time  $\TT_{\act{m}}(t,l,\act{d})$ and $C_{\act{m}}(t,l,\act{d})$ denote the travel time and cost with mode $\act{m}$ at time $t$ for a trip from origin $l$ to destination $\act{d}$; and $\dummy{\geqfive}$ is a dummy indicating if the trip is done within the same zone with walk. Observe that the mode state $m$ does not influence the one-stage utility in the case-study specification.
 
-Each individual is considering all possible locations for each new action. Locations are therefore both state variables and alternative actions so the computation time increases quadratically with the number of locations. Restricting the choice set of locations for individuals is therefore extremely tempting, but combining an activity scheduling model with a location choice set model in a consistent way seems extremely complex. This curse of dimensionality connected to the number of zones is sometimes solved by sampling a number of zones through some auxiliary model (see e.g., \citep{liao13}), or by approximating the log-sums through importance sampling (similar to how \citealt{Bradley10} does in a nested framework). We want to avoid such approximations if possible. However, if the zones would be refined or increase for other reasons, we would likely have to resolve to some sort of sampling. \citet{Rust97} shows how randomization can be used to approximate $\eutil$ in dynamic discrete choice models, and it would be one possible way to decrease computation time.
+\paragraph{Utility of activity participation}
+From \eqref{eq:mdponestage}, the one-stage utility when participating in an activity is given is dependent on the state variables for location $l$, time $t$, purpose $p$, activity history $\atime$, and the number of time-steps an activity has been performed $\amem$. In the case study, the activity of utility participation will be given by:
+\begin{equation}
+	\avgu_{act}(l,t,p,\atime,\amem) = u_\text{stay}(t,\act{p}) + \begin{cases} 
+	\ac_p(t) + u_{p,\text{size}}(l) &\cif p = p_{\text{travel}} \\
+	0 & \celse
+	\end{cases}
+\end{equation}
+where $u_\text{stay}(t,\act{p})$ is the potentially time-of-day dependent utility obtained when staying and continuing with the activity for an additional time step; $\ac_p(t)$ is a time-of-day dependent utility for starting an activity; and $u_{p,\text{size}}(l)$ is a location dependent utility obtained when starting an activity in a specific location, modelling the availability of services. In order to keep down the number of parameters, the constant utility $\ac_p(t)$ is only time dependent for the work activity and the duration utility $U_{n,p}(t,\dura{p})$ is only time dependent for the home activity. Time-of-day varying parameters are specified on discrete time steps $T_k$ with values $\theta_{p,T_k}$ and $\ac_{p,T_k}$. 
+
+The time-of-day dependent utility of starting an activ is given by linear interpolation between the closest defined parameters:
+\begin{equation*}
+\ac_p(t) = \frac{\ac_{p,T_k}(T_{k+1}-t)+\ac_{p,T_{k+1}}(t-T_k)}{T_{k+1}-T_{k}}
+\end{equation*}
+where $t\in(T_k,T_{k+1})$. For the duration utility we specify the \emph{marginal} utility of activity participation at time $t$ as given by linearly interpolation between the closest parameters, so:
+\begin{equation*}
+u_\text{stay,marg}(t,\act{p}) = \frac{\theta_{p,T_k}(T_{k+1}-T_k)+\theta_{p,T_{k+1}}(t-T_k) }{T_{k+1}-T_{k}}.
+\end{equation*}
+The stay-utility of an activity episode of duration $\dura{p}$, when $T_k\leq t$ and $t+\dura{p}\leq T_{k+1}$, then becomes:
+\begin{equation} \label{eq:uacttime}
+\begin{aligned}
+u_\text{stay}(t,\act{p}) &= \int_t^{t+\dura{p}} u_\text{stay,marg}(\tau,p) % \frac{\theta_{p,T_k}(T_{k+1}-\tau)+\theta_{p,T_{k+1}}(\tau-T_k) }{T_{k+1}-T_{k}}
+\ud{\tau} = \alpha_{T_k}\theta_{p,T_k} + \alpha_{T_{k+1}}\theta_{p,T_{k+1}}% \\
+%&= \frac{\theta_{p,T_k}T_{k+1}-\theta_{p,T_{k+1}}T_k + (\theta_{p,T_{k+1}} - \theta_{p,T_{k}}) (2t\dura{p} + \dura{p}^2)}{T_{k+1}-T_{k}}.
+\end{aligned}
+\end{equation}
+where:
+\begin{align*}
+\alpha_{T_k}&=\dura{p}\frac{T_{k+1} - t - 0.5 \dura{p}}{T_{k+1}-T_{k}}\\
+\alpha_{T_{k+1}}&=\dura{p}\frac{t + 0.5\dura{p} - T_k}{T_{k+1}-T_{k}}.
+\end{align*}
+Observe that  $\alpha_{T_k} + \alpha_{T_{k+1}} = \dura{p}$, so if $\theta_{p,T_k} = \theta_{p,T_{k+1}}$ the stay-utility becomes $\dura{p} \cdot \theta_{p,T_{k+1}}$.
+If $t+\dura{p}> T_{k+1}$, $u_t(\tau,p)$ in \refeq{eq:uacttime} becomes a stepwise linear function but is otherwise treated in the same way.
+
+Besides activity specific constants, each location $l$ has size parameters representing the number of available opportunities for each activity at that location. This utility is given by:
+\begin{equation*}
+u_{p,\text{size}}(l) =\theta_{p,\text{size}}\log \left( \sum_{s=1}^{s=S_p} x_{p,l,s}e^{\theta_{p,s}} \right)
+\end{equation*}
+where $S_p$ is the number of size variables for activity $p$, and the size variables $x_{p,l,s}$ can be, e.g., the number of employees in a specific sector at location $l$. Since the model contains activity specific constants, one of the parameters $\theta_{p,s}$ should be fixed for all activities. This also provides an alternative interpretation of the activity specific constants as scales for the size variables $x_{p,l,s}$. A complete list of size variables included for respectively activity is given in table \ref{tab:est2}. 
 
 \subsection{Data}
 \input{text/caseStudy/Data.tex}
 
-\subsection{Computation details}
-\input{text/caseStudy/compTime.tex}
+\subsection{Estimation}
+%TODO Discuss how estimation is done
 
-\subsection{Estimation results}
 \input{text/caseStudy/EstResult.tex}
 
 \subsection{Simulation result}

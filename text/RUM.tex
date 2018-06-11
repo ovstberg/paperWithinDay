@@ -4,7 +4,7 @@ In section \ref{seq:mdp} we defined an MDP consisting of a state space, an actio
 V(x_k,\epsilon_k) &= \max_{a_k} \left\{\avgu(x_k,a_k) + \mu_{x_k}\epsilon(a_k)+ \eutil(x_k,a_k) \right\} 
 \end{aligned}
 \end{equation}
-where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. If $\eutil(x_k,a_k)$ is known for each state-action pair, the optimal policy $\pi$ is obtained by choosing the action $a_k$ which maximise the static problem in \refeq{eq:vfbellman}. In order be able obtain an closed-form expression for $\eutil$, we will finally assume that $q_\epsilon(\dot|x_k,a_k)$ is given by the Gumbel distribution and translated to obtain a zero mean. 
+where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. If $\eutil(x_k,a_k)$ is known for each state-action pair, the optimal policy $\pi$ is obtained by choosing the action $a_k$ which maximise the static problem in \refeq{eq:vfbellman}. In order be able obtain an closed-form expression for $\eutil$, we will finally assume that $q_\epsilon(\cdot|x_k,a_k)$ is given by the Gumbel distribution and translated to obtain a zero mean. 
 The \emph{expected value function} $\ev(x_k) = E_{\epsilon_k} \left[ V(x_k,\epsilon_k) \right]$ will be used to denote the expected value of the value function \emph{before} the state variables $\epsilon_k$ has been observed. $\ev$ is thus the expected future utility of being in a state $s_k = (x_k,\epsilon_k)$ as seen by the individual before the state is visited and $\epsilon_k$ is observed. When $\epsilon_k(a_k)$ is Gumbel distributed (with zero mean), $\ev$ is given by the log-sum:
 \begin{equation} \label{eq:evfbellman}
 \begin{aligned}
@@ -19,7 +19,7 @@ Similarly, $\eutil(x_k,a_k)$ is given by:
     &= \int_{t\ks{k+1}} \left( \sum_{k=1}^{N_{\amem}}q_\amem(\amem\ks{k+1}|t\ks{k+1}, t\ks{k},\amem\ks{k},\act{p}) \cdot \ev(x_{k+1}) \right)q_t(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})).
 \end{aligned}
 \end{equation}
-The choice probabilities are simply given by the Multinomial Logit Model (MNL) and so the conditional choice probabilities of an action $a_k$ given the state $x_k$ are given by:
+If $\epsilon_k$ is Gumbel distributed, the choice probabilities are simply given by the Multinomial Logit Model (MNL) and so the conditional choice probabilities of an action $a_k$ given the state $x_k$ are given by:
 \newcommand{\akt}{\tilde{a_k}}
 \begin{equation} \label{eq:pcond}
 P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,\akt) + \eutil(x_k,\akt)\right)}}.
@@ -27,13 +27,38 @@ P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\
 
 
 %Continue here!
+\subsection{Solving the value function}
+- Pseudo-code
 
 
-\subsection{Estimation using NFXP}
-In order to use \eqref{eq:vfbellman} to calculate choice probabilities or simulate choices we first need to know $\eutil$ for all possible state-action pairs.  
+\subsubsection{Computational details}
+\label{seq:computationTime}
+
+With the current implementation, calculating the value function in all states and thus evaluating the probability of a path once for a single individual takes between $4-10\units{s}$. Almost all ($98\%$) of the computation time is consumed by the function calculating the value function in all end-activity states when summing up the alternative trips that can be started. When excluding working hours, an example individual have 11\,h of free time left between 5:00AM and 23:00PM. The value function is evaluated on a 10\,minute grid, giving 65 grid points in which it will be evaluated. In each of these grid points, there are a total of 4 modes available for a car owner and 1\zdel 240 locations that are both states and destinations. This gives a total of $65 \cdot 4 \cdot 1\zdel 240 \cdot 1\zdel 240 \sim 4 \cdot 10^8$ links. For each of these links, one must calculate the travel time (taking $16\%$ of the time), one-stage utilities ($23\%$), obtain the future expected value function and sum this with the utility ($41\%$) and finally perform the exponent $e^{u_i + EV_j}$ for all links ($20\%$). All-in-all, this takes around 4-10\,s when using a single core on a Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHZ. The main program is written in C\# but Intel MKL has been used for vector mathematics when applicable and C++ routines has been used for other time consuming parts. As a comparison, simply performing $e^x$ in MATLAB for a vector $x$ with $10^8$ elements on the same computer takes 1\,s. 
+
+As discussed above, the from-all-to-all destinations operation is currently the limiting computational factor. One possible way to speed up the program would be to sample locations. If 100 locations were sampled, the computation time could potentially decrease to $0.05\units{s/individual}$.  
+
+The program is parallelized using MPI and could potentially benefit from hundreds of cores reducing the computation time to days. A possible future solution to obtain efficient estimates and allow for nested logit or GEV formulations would be to use inefficient estimates obtained using sampling of locations or some alternative approximative or possibly biased estimation technique to find a good enough specification of the model and then finally obtain full-information estimates using a cluster. 
+
+
+
+
+\subsection{Estimation}
+\subsubsection{Estimation using NFXP}
+%TODO write better!
+In order to use \eqref{eq:vfbellman} to calculate choice probabilities or simulate choices we first need to know $\eutil$ 
 The standard way to obtain $\eutil$ following \citet{Rust87} has been to solve the equation system obtained when inserting \eqref{eq:evfbellman} into \eqref{eq:vfrust} and using value iteration to calculate $\eutil$ for each state-action pair.   
-If the number of such state-action pairs is large compared to the number of states, i.e, if there is a large number of actions available in each state, it can be beneficial from a computational perspective to instead calculate the expected value function $\ev$ in all $x$ and use this to calculate $\eutil$ on-the-fly when needed. Once $\eutil$ are known in each state, it is trivial to calculate the choice probabilities for each alternative action conditional on a specific state using \eqref{eq:pcond}.
-\subsection{Special case: Estimation using sampling of alternatives}
+If the number of such state-action pairs is large compared to the number of states, i.e, if there is a large number of actions available in each state, it can be beneficial from a computational perspective to instead calculate the expected value function $\ev$ in all $x$ and use this to calculate $\eutil$ on-the-fly when needed. Once $\eutil$ are known in each state, it is trivial to calculate the choice probabilities for each alternative action conditional on a specific state using \eqref{eq:pcond}. This process of estimation is called the Nested Fixed Point method (NFXP) as it involves solve $\eutil$ which is defined by a fixed point equation for each trial parameter value in the optimization process. 
+
+The standard method for estimating dynamic discrete choice models is the Nested Fixed Point Method (NFXP) \citep{RustML88}. This involves first calculating $\eutil$ and its gradients in each state of the network and then directly use \eqref{eq:pPath0} for estimation. Although possible to apply on the proposed model, the method would be extremely time consuming given the discussion on computation time in Section \ref{seq:computationTime}. If estimation would rely on calculating the value function and gradient of the value function in each state in each iteration, the computation time would likely be $0.4\cdot N_{\text{variables}} \cdot t$ per observation per iteration (as the gradient must be calculated for each variable, requiring at least the additional sum of the gradient of $u + EV$ for each variable). With $10\units{s/observation}$ to calculate $\eutil$, $70$ variables, $3\zdel 300$ observations and $100$ iterations before convergence, this would require $10 \cdot 0.4 \cdot  70 \cdot 3\zdel 300 \cdot 100 \units{s} \approx 1\zdel 000 \units{days}$ to estimate using a single core. 
+
+Methods used to speed up estimation of dynamic discrete choice models, e.g., the method proposed in \citet{aguirregabiria2002swapping}, reduces the burden of value iterations when calculating the value function. As no iteration is needed to evaluate the value function in this model, this would likely not help. Some approximative method is therefore needed.
+
+\subsubsection{Special case: Estimation using sampling of alternatives}
+\label{sec:estSampling}
+
+% 
+
 As a special case, the probability for a sequence of actions according to a dynamic discrete choice model as in \eqref{eq:pcond} degenerates into an MNL model over sequences of actions \citep{fosgerau2013}. Under these conditions, it can therefore be estimated on a subset of the alternatives \citep{mcfadden78}. This equivalence occurs when: 1) each state-action $(x_{k},a_{k})$ pair deterministically gives a new state that thus can be described by a mapping $x_{k+1}=f(x_{k},a_{k})$; and 2) the scale of the error terms is the same in all states, i.e., $\mu_{x_k}=\mu$. Under these restrictions \eqref{eq:vfrust} becomes: $\eutil(x_{k},a_{k})=\ev(x_{k+1})$. Thus:
 \begin{align}
 P(a_k|x_k) &= \frac{e^{\frac{1}{\mu}\left(\avgu(x_k,a_k) + \ev(f(x_{k+1})\right))}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu}\left(\avgu(x_k,\akt) + \ev(f(x_k,\akt))\right)}} \label{eq:MNL}\\

@@ -1,3 +1,8 @@
+\subsection{future estimation}
+Estimation without sampling of alternatives require approximations, for example using sampling of locations. The effect of such approximations can be evaluated on the model proposed in the case study as estimates on that model can be obtained without any approximations. % as was done here with linear in EV approximation
+
+Each individual is considering all possible locations for each new action. Locations are therefore both state variables and alternative actions so the computation time increases quadratically with the number of locations. Restricting the choice set of locations for individuals is therefore extremely tempting, but combining an activity scheduling model with a location choice set model in a consistent way seems extremely complex. This curse of dimensionality connected to the number of zones is sometimes solved by sampling a number of zones through some auxiliary model (see e.g., \citep{liao13}), or by approximating the log-sums through importance sampling (similar to how \citealt{Bradley10} does in a nested framework). We want to avoid such approximations if possible. However, if the zones would be refined or increase for other reasons, we would likely have to resolve to some sort of sampling. \citet{Rust97} shows how randomization can be used to approximate $\eutil$ in dynamic discrete choice models, and it would be one possible way to decrease computation time.
+
 \subsection{To add}
 
 We currently have linear-

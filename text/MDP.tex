@@ -122,14 +122,12 @@ A state variable $\amem$ stores the relevant history related to previously perfo
 \end{equation}
 In the future, we will also use the notation $x_k=(t,l,p,\atime,m,\amem)$ to denote the observable part of the state space.
 \subsection{Conditional choice sets}
-
-
 Defining the choice set $C(\s{k})$ involves defining the set of purposes, destinations and modes that are available in a specific state $\s{k}$.
 In principle, an individual can in each time step decide between: either staying at the same location and perform the previous activity $p$ for a while longer; or travel to another location and start a new activity there. In the first case, we assume that each activity purpose $p$ has a minimum additional duration $\Delta_p t$. When the chosen alternative is to stay and continue with the activity, it will be performed for an additional $\Delta_p t$.
 The availability of activities are limited in time and space. 
 Due to such time-space constraints it may not be possible to continue with an activity after a certain time. Further, certain activities may be restricted to a subset of the locations. For example, home and work activities are restricted in space to the home and work location, and the work activity is potentially restricted in both duration and time-of-day by the individuals working schedule. One can view such time-space restrictions as location specific opening hours for each activity: an activity with purpose $p$ can only be performed at location $l$ between the opening time $t^{\text{open}}({l,p})$ and closing time $t^{\text{close}}({l,p})$. Certain activities, such as work, may also have a minimum and maximum duration for each episode. The minimum duration for a purpose $p$ will be denoted $\atime^{min}(p)\geq \Delta_p t$ and the maximum duration $\atime^{max}(p)\leq T$. 
-When $p=p_\text{travel}$, the agent travelled in the previous action ($a_{k-1}$) but have yet to start an activity. The purpose of action $a_k$ is therefore restricted to one of the activities, i.e., $\act{p} \in P_{act}$. As no traveling takes place, mode and destinations choices of $a_k$ are restricted to $\act{m} = m_{\text{stay}}$ and $\act{d}=l$. The set of available purposes is determined by the time space constraints as:
-$P(t,l) = \big \{ p \in P_{act} \;\text{s.t:} \; t^{\text{open}}({l,p}) \leq t \leq t^{\text{close}}({l,p}) - \atime^{min}(p) \big \} $, i.e., it must be possible to start the activity and pursue the activity for its minimum duration $\atime^{min}(p)$ within the opening hours at the specific location.
+When $p=p_\text{travel}$, the agent travelled in the previous action ($a_{k-1}$) but have yet to start an activity. The activity history $\amem$ may influence the activity that an individual can start. This allows us to put restrictions on the number of times an activity can be performed each day. The purpose of action $a_k$ is therefore restricted to one of the activities, i.e., $\act{p} \in P_{act}(\amem)$. As no travelling takes place, mode and destinations choices of $a_k$ are restricted to $\act{m} = m_{\text{stay}}$ and $\act{d}=l$. The set of available purposes is determined by the time space constraints as:
+$P(t,l,\amem) = \big \{ p \in P_{act}(\amem) \;\text{s.t:} \; t^{\text{open}}({l,p}) \leq t \leq t^{\text{close}}({l,p}) - \atime^{min}(p) \big \} $, i.e., it must be possible to start the activity and pursue the activity for its minimum duration $\atime^{min}(p)$ within the opening hours at the specific location.
 
 
 
@@ -137,14 +135,13 @@ If $p=p_\text{end}$, the agent has ended an activity with the previous action in
 
 
 If $p\in P_{act}$, the agent is currently performing an activity and can either continue with the same activity for another time step or end the activity and travel in the following decision stage. It is possible to continue with an activity as constraints on maximum duration and opening hours are satisfied, i.e., if $t+\Delta_p t \leq t^{\text{close}}({l,p})$ and as long as $\atime_p + \Delta_p t \leq \atime^{max}(p)$. In summary, the set of actions available conditional on a state $s_k$ is given by:
-
 \newcommand{\tableexp}[1]{{{\footnotesize\emph{#1}}}}
-\begin{align}
+\begin{align} \label{eq:choiceset}
     C(\s{k}) = \left \{
     {\def\arraystretch{1.4}\tabcolsep=2pt
     \begin{tabular}{llllccl}
         \multicolumn{5}{c}{\tableexp{start activity}} & & \\[-4pt]
-  \Big\{ & $\act{d}=l$,             &$\act{m}= m_\text{stay}$,   &$\act{p} \in P(t,l)$             &\Big\}  &  if&  $p=p_\text{travel}$\\
+  \Big\{ & $\act{d}=l$,             &$\act{m}= m_\text{stay}$,   &$\act{p} \in P(t,l,\amem)$             &\Big\}  &  if&  $p=p_\text{travel}$\\
           \multicolumn{5}{c}{\tableexp{travel}} & & \\[-4pt]
   \Big\{ & $\act{d} \in L$,         &$\act{m} \in M(m)$,         &$\act{p}=p_\text{travel}$        &\Big\}  &  if&  $p = p_{\text{end}}$ \\
             \multicolumn{5}{c}{\tableexp{stay/end}} & & \\[-4pt]
@@ -155,6 +152,7 @@ If $p\in P_{act}$, the agent is currently performing an activity and can either 
   }
     \right.
 \end{align}
+With \eqref{eq:choiceset} the choice set is defined up till: the opening and closing hours for each activity, i.e., $t^{\text{open}}({l,p})$ and $t^{\text{close}}({l,p})$; the maximum and minimum duration of each activity $\atime^{min}(p)$ and $\atime^{max}(p)$; the set of activities available depending on the history, $P_{act}(\amem)$; and the modes available depending on the mode-state, $M(m)$. 
 \subsection{Conditional state transitions}
 The state $\s{k+1}$ reached when taking action $a_k$ in state $\s{k}$ is a possibly random variable given by the probability density function $q(\s{k+1}|\s{k},a_k)$. To distinguish between the state variables in state $\s{k+1}$ and $\s{k}$ we will use the notation $i\ks{k}$ and $i\ks{k+1}$ for each element in the state vector.
 The transitions of the state variables for location $l$, purpose $p$, time spent on activity $\atime$ and previous mode $m$ are determined directly from the state-action pair. The new location is simply the destination of the action, so $l\ks{k+1} = \act{d}$. The state variable for purpose is likewise defined as the purpose of the previous action, so $p\ks{k+1} = \act{p}$. 
@@ -224,7 +222,7 @@ The one-stage utility $u(a_k,x_k)$ of taking an action $a_k$ in the state $s_k$ 
 \end{aligned}
 \end{equation}
 for some constant $\mu_{x_k}$. We will assume that the expected utility of traveling is dependent on the origin $l$, destination $d$, departure time $t$, mode of transport $\act{m}$ and the mode state variable $m$. We further assume that the utility of performing an activity is dependent on the location at which it is performed $l$, the time of day $t$, the type of activity $p$, the number of time steps it has been performed $\atime$ and the activity memory state $\amem$. The one-stage utility can then be written as:
-\begin{equation}
+\begin{equation} \label{eq:mdponestage}
 	\avgu(s_k,a_k) = \epsilon(a_k) + \begin{cases}
 	\avgu_{trav}(t,l,m,\act{d},\act{m}) &\cif \act{p} = p_\text{travel} \\
 	\avgu_{act}(l,t,p,\atime,\amem) & \cif \act{p} \in P_{\text{act}} \\
