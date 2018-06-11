@@ -1,0 +1,84 @@
+In section \ref{seq:mdp} we defined an MDP consisting of a state space, an action space, transition rules and utility functions. We further assumed that individuals act as if they seek a policy which maximise the value function defined by \eqref{eq:vf}. In this section we will add an additional assumption on the distribution $q_\epsilon$ of the state variable $\epsilon$ under which it is possible to derive an analytical expression for the policy which maximise the value function. Observe that value function $V(s)$ in \eqref{eq:vf} can be defined recursively through Bellman's equation as \citep{bellman,Rust87}:
+\begin{equation} \label{eq:vfbellman}
+\begin{aligned}
+V(x_k,\epsilon_k) &= \max_{a_k} \left\{\avgu(x_k,a_k) + \mu_{x_k}\epsilon(a_k)+ \eutil(x_k,a_k) \right\} 
+\end{aligned}
+\end{equation}
+where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. If $\eutil(x_k,a_k)$ is known for each state-action pair, the optimal policy $\pi$ is obtained by choosing the action $a_k$ which maximise the static problem in \refeq{eq:vfbellman}. In order be able obtain an closed-form expression for $\eutil$, we will finally assume that $q_\epsilon(\dot|x_k,a_k)$ is given by the Gumbel distribution and translated to obtain a zero mean. 
+The \emph{expected value function} $\ev(x_k) = E_{\epsilon_k} \left[ V(x_k,\epsilon_k) \right]$ will be used to denote the expected value of the value function \emph{before} the state variables $\epsilon_k$ has been observed. $\ev$ is thus the expected future utility of being in a state $s_k = (x_k,\epsilon_k)$ as seen by the individual before the state is visited and $\epsilon_k$ is observed. When $\epsilon_k(a_k)$ is Gumbel distributed (with zero mean), $\ev$ is given by the log-sum:
+\begin{equation} \label{eq:evfbellman}
+\begin{aligned}
+\ev(x_k) &= %E_{\epsilon_k} \left[ \max_{{a_k}\in C(x_{k})} \left\{\avgu(x_k,a_k) + \mu_{x_k} \epsilon_k(a_k)+ \eutil(x_k,a_k) \right\}  \right] \\&= 
+\mu_{x_k}\cdot\log\left(\sum_{a_k\in C(x_{k})} e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}\right).
+\end{aligned}
+\end{equation}
+Similarly, $\eutil(x_k,a_k)$ is given by:
+\begin{equation} \label{eq:vfrust}
+\begin{aligned}
+    \eutil(x_k,a_k) %&= \int_{x_{k+1}} \ev(x_{k+1})q(dx_{k+1}|x_k,a_k) \\
+    &= \int_{t\ks{k+1}} \left( \sum_{k=1}^{N_{\amem}}q_\amem(\amem\ks{k+1}|t\ks{k+1}, t\ks{k},\amem\ks{k},\act{p}) \cdot \ev(x_{k+1}) \right)q_t(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})).
+\end{aligned}
+\end{equation}
+The choice probabilities are simply given by the Multinomial Logit Model (MNL) and so the conditional choice probabilities of an action $a_k$ given the state $x_k$ are given by:
+\newcommand{\akt}{\tilde{a_k}}
+\begin{equation} \label{eq:pcond}
+P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,\akt) + \eutil(x_k,\akt)\right)}}.
+\end{equation}
+
+
+%Continue here!
+
+
+\subsection{Estimation using NFXP}
+In order to use \eqref{eq:vfbellman} to calculate choice probabilities or simulate choices we first need to know $\eutil$ for all possible state-action pairs.  
+The standard way to obtain $\eutil$ following \citet{Rust87} has been to solve the equation system obtained when inserting \eqref{eq:evfbellman} into \eqref{eq:vfrust} and using value iteration to calculate $\eutil$ for each state-action pair.   
+If the number of such state-action pairs is large compared to the number of states, i.e, if there is a large number of actions available in each state, it can be beneficial from a computational perspective to instead calculate the expected value function $\ev$ in all $x$ and use this to calculate $\eutil$ on-the-fly when needed. Once $\eutil$ are known in each state, it is trivial to calculate the choice probabilities for each alternative action conditional on a specific state using \eqref{eq:pcond}.
+\subsection{Special case: Estimation using sampling of alternatives}
+As a special case, the probability for a sequence of actions according to a dynamic discrete choice model as in \eqref{eq:pcond} degenerates into an MNL model over sequences of actions \citep{fosgerau2013}. Under these conditions, it can therefore be estimated on a subset of the alternatives \citep{mcfadden78}. This equivalence occurs when: 1) each state-action $(x_{k},a_{k})$ pair deterministically gives a new state that thus can be described by a mapping $x_{k+1}=f(x_{k},a_{k})$; and 2) the scale of the error terms is the same in all states, i.e., $\mu_{x_k}=\mu$. Under these restrictions \eqref{eq:vfrust} becomes: $\eutil(x_{k},a_{k})=\ev(x_{k+1})$. Thus:
+\begin{align}
+P(a_k|x_k) &= \frac{e^{\frac{1}{\mu}\left(\avgu(x_k,a_k) + \ev(f(x_{k+1})\right))}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu}\left(\avgu(x_k,\akt) + \ev(f(x_k,\akt))\right)}} \label{eq:MNL}\\
+&=e^{\frac{1}{\mu}\left(\avgu(a_k,x_k) + \ev(x_{k+1})- \ev(x_k)\right)}\label{eq:MNLv2}
+\end{align}
+where \eqref{eq:evfbellman} together with \eqref{eq:MNL} gives \eqref{eq:MNLv2}. Now consider a day-path, i.e., a sequence of decisions  $\ve{a} = (a_0,...,a_{K-1})$ which starts in a state $x_0$ and traverse the states $\ve{x} = (x_1,...,x_{K})$, where the time at the terminal state $t\ks{K}=T$. The likelihood for this sequence of decisions and states is, according to \eqref{eq:MNLv2} given by:
+\begin{equation}\label{eq:pPath0}
+\begin{aligned}
+P(\ve{a},\ve{x}|x_0) = P(\ve{a}|x_0) &= \prod_{i=0}^{T-1}P(a_i|x_i) \\
+& = \prod_{i=0}^{T-1} e^{\frac{1}{\mu}\left(\avgu(a_i,x_i) + \ev(x_{i+1})-\ev(x_i)\right)} \\
+& =  e^{\sum_{k=0}^{T-1} \avgu(a_k,x_k) + \ev(x_{K})-\ev(x_0)} 
+\end{aligned}
+\end{equation}
+Assume that the initial state is known and that there is a single state which is feasible at time $T$ denoted by $x_T$, and use the notation $u(\ve{a})=\sum_{k=0}^{T-1} \avgu(a_k,x_k)$. Then the probability of a path $\ve{a}$ among the set $\Agood(x_0,x_T)$ of all action sequences that leads from $x_0$ to $x_T$ is given by:
+\begin{equation}
+P(\ve{a},\ve{x}|x_0) = \frac{e^{u(\ve{a})}}{\sum\limits_{\ve{a'} \in \Agood(x_0)}e^{u(\ve{a'})} }.
+\end{equation}
+
+Estimation on a subset of the choice set involves selecting a choice set $\Ccsamp_n \subset \Cc_n$ and estimating using the conditional choice probability $P_n(\ve{a}_n|\Ccsamp_n)$ instead of the $P_n(\ve{a}_n|\Cc_n)$. A maximum likelihood estimation on a choice set $\Ccsamp$ gives consistent estimates if the correction term $\log(\bar{q}_n(\Ccsamp_n|j))$ is added to each alternative and $\bar{q}_n(\Ccsamp_n|j)$ satisfies the positive conditioning property, i.e., that if $j\in \Ccsamp_n$ and $\bar{q}_n(\Ccsamp_n|i)>0$ for some $i$, then $\bar{q}_n(\Ccsamp_n|j)>0$. This holds if $\Ccsamp_n$ is sampled from the universal choice set $\Cc_n$ and all alternatives in $\Cc_n$ have a non-zero probability of being sampled \citep{mcfadden78}. 
+
+One way of constructing a choice set consists of drawing $R$ alternatives with replacement from the choice set $\Cc_n$ consisting of $J_n$ alternatives, and then adding the observed choice to the choice set. The outcome of such a protocol is $({k}_{n1},{k}_{n2},\dots,{k}_{nJ})$ where ${k}_{nj}$ is the number of times alternative $j$ appears in the choice set, so that $\sum_{j=1}^J {k}_{nj} = R+1$, since the observed alternative $j$ is added once extra to the choice set. Let $q_n(i)$ denote the probability that alternative $j \in \Cc_n$ is sampled. Under this sampling protocol, the estimates are consistent if the correction term $\log(\frac{k_{n\ve{a}_n}}{q_n(\ve{a}_n)})$ is added to each alternative \citep{frejinger09}. After adding the correction term, the likelihood function to use for estimation an individual $n$ becomes:
+\begin{equation} \label{eq:cond_like_corr}
+\tilde{P}_n(\ve{a}) = \frac{e^{u(\ve{a}) + \log(\frac{k_{n\ve{a}_n}}{q_n(\ve{a}_n)})}}{\sum\limits_{\ve{a}^* \in \Cc_n} e^{u(\ve{a}^*) + \log(\frac{k_{n\ve{a}^*_n}}{q_n(\ve{a}^*_n)})}}
+\end{equation}
+%\subsection{Solving the value function}
+%When modelling daily planning, there is logical terminal time $T$ in the end of the day. We will restrict ourselves to a single feasible state $x_T$ in the end of day with $\eutil(x) = 0$. This is not a restriction per se; multiple states in the end of the day could be included by adding a link from all of these states to a common fictive terminal state $x_k$. With $\eutil(x_k)$ defined, it is possible to use backward induction to calculate $\eutil$ in all states using \refeq{eq:EV}.
+%
+%
+%- Continuous time 
+%
+%\subsection{Overlapping paths}
+%In the graph describing the daily activity-travel network, multiple possible day-paths of sequences of states and actions will pass through the same state-action pair $(x,a)$. It is reasonable to assume that these day-paths share some portion of the unobserved utility component. In route choice models this is a well known problem, and there is a risk that not taking it into account will give unrealistic substitution patterns. To overcome this problem without explicitly introducing an unobserved link specific random utility component, it is common to add some deterministic correction term to the utility of a path which models the degree of overlap with other paths in the choice set. Common examples in the route choice literature include the Path Size Logit (PSL) \citep[][]{} and C-Logit \citep{}. As noted in \citet{fosgerau2013}, these correction terms are not additatively separable over links and can therefore not used in a model where choices are made sequentially over links, and they can therefore not directly be used here. In the context of route-choice, \citet{fosgerau2013} developed an alternative correction term which they called the Link Size (LS) attribute. The LS-attribute is derived by calculating the expected flow on each link according to some auxiliary model. They show that LS-attribute gives substitution patterns very similar to the PSL.
+%
+%The probability that a specific state-action pair will be observed is given by:
+%\begin{equation}
+%P(x,a) = P(x)\cdot P(a|x)
+%\end{equation}
+%where $P(a|x)$ are given by \eqref{eq:pcond} and where the $P(x)$ is the probability that an individual reaches state $x$ and is given by the solution to the equation system:
+%\begin{align}
+%P(x_{k+1}) &= \sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k)\cdot P(a_k|x_k)\cdot P(x_k) \\
+%&=\sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k) e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right) - \ev(x_k}
+%\cdot P(x_k)
+%\end{align}
+%As all actions lead forward in time, it is clear that the stationary probabilities can be obtained by starting at $t=0$ and moving forward in time once $P(a|x)$ has been calculated. 
+%\begin{equation}
+%P(x_{k+1}) = \sum_{x_k \in X} \sum_{a_k \in C(x_k)}q(x_{k+1}|a_k,x_k)\cdot \cdot P(x_k).
+%\end{equation}
+%
