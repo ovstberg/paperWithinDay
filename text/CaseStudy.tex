@@ -77,9 +77,12 @@ The choice set $C(s_k)$ has been specified in \eqref{eq:choiceset} up to the ope
 \newcommand{\wait}{\text{wait}}
 \newcommand{\geqfive}{\text{s.z.,walk}}
 \newcommand{\mc}{\theta}
-\newcommand{\ac}{\theta}
+\newcommand{\ac}{C}
+\newcommand{\acp}{\theta}
 \newcommand{\dura}[1]{\Delta t_#1}
 \newcommand{\TT}{TT}
+\newcommand{\ustay}{\avgu_\text{stay}}
+\newcommand{\stay}{\text{stay}}
 
 The one-stage utility of a state-action pair was in \eqref{eq:mdponestage} dividable into one part for the (dis)utility of travelling and one part for the activity of utility participation. Below follows the specification of these two utility functions used in the case study, starting with the utility of travelling.
 \paragraph{Utility of travelling}
@@ -92,26 +95,24 @@ where $\mc_{\act{m}}$ are mode specific constants; $\theta_{tt,\act{m}}$ are mod
 \paragraph{Utility of activity participation}
 From \eqref{eq:mdponestage}, the one-stage utility when participating in an activity is given is dependent on the state variables for location $l$, time $t$, purpose $p$, activity history $\atime$, and the number of time-steps an activity has been performed $\amem$. In the case study, the activity of utility participation will be given by:
 \begin{equation}
-	\avgu_{act}(l,t,p,\atime,\amem) = u_\text{stay}(t,\act{p}) + \begin{cases} 
+	\avgu_{act}(l,t,p,\atime,\amem) = \ustay(t,\act{p},\dura{p}) + \begin{cases} 
 	\ac_p(t) + u_{p,\text{size}}(l) &\cif p = p_{\text{travel}} \\
 	0 & \celse
 	\end{cases}
 \end{equation}
-where $u_\text{stay}(t,\act{p})$ is the potentially time-of-day dependent utility obtained when staying and continuing with the activity for an additional time step; $\ac_p(t)$ is a time-of-day dependent utility for starting an activity; and $u_{p,\text{size}}(l)$ is a location dependent utility obtained when starting an activity in a specific location, modelling the availability of services. In order to keep down the number of parameters, the constant utility $\ac_p(t)$ is only time dependent for the work activity and the duration utility $U_{n,p}(t,\dura{p})$ is only time dependent for the home activity. Time-of-day varying parameters are specified on discrete time steps $T_k$ with values $\theta_{p,T_k}$ and $\ac_{p,T_k}$. 
-
-The time-of-day dependent utility of starting an activ is given by linear interpolation between the closest defined parameters:
+where $\ustay(t,\act{p},\dura{p})$ is the potentially time-of-day dependent utility obtained when staying and continuing with the activity for a duration of $\dura{p}$; $\ac_p(t)$ is a time-of-day dependent utility for starting an activity; and $u_{p,\text{size}}(l)$ is a location dependent utility obtained when starting an activity in a specific location, modelling the availability of services. In order to keep down the number of parameters in the case study, the constant utility $\ac_p(t)$ is only time dependent for the work activity and the duration utility $\ustay(t,\act{p},\dura{p})$ is only time dependent for the home activity. Time-of-day varying parameters are specified on discrete time steps $T_k$ with values $\theta_{\stay,p,T_k}$ and $\acp_{C,p,T_k}$. The time-of-day dependent utility of starting an activity is given by linear interpolation between the closest defined parameters:
 \begin{equation*}
-\ac_p(t) = \frac{\ac_{p,T_k}(T_{k+1}-t)+\ac_{p,T_{k+1}}(t-T_k)}{T_{k+1}-T_{k}}
+\ac_p(t) = \frac{\acp_{C,p,T_k}\cdot (T_{k+1}-t)+\acp_{C,p,T_{k+1}}\cdot (t-T_k)}{T_{k+1}-T_{k}}
 \end{equation*}
 where $t\in(T_k,T_{k+1})$. For the duration utility we specify the \emph{marginal} utility of activity participation at time $t$ as given by linearly interpolation between the closest parameters, so:
 \begin{equation*}
-u_\text{stay,marg}(t,\act{p}) = \frac{\theta_{p,T_k}(T_{k+1}-T_k)+\theta_{p,T_{k+1}}(t-T_k) }{T_{k+1}-T_{k}}.
+u_\text{stay,marg}(t,\act{p}) = \frac{\theta_{\stay,p,T_k}\cdot(T_{k+1}-T_k)+\theta_{\stay,p,T_{k+1}}\cdot(t-T_k) }{T_{k+1}-T_{k}}.
 \end{equation*}
 The stay-utility of an activity episode of duration $\dura{p}$, when $T_k\leq t$ and $t+\dura{p}\leq T_{k+1}$, then becomes:
 \begin{equation} \label{eq:uacttime}
 \begin{aligned}
-u_\text{stay}(t,\act{p}) &= \int_t^{t+\dura{p}} u_\text{stay,marg}(\tau,p) % \frac{\theta_{p,T_k}(T_{k+1}-\tau)+\theta_{p,T_{k+1}}(\tau-T_k) }{T_{k+1}-T_{k}}
-\ud{\tau} = \alpha_{T_k}\theta_{p,T_k} + \alpha_{T_{k+1}}\theta_{p,T_{k+1}}% \\
+\ustay(t,\act{p}) &= \int_t^{t+\dura{p}} u_\text{stay,marg}(\tau,p) % \frac{\theta_{p,T_k}(T_{k+1}-\tau)+\theta_{p,T_{k+1}}(\tau-T_k) }{T_{k+1}-T_{k}}
+\ud{\tau} = \alpha_{T_k}\theta_{\stay,p,T_k} + \alpha_{T_{k+1}}\theta_{\stay,p,T_{k+1}}% \\
 %&= \frac{\theta_{p,T_k}T_{k+1}-\theta_{p,T_{k+1}}T_k + (\theta_{p,T_{k+1}} - \theta_{p,T_{k}}) (2t\dura{p} + \dura{p}^2)}{T_{k+1}-T_{k}}.
 \end{aligned}
 \end{equation}
@@ -120,7 +121,7 @@ where:
 \alpha_{T_k}&=\dura{p}\frac{T_{k+1} - t - 0.5 \dura{p}}{T_{k+1}-T_{k}}\\
 \alpha_{T_{k+1}}&=\dura{p}\frac{t + 0.5\dura{p} - T_k}{T_{k+1}-T_{k}}.
 \end{align*}
-Observe that  $\alpha_{T_k} + \alpha_{T_{k+1}} = \dura{p}$, so if $\theta_{p,T_k} = \theta_{p,T_{k+1}}$ the stay-utility becomes $\dura{p} \cdot \theta_{p,T_{k+1}}$.
+Observe that  $\alpha_{T_k} + \alpha_{T_{k+1}} = \dura{p}$, so if $\theta_{\stay,p,T_k} = \theta_{\stay,p,T_{k+1}}$ the stay-utility becomes $\dura{p} \cdot \theta_{\stay,p,T_{k+1}}$.
 If $t+\dura{p}> T_{k+1}$, $u_t(\tau,p)$ in \refeq{eq:uacttime} becomes a stepwise linear function but is otherwise treated in the same way.
 
 Besides activity specific constants, each location $l$ has size parameters representing the number of available opportunities for each activity at that location. This utility is given by:
