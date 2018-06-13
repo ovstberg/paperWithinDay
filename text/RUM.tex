@@ -5,7 +5,7 @@ V(x_k,\epsilon_k) &= \max_{a_k} \left\{\avgu(x_k,a_k) + \mu_{x_k}\epsilon_k(a_k)
 \end{aligned}
 \end{equation}
 where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. If $\eutil(x_k,a_k)$ is known for each state-action pair the optimal policy $\pi$ is, by the principle of optimality, to conditional on a state $s_k$ choose the action $a_k$ which maximise the one-stage problem in \refeq{eq:vfbellman}. $\eutil(x_k,a_k) $ is given by: 
-\begin{equation}
+\begin{equation} \label{eq:eutil}
 \begin{aligned}
 	\eutil&(x_k,a_k)  = E_{t\ks{k+1},\amem\ks{k+1},\epsilon_{k+1}}\left[ V(x_{k+1},\epsilon_{k+1}) \mid x_k,a_k \right] \\
 	&= \int_{t\ks{k+1}} \left( \sum_{k=1}^{N_{\amem}}q_\amem(\amem\ks{k+1}|t\ks{k+1}, t\ks{k},\amem\ks{k},\act{p}) \cdot \ev(x_{k+1}) \right)q_t(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})).
@@ -28,12 +28,32 @@ P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\
 
 %Continue here!
 \subsection{Solving the value function}
-- Choice probabilities require that the value function can be calculated. The equation has a solution under regularity conditions outlined in \citet{Rust88}. In infinite horizon models, e.g., the Recursive Logit model of for route choice \citep{fosgerau2013}, there exist loops so that the value function in future states $s_{k+1}$ is dependent on the value function in the current state $s_k$. XXX is due to this dependence a fixed point equation. This fixed point equation is often solved by a combination of value iteration and newton iterations. However, as we have a finite horizon problem where every action moves forward in time, it is possible to specify the model so that no loops exists. This can severly speed up computation time, as each state only needs to be traversed once rather than potentially hundreds of times in naive value iteration. The solution method used is in principle value iteration but we will use clearer notion backward induction to clarify that no iteration is needed and that the process involves moving backward in time.
+Finding the optimal policy and calculating the choice probabilities using \eqref{eq:pcond} requires that the expected value function is known in each state $x_k$. The equation system consisting of \eqref{eq:eutil} and \eqref{eq:evfbellman} has a solution under regularity conditions outlined in \citet{Rust88}. In infinite horizon models, e.g., the Recursive Logit model for route choice \citep{fosgerau2013}, it is possible to revisit the same state twice and the value function in future states $s_{k+1}$ is thus dependent on the value function in the current state $s_k$. However, as the problem described here has a finite horizon and every action moves forward in time, it is possible to specify the model so that no such loops exists. The expected value function $\ev$ can therefore be calculated by starting at the terminal time step $T$ and moving backward in time. This solution method is often called backward induction. However, it cannot be used directly when time is a continuous variable as there is an infinite number of states. We overcome this problem by using a first order approximation of the value function:
+
+\subsubsection{First order approximation of the value function}
+Time is modelled as a continuous variable, but the number of states in which $\ev$ can be calculated is limited by computation time. It is therefore not possible to exactly calculate the expected value functions in all reachable states. Instead, $\ev$ is calculated on a discretized time-grid and linear interpolation is used to approximate the value between these points. 
+
+
+The linear interpolation approximation in a state $x$ is denoted \laeutil(x). The calculation of $\ev$ will therefore be based on approximations of $\ev$ in future states. We will therefore never know the exact expected value function in any state, but rather the (1:st order) approximate expected value function \aeutil, given by:
+\begin{equation} \label{eq:linap1}
+\aeutil(x_t) = \log\left(\sum_{a\in A(x_t)}e^{u(x_t,a) + \laeutil(x_{t'})}\right)
+\end{equation}
+where $t_{k-1} \leq t' \leq t_k $ gives: 
+\begin{equation}\label{eq:linap2}
+\laeutil(x_{t'}) = \alpha_1 \aeutil(x_{t_k}) + \alpha_2 \aeutil(x_{t_{k+1}})
+\end{equation}
+where $\alpha_1 = \frac{t_{k+1}-t'}{t_{k+1}-t_k}$ and $\alpha_2 = \frac{t'-t_k}{t_{k+1}-t_k}$.
+
+This approximation makes the order in which $\ev$ is calculated important. When backward induction is used to calculate $\ev$, it is updated one time step at a time starting in the end of the day $T$ and moving backward. If an action is less than $10\unit{minutes}$ long, the approximation in \refeq{eq:linap2} will be based on \aeutil in the current time step, causing self-dependence which would require value iteration or the solution to an equation system. The only way this can occur with the current discretization and activity durations is if the new action involves a trip to a ``new activity'' state. As the only available alternative in a ``new activity'' state is to start an activity, \aeutil in these states can be calculated first without risking self dependence. After \aeutil has been calculated in the ``new activity'' states, it can be calculated in the remaining states for that time step. Note that for this reason, it is important that the shortest possible activity duration is longer than the duration between time-steps.
+
+ but we will in the following only calculate the value function at discrete time steps $t_j$
 
 
 - Discrete time steps
 - Simulate time
 - 
+
+\subsubsection{Pseudo code}
 
 
 \subsubsection{Computational details}
