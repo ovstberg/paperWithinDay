@@ -1,24 +1,78 @@
+\newcommand{\cost}{\text{cost}}
+\newcommand{\car}{\text{car}}
+\newcommand{\pt}{\text{PT}}
+\newcommand{\walk}{\text{walk}}
+\newcommand{\bike}{\text{bike}}
+%\newcommand{\dummy}[1]{\delta_{#1}}
+\newcommand{\hi}{\text{h.i}}
+\newcommand{\wait}{\text{wait}}
+\newcommand{\geqfive}{\text{s.z.,walk}}
+\newcommand{\mc}{\theta}
+\newcommand{\ac}{C}
+\newcommand{\acp}{\theta}
+\newcommand{\dura}[1]{\Delta t_#1}
+\newcommand{\TT}{TT}
+\newcommand{\ustay}{\avgu_\text{stay}}
+\newcommand{\stay}{\text{stay}}
+
+\newcommand{\p}[1]{p_{\text{#1}}}
+\newcommand{\m}[1]{m_{\text{#1}}}
+\newcommand{\amemm}[1]{\amem_\text{#1}}
+\newcommand{\dummy}[1]{\delta_{#1}}
+
 This section consist of a case study where a model is specified and estimated based on the method proposed in Section \ref{seq:mdp}.
 As discussed in section XXX %TODO 
 it can be very computationally demanding to estimate a model using NFXP. We have therefore chosen to restrict this case study to the special case when there is no uncertainty in the transition of the state variables in $x_k$ and when the scale of the random state variables $\epsilon$ is the same in all $x_k$ so that $\mu(x_k)=\mu=1$. As discussed in \ref{sec:estSampling}, this special case can be estimated using sampling of alternative sequences of actions. We further use the estimates to generate statistics of, e.g., the departure time of trips. 
 
 
 % Description of what type of behaviour we set out to model in our case study.
-
-People can have fixed or flexible working hours. People with fixed working hours must arrive at work when the workday start and leave when the workday ends. %Specify how this is done: +-10minutes is ok.
-People with flexible working hours can choose to arrive between $6\unit{a.m.}$ and $10\unit{a.m.}$, but the length of a working day is still fixed. The individual specifications on working hour type, working length, start and end hours must be provided from elsewhere. Children can be dropped off between $6:30\unit{a.m.}$ and $12:00\unit{a.m.}$. Pick up trips must be completed between $12\unit{a.m.}$ and $6:30\unit{p.m.}$
-
+In this case study, we set out to model people who work with fairly regular working hours on a day when they go to work. We assume that work is a mandatory activity as well as dropping of children at school or picking them up after school in case such activities are observed. People can have fixed working schedule, in which case the starting time for job is fixed, or flexible, in which case we assume that they are allowed to arrive between $6\unit{a.m.}$ and $10\unit{a.m.}$.
+Children can be dropped off between $6:30\unit{a.m.}$ and $12:00\unit{a.m.}$ and picked up between $12\unit{a.m.}$ and $6:30\unit{p.m.}$
+In the case study, an individual is defined by an observed sequence of actions $\ve{a}^n$ together with the following attributes:
+\begin{equation}
+i^n = 
+\begin{pmatrix}
+l^n_\text{home} \\
+l^n_\text{work} \\
+l^n_\text{child} \\
+\dummy{car} \\
+\dummy{pt card} \\
+\dummy{flex} \\
+t^n_\text{work}\\
+\\
+P^n_{\text{mandatory}}
+\\
+\text {}
+\end{pmatrix} = 
+\begin{pmatrix*}[l]
+\text{home location} \\
+\text{work location} \\
+\text{child location} \\
+\text{car ownership dummy} \\
+\text{pt card dummy} \\
+\text{flexible working hours dummy} \\
+\text{work duration} \\
+\\
+\text{list of mandatory activities}
+\\
+\text {}
+\end{pmatrix*}
+\in
+\begin{Bmatrix*}[l]
+\{1,2,\dots, N_L\} \\
+\{1,2,\dots, N_L\} \\
+\{1,2,\dots, N_L\} \\
+\{0,1\} \\
+\{0,1\} \\
+\{0,1\} \\
+[0,T] \\
+\begin{Bmatrix*} [\p{work}] ,[\p{child},\p{work}] \\  
+[\p{work},\p{child}] 
+\\ [\p{child},\p{work},\p{child}]\end{Bmatrix*}
+\end{Bmatrix*}
+\end{equation}
 \subsection{Model specification}
-In this case study we will describe the daily planning of travel and activities of individuals with fairly regular working schedules on working days. We have assumed that 
-
-
-
-\newcommand{\p}[1]{p_{\text{#1}}}
-\newcommand{\m}[1]{m_{\text{#1}}}
-\newcommand{\amemm}[1]{\amem_\text{#1}}
-
-
-An individual has a set of mandatory activities which has to be performed during a day and for which the location is fixed. For all individuals $\p{work}$ is in this set, and depending on if they are observed to drop of or pick up children during the day those activities may also be mandatory.  
+Below we discuss how the MDP is specified in the case study. This involves defining the actions, states, conditional choice sets, state transitions and one-stage utility functions.  
 \subsubsection{Actions}
 Remember that an action consisted of the choice of a location, activity and mode. We have used the so called EMME zonal system of the region of Stockholm, which is standard to use in models in the area and for which official statics are available. The Stockholm region consist of 1240 such zones, so $N_L = 1240$. The modes modelled are car, public transport, bike and walk. Activities are divided into home, work, child (pick up or drop off), social, recreational, grocery shopping and other.
 
@@ -37,7 +91,7 @@ a_k = \begin{pmatrix}
 \end{equation}
 \subsubsection{States}
 We let a day start at $5\unit{am}$ and end at $11\unit{pm}$, and let $t$ define the number of $10\units{minute}$ intervals since $5\unit{am}$ so that $T=108$.
-We will for the case study let the marginal utility of activity participation be constant and use $\tau$ only to remember if the activity has been started ($\tau=1$) or not ($\tau=0$), so $N_\atime=\max{N_{\atime,p}}=1$. The mode history will keep track of whether car is used as the mode of transport on a tour. The mode history can thus be described by three values: $m_{\text{stay}},\m{car}$ and $\m{pt}$. The activity history will store whether any of the mandatory activities have been performed, where $\amemm{no}$ means that no mandatory activity has been performed and $\amemm{activity}$ means that 'activity' was the last previous mandatory activity to be performed. 
+We will for the case study let the marginal utility of activity participation be constant and use $\tau$ only to remember if the activity has been started ($\tau=1$) or not ($\tau=0$), so $N_\atime=\max{N_{\atime,p}}=1$. The mode history will keep track of whether car is used as the mode of transport on a tour. The mode history can thus be described by three values: $m_{\text{stay}},\m{car}$ and $\m{pt}$. The activity history stores the number of completed activities in the list of mandatory activities where the number of mandatory activities for an individual $n$ is $N^n_\text{mandatory}\leq 3$. 
 \begin{equation}
 \s{k} = \begin{pmatrix}
 t \\
@@ -52,83 +106,145 @@ m \\
 \begin{Bmatrix*}[l]
 [0,108] \\
 \{1,2,\dots, 1240\} \\
-\{ p_{\text{travel}},p_{\text{end}},\p{home},\p{work},\p{child},\p{rec.},\p{social},\p{shop},\p{other}\}  \\
+\{ \p{home},\p{work},\p{child},\p{rec.},\p{social},\p{shop},\p{other}\}  \\
 \{0\} \\
 \{m_{\text{stay}},\m{car},\m{pt} \}\\
-\{\amemm{no},\amemm{drop off}, \amemm{work},\amemm{pickup}\}\\
+\{0,1,2,3\}\\
 \rr^{N_C}
 \end{Bmatrix*}
 \end{equation}
 
 \subsubsection{Conditional choice-set}
-The choice set $C(s_k)$ has been specified in \eqref{eq:choiceset} up to the opening hours of activities $t^{\text{open}}({l,p})$
-
-
+The choice set $C^n(s_k)$ for an individual $n$ requires the specification of $M^n(m)$, $L^n_{\text{act}}(\act{p})$ and $P^n(h)$.
+The available modes are:
+\begin{equation*}
+M^n(m) = \begin{cases}
+\{ \m{pt},\m{walk},\m{bike} \} & \cif \dummy{car}^n = 0 \\
+\{ \m{car},\m{pt},\m{walk},\m{bike} \} & \cif \dummy{car}^n = 1,m = \m{stay} \\
+\{ \m{car}\} & \cif m = \m{car} \\
+\{ \m{pt},\m{walk},\m{bike} \} & \cif m = \m{pt} 
+\end{cases}
+\end{equation*}
+Let $P_{\text{freetime}} = \{\p{rec.},\p{social},\p{shop},\p{other}\}$. The locations available for a specific individual $n$ is:
+\begin{equation}
+L^n_{\text{act}}(\act{p}) = \begin{cases}
+L & \cif \act{p} \in P_{\text{freetime}} \\
+l^n_\text{home} & \cif \act{p} = \p{home} \\
+l^n_\text{work} & \cif \act{p} = \p{work} \\
+l^n_\text{child} & \cif \act{p} = \p{child} \\
+\end{cases}
+\end{equation}
+Remember that for each individual we have an ordered list of mandatory activities $P^n_{\text{mandatory}}$ where $P^n_{\text{mandatory}}(i)$ is a set containing the $i$:th activity in list. The available activities conditional on history can now be defined as:
+\begin{equation}
+P^n(h) = P_{\text{freetime}} \cup \{\p{home}\} \cup \begin{cases}
+P^n_{\text{mandatory}}(h+1)& \cif h < N^n_\text{mandatory} \\
+\emptyset & \celse
+\end{cases}
+\end{equation}
 \subsubsection{State transitions}
+The unspecified state transition are $q_t$, $q_h$ and $f_m$. As $m$ is used to remember whether car was the first trip on a tour away from home it is defined as:
+\begin{equation}
+    m\ks{k+1} = 
+    \begin{cases}
+        \m{car} & \cif \act{m} = \m{car} \text{ and } m=m_\text{stay} \\
+        \m{pt}  & \cif \act{m} \neq \m{car} \text{ and } m=m_\text{stay}  \\
+        m_\text{stay} & \cif \act{p} = p_{\text{home}} \\
+		m\ks{k} & \celse
+    \end{cases}
+\end{equation}
+With $\amem$ denoting the number of finished mandatory activities, it is updated whenever a 
+\begin{equation}
+	\amem\ks{k+1} = 
+	\begin{cases}
+		\amem\ks{k}+1 &\cif \act{p} = P^n_{\text{mandatory}}(\amem\ks{k}) \\
+		\amem\ks{k}& \celse.
+	\end{cases}
+\end{equation}
+Finally, when there is no travel time uncertainty, $t\ks{k+1}$ is simply given by:
+\begin{equation}
+	t\ks{k+1} =t\ks{k} + \begin{cases}
+  	\TT_{\act{m}}(t\ks{k},l\ks{k},\act{d}) & \cif m\neq m_\text{stay} \\
+  	t_{\text{min}}^n(\act{p}) & \cif m= m_\text{stay} \text{, } \atime = 0  \\
+  	\Delta_p t & \cif m= m_\text{stay} \text{, } \atime \geq 1 
+	\end{cases}
+\end{equation}
 
 \subsubsection{One-stage utility functions}
-\newcommand{\cost}{\text{cost}}
-\newcommand{\car}{\text{car}}
-\newcommand{\pt}{\text{PT}}
-\newcommand{\walk}{\text{walk}}
-\newcommand{\bike}{\text{bike}}
-\newcommand{\dummy}[1]{\delta_{#1}}
-\newcommand{\hi}{\text{h.i}}
-\newcommand{\wait}{\text{wait}}
-\newcommand{\geqfive}{\text{s.z.,walk}}
-\newcommand{\mc}{\theta}
-\newcommand{\ac}{C}
-\newcommand{\acp}{\theta}
-\newcommand{\dura}[1]{\Delta t_#1}
-\newcommand{\TT}{TT}
-\newcommand{\ustay}{\avgu_\text{stay}}
-\newcommand{\stay}{\text{stay}}
 
-The one-stage utility of a state-action pair was in \eqref{eq:mdponestage} dividable into one part for the (dis)utility of travelling and one part for the activity of utility participation. Below follows the specification of these two utility functions used in the case study, starting with the utility of travelling.
+The one-stage utility of a state-action pair was in \eqref{eq:mdponestage} dividable into four parts: the (dis)utility of travelling $utravel(t,l,m,\act{d},\act{m})$; the utility from activity participation $\uact(t,p,\atime)$; the utility representing preferences for when to start and where to perform an activity $\ustart(l,t,\amem, p)$; and a utility component for interaction between current and future purpose $\uchange(p,\act{p})$ which is left out from this case study. Below follows the specification of these two utility functions used in the case study, starting with the utility of travelling.
 \paragraph{Utility of travelling}
 The utility of travelling is given by:
 \begin{equation}
-u_{trav}(t,l,m,\act{d},\act{m}) = \mc_{\act{m}} + \theta_{tt,\act{m}} \cdot \TT_{\act{m}}(t,l,\act{d}) + \theta_{\cost} \cdot C_{\act{m}}(t,l,\act{d}) +\theta_{\geqfive} \dummy{\geqfive}
+u_{trav}(t,l,m,\act{d},\act{m}) = \mc_{\act{m}} + \theta_{tt,\act{m}} \cdot \TT_{\act{m}}(t,l,\act{d}) \theta_{\cost} \cdot C_{\act{m}}(t,l,\act{d}) +\theta_{\geqfive} \dummy{\geqfive}
 \end{equation}
 where $\mc_{\act{m}}$ are mode specific constants; $\theta_{tt,\act{m}}$ are mode specific (dis)utilities for travel time  $\TT_{\act{m}}(t,l,\act{d})$ and $C_{\act{m}}(t,l,\act{d})$ denote the travel time and cost with mode $\act{m}$ at time $t$ for a trip from origin $l$ to destination $\act{d}$; and $\dummy{\geqfive}$ is a dummy indicating if the trip is done within the same zone with walk. Observe that the mode state $m$ does not influence the one-stage utility in the case-study specification.
 
-\paragraph{Utility of activity participation}
-From \eqref{eq:mdponestage}, the one-stage utility when participating in an activity is given is dependent on the state variables for location $l$, time $t$, purpose $p$, activity history $\atime$, and the number of time-steps an activity has been performed $\amem$. In the case study, the activity of utility participation will be given by:
+\paragraph{Utility of starting activity}
+The utility of starting an activity $\ustart(l,t,\amem, p)$ is here independent of $\amem$ and given by:
 \begin{equation}
-	\avgu_{act}(l,t,p,\atime,\amem) = \ustay(t,\act{p},\dura{p}) + \begin{cases} 
-	\ac_p(t) + u_{p,\text{size}}(l) &\cif p = p_{\text{travel}} \\
+	\ustart(l,t,p) = \begin{cases}
+	u_{\text{size}}(l,p) & \cif p \in P_{\text{freetime}} \\
+	u_\text{child constraints}(t) & \cif p = \p{child} \\
+	u_\text{work constraints}(t)  + u_{\text{start work}}(t) & \cif p = \p{work} \\
+	0 & \cif p = \p{home}  
+	\end{cases} 
+\end{equation}
+where $u_{\text{size}}$ models the number of opportunities that exist for each purpose in a specific location; $u_\text{constraints}$ models constraints on when activities can be performed; and $u_{\text{start time}}$ models preferences for when to start specific activities. The size utility is given by:
+\begin{equation*}
+u_{p,\text{size}}(l) =\theta_{C,p} + \theta_{p,\text{size}}\log \left( \sum_{s=1}^{s=S_p} x_{p,l,s}e^{\theta_{p,s}} \right)
+\end{equation*}
+where $S_p$ is the number of size variables for activity $p$, and the size variables $x_{p,l,s}$ can be, e.g., the number of employees in a specific sector at location $l$. Since the size utility contain an activity specific constant $\theta_{C,p}$, one of the parameters $\theta_{p,s}$ should be fixed for all activities. This also provides an alternative interpretation of the activity specific constants $\theta_{C,p}$ as scales for the size variables $x_{p,l,s}$. A complete list of size variables included for respectively activity is given in table \ref{tab:est2}. 
+
+Child and work constraints are ensure that these activities are started within the opening hours of day-care and schools in the case of child activities and within the acceptable starting hours for work for the individual, so:
+\begin{equation*}
+\begin{aligned}
+		u_\text{child constraints}(t) &= 
+		\begin{cases}
+				0 & \cif t_{\text{drop off after}} \leq t \leq t_{\text{drop off before}} \\
+		0 & \cif t_{\text{pick up after}} \leq t \leq t_{\text{pick up before}} \\
+		-\infty & \celse
+		\end{cases} 
+		\\
+		u_\text{work constraints}(t) &= 
+		\begin{cases}
+		0 & \cif t_{\text{work start after}}^n \leq t \leq t_{\text{work start before}}^n \\
+		-\infty & \celse
+		\end{cases}
+\end{aligned}
+\end{equation*}
+
+The time-of-day dependent utility of starting work is specified at a number of points in time $t_j$ by parameters $\acp_{\text{work},t_j}$. If work starts at a time $t$ between two such time point $t_j$ and $t_{j+1}$, i.e., if $t_j\leq t \leq t_{j+1}$, linear interpolation is used to obtain the start utility:
+\begin{equation*}
+u_{\text{start work}}(t)  = \frac{\acp_{\text{work},j}\cdot (t_{j+1}-t)+\acp_{\text{work},j+1}\cdot (t-t_j)}{t_{j+1}-t_{j}}
+\end{equation*}
+\paragraph{Utility of activity participation}
+The utility of activity participation is modelled as:
+\begin{equation}
+	\uact(t,p,\atime) = \begin{cases} 
+	\theta_{t,p} \cdot \Delta_t &\cif p \in P_{\text{freetime}} \\
+	u_\text{stay home}(t) & \cif p = p_\text{home} \\
 	0 & \celse
 	\end{cases}
 \end{equation}
-where $\ustay(t,\act{p},\dura{p})$ is the potentially time-of-day dependent utility obtained when staying and continuing with the activity for a duration of $\dura{p}$; $\ac_p(t)$ is a time-of-day dependent utility for starting an activity; and $u_{p,\text{size}}(l)$ is a location dependent utility obtained when starting an activity in a specific location, modelling the availability of services. In order to keep down the number of parameters in the case study, the constant utility $\ac_p(t)$ is only time dependent for the work activity and the duration utility $\ustay(t,\act{p},\dura{p})$ is only time dependent for the home activity. Time-of-day varying parameters are specified on discrete time steps $T_k$ with values $\theta_{\stay,p,T_k}$ and $\acp_{C,p,T_k}$. The time-of-day dependent utility of starting an activity is given by linear interpolation between the closest defined parameters:
+\newcommand{\home}{\text{home}}
+ For the utility of staying at home for another time step, we specify the \emph{marginal} utility of activity participation at time $t$ as given by linearly interpolation between the closest parameters, so:
 \begin{equation*}
-\ac_p(t) = \frac{\acp_{C,p,T_k}\cdot (T_{k+1}-t)+\acp_{C,p,T_{k+1}}\cdot (t-T_k)}{T_{k+1}-T_{k}}
-\end{equation*}
-where $t\in(T_k,T_{k+1})$. For the duration utility we specify the \emph{marginal} utility of activity participation at time $t$ as given by linearly interpolation between the closest parameters, so:
-\begin{equation*}
-u_\text{stay,marg}(t,\act{p}) = \frac{\theta_{\stay,p,T_k}\cdot(T_{k+1}-T_k)+\theta_{\stay,p,T_{k+1}}\cdot(t-T_k) }{T_{k+1}-T_{k}}.
+u_\text{marginal stay home}(t) = \frac{\theta_{\home,t_j}\cdot(t_{j+1}-t_j)+\theta_{\home,t_{k+1}}\cdot(t-t_j) }{t_{j+1}-t_{j}}.
 \end{equation*}
 The stay-utility of an activity episode of duration $\dura{p}$, when $T_k\leq t$ and $t+\dura{p}\leq T_{k+1}$, then becomes:
 \begin{equation} \label{eq:uacttime}
 \begin{aligned}
-\ustay(t,\act{p}) &= \int_t^{t+\dura{p}} u_\text{stay,marg}(\tau,p) % \frac{\theta_{p,T_k}(T_{k+1}-\tau)+\theta_{p,T_{k+1}}(\tau-T_k) }{T_{k+1}-T_{k}}
-\ud{\tau} = \alpha_{T_k}\theta_{\stay,p,T_k} + \alpha_{T_{k+1}}\theta_{\stay,p,T_{k+1}}% \\
+u_\text{stay home}(t) &= \int_t^{t+\dura{p}} u_\text{marginal stay home}(y)
+\ud{y} = \alpha_{t_j}\theta_{\home,t_j} + \alpha_{t_{j+1}}\theta_{\home,t_{j+1}}% \\
 %&= \frac{\theta_{p,T_k}T_{k+1}-\theta_{p,T_{k+1}}T_k + (\theta_{p,T_{k+1}} - \theta_{p,T_{k}}) (2t\dura{p} + \dura{p}^2)}{T_{k+1}-T_{k}}.
 \end{aligned}
 \end{equation}
 where:
 \begin{align*}
-\alpha_{T_k}&=\dura{p}\frac{T_{k+1} - t - 0.5 \dura{p}}{T_{k+1}-T_{k}}\\
-\alpha_{T_{k+1}}&=\dura{p}\frac{t + 0.5\dura{p} - T_k}{T_{k+1}-T_{k}}.
+\alpha_{t_j}&=\dura{p}\frac{t_{j+1} - t - 0.5 \dura{p}}{t_{j+1}-t_{j}}\\
+\alpha_{t_{j+1}}&=\dura{p}\frac{t + 0.5\dura{p} - t_j}{t_{j+1}-t_{j}}.
 \end{align*}
-Observe that  $\alpha_{T_k} + \alpha_{T_{k+1}} = \dura{p}$, so if $\theta_{\stay,p,T_k} = \theta_{\stay,p,T_{k+1}}$ the stay-utility becomes $\dura{p} \cdot \theta_{\stay,p,T_{k+1}}$.
-If $t+\dura{p}> T_{k+1}$, $u_t(\tau,p)$ in \refeq{eq:uacttime} becomes a stepwise linear function but is otherwise treated in the same way.
-
-Besides activity specific constants, each location $l$ has size parameters representing the number of available opportunities for each activity at that location. This utility is given by:
-\begin{equation*}
-u_{p,\text{size}}(l) =\theta_{p,\text{size}}\log \left( \sum_{s=1}^{s=S_p} x_{p,l,s}e^{\theta_{p,s}} \right)
-\end{equation*}
-where $S_p$ is the number of size variables for activity $p$, and the size variables $x_{p,l,s}$ can be, e.g., the number of employees in a specific sector at location $l$. Since the model contains activity specific constants, one of the parameters $\theta_{p,s}$ should be fixed for all activities. This also provides an alternative interpretation of the activity specific constants as scales for the size variables $x_{p,l,s}$. A complete list of size variables included for respectively activity is given in table \ref{tab:est2}. 
+If $t+\dura{p}> t_{j+1}$, $u_\text{marginal stay home}(y)$ in \refeq{eq:uacttime} becomes a stepwise linear function and additional factors $\alpha_{t_{j+2}}$ is added to the utility function.
 
 \subsection{Data}
 \input{text/caseStudy/Data.tex}

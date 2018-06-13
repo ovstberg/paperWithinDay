@@ -88,7 +88,7 @@ $N_C$.
 \subsection{States}
  A state $\s{k}$ must firstly consist of the current location $l \in L$ and time-of-day $t$ which is modelled as a continuous variable between 0 and $T$, i.e., $t\in [0,T]$. A number of state variables can then be defined to represent the part of the history which may influence future choices. 
 A state variable $p \in P$ will be used to define the purpose of the action leading to the current state. If the utility of performing an activity is dependent on the duration that is has been performed or if an activity has a maximum utility, it will be necessary to remember the amount of time that has passed since it was started. The state variable $\atime \in \{0,1,2,\dots,N_{\atime,p} \}$ stores the number of times the individual has chosen to continue the current activity $p$ since it was first started, where $N_{\atime,p}$ is the maximum memory for purpose $p$. The maximum value of $N_{\atime,p}$ for any purpose $p$ is denoted $N_\atime$. The state variable $m \in M$ is used to allow for interdependencies among the mode choice between different trips on a tour. 
-A state variable $\amem$ stores the relevant history related to previously performed activities. This variable could in principle store the number of times each activity has been performed during the day. It could also store information about the need to perform different activities. Let the maximum number of such different histories and/or need combinations that are modelled be $N_\amem$. Then $\amem\in\{\amem_1,\amem_2\dots,\amem_{N_\amem} \}$. Finally, we let a state vector $\epsilon_k \in \rr^{N_C}$ represent the non-modelled random attributes of the available actions. In total, the state $\s{k}$ is given by:
+A state variable $\amem$ stores the relevant history related to previously performed activities in the form of an index. This variable could in principle store the number of times each activity has been performed during the day. It could also store information about the need to perform different activities. Let the maximum number of such different histories and/or need combinations that are modelled be $N_\amem$. Then $\amem\in\{1,2\dots,{N_\amem} \}$. Finally, we let a state vector $\epsilon_k \in \rr^{N_C}$ represent the non-modelled random attributes of the available actions. In total, the state $\s{k}$ is given by:
 \begin{equation}
     \s{k} = \begin{pmatrix}
     t \\
@@ -115,7 +115,7 @@ A state variable $\amem$ stores the relevant history related to previously perfo
     \{p_1,\dots,p_{N_P}\} \\
     \{0,N_{\atime}\} \\
     \{m_{\text{stay}},m_1,\dots,m_{N_m}\} \\
-    \{\amem_1,\amem_2\dots,\amem_{N_\amem} \}\\
+    \{1,2\dots,{N_\amem} \}\\
     \rr^{N_C}
     \end{Bmatrix*}
 \end{equation}
@@ -130,23 +130,23 @@ Thirdly, the maximum duration of an activity may be limited, limiting the maximu
     \left \{
     {
     \begin{tabular}{l|l}
-    $\act{d}$ & $\act{d} \in  L$ \\
-    $\act{m}$ & $\act{m} \in M(m)$ \\
-    $\act{p}$ & $\act{p} \in P(h), \act{d} \in L_\text{act}(\act{p})$   
-  \end{tabular}
+    	$\act{d}$ & $\act{d} \in  L$                                      \\
+    	$\act{m}$ & $\act{m} \in M(m)$                                    \\
+    	$\act{p}$ & $\act{p} \in P(h), \act{d} \in L_\text{act}(\act{p})$
+    \end{tabular}
   } \right\},\;\; C_\text{stay}(l,p) = 
     \left \{ { \begin{tabular}{l}
-    $l$  \\
-    $m_\text{stay}$  \\
-    $p$   
-  \end{tabular} } \right\} \\ \nonumber \\
+    	$l$             \\
+    	$m_\text{stay}$ \\
+    	$p$
+    \end{tabular} } \right\} \\ \nonumber \\
     C(\s{k}) = \left \{
     {\setlength\tabcolsep{1pt}
     \begin{tabular}{lllll}
-       $C_\text{travel}(h,m)$ & $\cup$ & $C_\text{stay}(l,p)$& \;\; if \;$0<$&\tau<\tau_\text{max}(p)$ \\
-   $C_\text{travel}(h,m)$ &  & &\;\;  if \;&$\tau = \tau_\text{max}(p)$ \\
-   &  & $C_\text{stay}(l,p)$ & \;\; if \;&$\tau = 0$\\
-  \end{tabular}
+    	$C_\text{travel}(h,m)$ & $\cup$ & $C_\text{stay}(l,p)$ & \;\; if \;$0<$ & $\tau<\tau_\text{max}(p)$   \\
+    	$C_\text{travel}(h,m)$ &        &                      & \;\;  if \;    & $\tau = \tau_\text{max}(p)$ \\
+    	                       &        & $C_\text{stay}(l,p)$ & \;\; if \;     & $\tau = 0$
+    \end{tabular}
   }
     \right.
 \end{align}
