@@ -28,31 +28,30 @@ P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\
 
 %Continue here!
 \subsection{Solving the value function}
-Finding the optimal policy and calculating the choice probabilities using \eqref{eq:pcond} requires that the expected value function is known in each state $x_k$. The equation system consisting of \eqref{eq:eutil} and \eqref{eq:evfbellman} has a solution under regularity conditions outlined in \citet{Rust88}. In infinite horizon models, e.g., the Recursive Logit model for route choice \citep{fosgerau2013}, it is possible to revisit the same state twice and the value function in future states $s_{k+1}$ is thus dependent on the value function in the current state $s_k$. However, as the problem described here has a finite horizon and every action moves forward in time, it is possible to specify the model so that no such loops exists. The expected value function $\ev$ can therefore be calculated by starting at the terminal time step $T$ and moving backward in time. This solution method is often called backward induction. However, it cannot be used directly when time is a continuous variable as there is an infinite number of states. We overcome this problem by using a first order approximation of the value function:
+Finding the optimal policy and calculating the choice probabilities using \eqref{eq:pcond} requires that the expected value function is known in each state $x_k$. The equation system consisting of \eqref{eq:eutil} and \eqref{eq:evfbellman} has a solution under regularity conditions outlined in \citet{Rust88}. In infinite horizon models, e.g., the Recursive Logit model for route choice \citep{fosgerau2013}, it is possible to revisit the same state twice and the value function in future states $s_{k+1}$ is thus dependent on the value function in the current state $s_k$. However, as the problem described here has a finite horizon and every action moves forward in time, it is possible to specify the model so that no such loops exists. The expected value function $\ev$ can therefore be calculated by starting at the terminal time step $T$ and moving backward in time. This solution method is often called backward induction. However, it cannot be used directly when time is a continuous variable as there is an infinite number of states. We therefore have to use an approximative solution, which will be discussed below.
 
-\subsubsection{First order approximation of the value function}
-Time is modelled as a continuous variable, but the number of states in which $\ev$ can be calculated is limited by computation time. It is therefore not possible to exactly calculate the expected value functions in all reachable states. Instead, $\ev$ is calculated on a discretized time-grid and linear interpolation is used to approximate the value between these points. 
-
-
-The linear interpolation approximation in a state $x$ is denoted \laeutil(x). The calculation of $\ev$ will therefore be based on approximations of $\ev$ in future states. We will therefore never know the exact expected value function in any state, but rather the (1:st order) approximate expected value function \aeutil, given by:
-\begin{equation} \label{eq:linap1}
-\aeutil(x_t) = \log\left(\sum_{a\in A(x_t)}e^{u(x_t,a) + \laeutil(x_{t'})}\right)
+\subsubsection{Approximation of the value function}
+We propose to approximatively solve the problem by calculating the expected value function in a number of discrete time steps and approximating its value between these times steps using linear interpolation. The time steps will below be denoted $t_j$ and the distance between time steps is $\Delta t$, so that $t_{j+1}-t_j = \Delta t$. There are thus a total of $N_T = T/\Delta t$ time steps where the expected value function is calculated. We will continue to use $\ev(x)$ to denote approximated expected value function which is calculated at these discrete time steps. For the notations below, let $x_{k,t_j}$ specify that $t\ks{k} = t_j$. The values between these time steps is obtained by the function $g(\ev,x_k)$, and these approximate values are used when calculating an approximative solution to $\eutil(x_k,a_k)$: 
+\begin{equation} \label{eq:eutilapprox}
+\begin{aligned}
+\aeutil(x_k,a_k)= \int_{t\ks{k+1}} \left( \sum_{k=1}^{N_{\amem}}q_\amem(\amem\ks{k+1}|t\ks{k+1}, t\ks{k},\amem\ks{k},\act{p}) \cdot g(\ev,x_{k+1}) \right)q_t(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})).
+\end{aligned}
 \end{equation}
-where $t_{k-1} \leq t' \leq t_k $ gives: 
+With a linear interpolation, where $t_{j-1} \leq t' \leq t_j $ gives: 
 \begin{equation}\label{eq:linap2}
-\laeutil(x_{t'}) = \alpha_1 \aeutil(x_{t_k}) + \alpha_2 \aeutil(x_{t_{k+1}})
+g(\ev,x_k) = \alpha_1 \ev(x_{k,t_j}) + \alpha_2 \ev(x_{k,t_{j+1}})
 \end{equation}
-where $\alpha_1 = \frac{t_{k+1}-t'}{t_{k+1}-t_k}$ and $\alpha_2 = \frac{t'-t_k}{t_{k+1}-t_k}$.
-
-This approximation makes the order in which $\ev$ is calculated important. When backward induction is used to calculate $\ev$, it is updated one time step at a time starting in the end of the day $T$ and moving backward. If an action is less than $10\unit{minutes}$ long, the approximation in \refeq{eq:linap2} will be based on \aeutil in the current time step, causing self-dependence which would require value iteration or the solution to an equation system. The only way this can occur with the current discretization and activity durations is if the new action involves a trip to a ``new activity'' state. As the only available alternative in a ``new activity'' state is to start an activity, \aeutil in these states can be calculated first without risking self dependence. After \aeutil has been calculated in the ``new activity'' states, it can be calculated in the remaining states for that time step. Note that for this reason, it is important that the shortest possible activity duration is longer than the duration between time-steps.
-
- but we will in the following only calculate the value function at discrete time steps $t_j$
-
-
-- Discrete time steps
-- Simulate time
-- 
-
+where $\alpha_1 = \frac{t_{j+1}-t}{t_{j+1}-t_j}$ and $\alpha_2 = \frac{t-t_j}{t_{j+1}-t_j}$.
+With this approximation, we can give some examples on how stochastic travel time can be implemented:
+\paragraph{Example: Uniform travel time}
+Assume that the transition of $\amem$ certain so that $q_\amem$ can be neglected in \eqref{eq:eutilapprox}. Further assume that the travel time between location $l\ks{k}$ and destination $\act{d}$ is described by a uniform random variable as:
+\begin{equation}
+	q_t(t\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})=\begin{cases}
+	\frac{1}{b-a} & \cif  a \leq t\ks{k+1} \leq b \\
+	0 & \celse
+	\end{cases}
+\end{equation}
+for some $a>t\ks{k}$ and $b$. 
 \subsubsection{Pseudo code}
 
 
