@@ -37,7 +37,7 @@ a_k = \begin{pmatrix}
 \end{equation}
 \subsubsection{States}
 We let a day start at $5\unit{am}$ and end at $11\unit{pm}$, and let $t$ define the number of $10\units{minute}$ intervals since $5\unit{am}$ so that $T=108$.
-We will for the case study let the marginal utility of activity participation be constant, so $N_\atime=\max{N_{\atime,p}}=0$. The mode history will be dependent on whether the previous car is a car or not, which will influence the availability of a car. The mode history can thus be described by three values: $m_{\text{stay}},\m{car}$ and $\m{pt}$. The activity history will be described by whether any of the mandatory activities have been performed, where $\amemm{no}$ means that no mandatory activity has been performed and $\amemm{activity}$ means that 'activity' was the last previous mandatory activity to be performed. 
+We will for the case study let the marginal utility of activity participation be constant and use $\tau$ only to remember if the activity has been started ($\tau=1$) or not ($\tau=0$), so $N_\atime=\max{N_{\atime,p}}=1$. The mode history will keep track of whether car is used as the mode of transport on a tour. The mode history can thus be described by three values: $m_{\text{stay}},\m{car}$ and $\m{pt}$. The activity history will store whether any of the mandatory activities have been performed, where $\amemm{no}$ means that no mandatory activity has been performed and $\amemm{activity}$ means that 'activity' was the last previous mandatory activity to be performed. 
 \begin{equation}
 \s{k} = \begin{pmatrix}
 t \\

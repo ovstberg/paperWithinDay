@@ -19,7 +19,7 @@ The \emph{expected value function} $\ev(x_k)$ will be used to denote the expecte
 \mu_{x_k}\cdot\log\left(\sum_{a_k\in C(x_{k})} e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}\right).
 \end{aligned}
 \end{equation}
-With i.i.d Gumbel distributed $\epsilon_k$, the probability that an action $a_k$ will be the utility maximizing alternative in a state $x_k$ when $\epsilon_{k}$ is unobserved is simply given by the Multinomial Logit Model (MNL): 
+With i.i.d Gumbel distributed $\epsilon_k$, the probability that an action $a_k$ will be the utility maximising alternative in a state $x_k$ when $\epsilon_{k}$ is unobserved is simply given by the Multinomial Logit Model (MNL): 
 \newcommand{\akt}{\tilde{a_k}}
 \begin{equation} \label{eq:pcond}
 P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,\akt) + \eutil(x_k,\akt)\right)}}.
@@ -28,6 +28,9 @@ P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\
 
 %Continue here!
 \subsection{Solving the value function}
+- Choice probabilities require that the value function can be calculated. The equation has a solution under regularity conditions outlined in \citet{Rust88}. In infinite horizon models, e.g., the Recursive Logit model of for route choice \citep{fosgerau2013}, there exist loops so that the value function in future states $s_{k+1}$ is dependent on the value function in the current state $s_k$. XXX is due to this dependence a fixed point equation. This fixed point equation is often solved by a combination of value iteration and newton iterations. However, as we have a finite horizon problem where every action moves forward in time, it is possible to specify the model so that no loops exists. This can severly speed up computation time, as each state only needs to be traversed once rather than potentially hundreds of times in naive value iteration. The solution method used is in principle value iteration but we will use clearer notion backward induction to clarify that no iteration is needed and that the process involves moving backward in time.
+
+
 - Discrete time steps
 - Simulate time
 - 
@@ -45,7 +48,9 @@ The program is parallelized using MPI and could potentially benefit from hundred
 
 
 
-\subsection{Estimation}
+\subsection{Maximum likelihood estimation}
+Likelihood function
+
 \subsubsection{Estimation using NFXP}
 %TODO write better!
 In order to use \eqref{eq:vfbellman} to calculate choice probabilities or simulate choices we first need to know $\eutil$ 
