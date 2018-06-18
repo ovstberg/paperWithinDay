@@ -8,7 +8,7 @@ where $\eutil(x_k,a_k) $ is the expected value of the value function of the stat
 \begin{equation} \label{eq:eutil}
 \begin{aligned}
 	\eutil&(x_k,a_k)  = E_{t\ks{k+1},\amem\ks{k+1},\epsilon_{k+1}}\left[ V(x_{k+1},\epsilon_{k+1}) \mid x_k,a_k \right] \\
-	&= \int_{t\ks{k+1}} \left( \sum_{k=1}^{N_{\amem}}q_\amem(\amem\ks{k+1}|t\ks{k+1}, t\ks{k},\amem\ks{k},\act{p}) \cdot \ev(x_{k+1}) \right)q_t(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})).
+	&= \int_{t'} \left( \sum_{j=1}^{N_{\amem}}q_\amem(\amem_j|t', t,\amem,\act{p}) \cdot \ev(x_{k+1}) \right)q_t(t'|t,l,\act{m},\act{d})).
 	\end{aligned}
 \end{equation}
 where in turn $\ev(x_k) = E_{\epsilon_k} \left[ V(x_k,\epsilon_k) \right]$.
