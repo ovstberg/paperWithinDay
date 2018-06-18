@@ -1,7 +1,7 @@
 In section \ref{seq:mdp} we defined an MDP consisting of a state space, an action space, transition rules and utility functions. We further assumed that individuals act as if they seek a policy which maximise the value function defined by \eqref{eq:vf}. In this section we will add an additional assumption on the distribution $q_\epsilon$ of the state variable $\epsilon$ under which it is possible to derive an analytical expression for the policy which maximise the value function. Observe that value function $V(s)$ in \eqref{eq:vf} can be defined recursively through Bellman's equation as \citep{bellman,Rust87}:
 \begin{equation} \label{eq:vfbellman}
 \begin{aligned}
-V(x_k,\epsilon_k) &= \max_{a_k} \left\{\avgu(x_k,a_k) + \mu_{x_k}\epsilon_k(a_k)+ \eutil(x_k,a_k) \right\} 
+V(x_k,\epsilon_k) &= \max_{a_k} \left\{\avgu(x_k,a_k) + \epsilon_k(a_k)+ \eutil(x_k,a_k) \right\} 
 \end{aligned}
 \end{equation}
 where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. If $\eutil(x_k,a_k)$ is known for each state-action pair the optimal policy $\pi$ is, by the principle of optimality, to conditional on a state $s_k$ choose the action $a_k$ which maximise the one-stage problem in \refeq{eq:vfbellman}. $\eutil(x_k,a_k) $ is given by: 
@@ -16,14 +16,15 @@ The \emph{expected value function} $\ev(x_k)$ will be used to denote the expecte
 \begin{equation} \label{eq:evfbellman}
 \begin{aligned}
 \ev(x_k) &= %E_{\epsilon_k} \left[ \max_{{a_k}\in C(x_{k})} \left\{\avgu(x_k,a_k) + \mu_{x_k} \epsilon_k(a_k)+ \eutil(x_k,a_k) \right\}  \right] \\&= 
-\mu_{x_k}\cdot\log\left(\sum_{a_k\in C(x_{k})} e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}\right).
+\log\left(\sum_{a_k\in C(x_{k})} e^{\avgu(x_k,a_k) + \eutil(x_k,a_k)}\right).
 \end{aligned}
 \end{equation}
 With i.i.d Gumbel distributed $\epsilon_k$, the probability that an action $a_k$ will be the utility maximising alternative in a state $x_k$ when $\epsilon_{k}$ is unobserved is simply given by the Multinomial Logit Model (MNL): 
 \newcommand{\akt}{\tilde{a_k}}
 \begin{equation} \label{eq:pcond}
-P(a_k|x_k) = \frac{e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,a_k) + \eutil(x_k,a_k)\right)}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu_{x_k}}\left(\avgu(x_k,\akt) + \eutil(x_k,\akt)\right)}}.
-\end{equation}
+P(a_k|x_k) = \frac{e^{\avgu(x_k,a_k) + \eutil(x_k,a_k)}}{\sum_{\akt \in C(x_k)}e^{\avgu(x_k,\akt) + \eutil(x_k,\akt)}}
+\end{equation} 
+Other assumptions on the distribution of $\epsilon$ is also possible which would allow for correlation structure and they can, e.g., be assumed to follow a Nested Logit (NL) or Generalised Extreme Value (GEV) distribution \citep{mai2015,mai2016method}.
 
 
 %Continue here!
@@ -37,55 +38,114 @@ We propose to approximatively solve the problem by calculating the expected valu
 \aeutil(x_k,a_k)= \int_{t\ks{k+1}} \left( \sum_{k=1}^{N_{\amem}}q_\amem(\amem\ks{k+1}|t\ks{k+1}, t\ks{k},\amem\ks{k},\act{p}) \cdot g(\ev,x_{k+1}) \right)q_t(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})).
 \end{aligned}
 \end{equation}
-With a linear interpolation, where $t_{j-1} \leq t' \leq t_j $ gives: 
+If linear interpolation is used for approximation $g$ is obtained by the expected value function at the time steps $j-1$ and $j$ where $t_{j-1} \leq t\ks{k} \leq t_j $ as: 
 \begin{equation}\label{eq:linap2}
-g(\ev,x_k) = \alpha_1 \ev(x_{k,t_j}) + \alpha_2 \ev(x_{k,t_{j+1}})
+g_\text{linear}(\ev,x_k) = \alpha_1 \ev(x_{k,t_j}) + \alpha_2 \ev(x_{k,t_{j+1}})
 \end{equation}
-where $\alpha_1 = \frac{t_{j+1}-t}{t_{j+1}-t_j}$ and $\alpha_2 = \frac{t-t_j}{t_{j+1}-t_j}$.
-With this approximation, we can give some examples on how stochastic travel time can be implemented:
+where $\alpha_1 = \frac{t_{j+1}-t}{\Delta t}$ and $\alpha_2 = \frac{t-t_j}{\Delta t}$.
+With this approximation, we can give some examples on how stochastic travel time can be implemented.
+
+Let $Q_{\eutil}(x_k,a_k)=Q_{\eutil}(t,l,h,\act{p},\act{m},\act{d})$ return a vector $q$ such that $\eutil(x_k,a_k) =  q \cdot \ev$. 
+
 \paragraph{Example: Uniform travel time}
-Assume that the transition of $\amem$ certain so that $q_\amem$ can be neglected in \eqref{eq:eutilapprox}. Further assume that the travel time between location $l\ks{k}$ and destination $\act{d}$ is described by a uniform random variable as:
-\begin{equation}
-	q_t(t\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})=\begin{cases}
-	\frac{1}{b-a} & \cif  a \leq t\ks{k+1} \leq b \\
+Assume that there is no transition $\amem$ so that $q_\amem$ can be neglected in \eqref{eq:eutilapprox}. Further assume that the travel time between location $l\ks{k}$ and destination $\act{d}$ is described by a uniform random variable as:
+\begin{equation*}
+	q_{t,\text{U}}(t\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})=\begin{cases}
+	\frac{1}{b-a} & \cif a \leq t\ks{k+1} - t\ks{k} \leq b \\
 	0 & \celse
 	\end{cases}
-\end{equation}
-for some $a>t\ks{k}$ and $b$. 
-\subsubsection{Pseudo code}
+\end{equation*}
+for some $a$ and $b$ such that $b> a \geq 0$. Let $n_a$ and $n_b$ denote the index of the time step before $a+t\ks{k}$ and after $b+t\ks{k}$ so that $t_{n_a} \leq a+t\ks{k} \leq t_{n_a+1}$ and $t_{n_b-1} \leq b+t\ks{k} \leq t_{n_b}$ respectively. Then:
+\begin{equation*}
+\begin{aligned}
+\aeutil(x_k,a_k)&= \int_{t\ks{k+1}} g_\text{linear}(\ev,x_{k+1,t\ks{k+1}})q_{t,\text{U}}(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d}))\\
+&=\sum_{j=n_a}^{n_b} \beta_j \cdot \ev(x_{k+1,t_j})
+\end{aligned}
+\end{equation*}
+where:
+\begin{equation*}
+\beta_j = \frac{1}{b-a} \cdot \begin{cases}
+1 & \cif n_a +2 \leq j \leq n_{b}-2 \\
+0.5 + \frac{t_{n_a+1}-t\ks{k} - a}{\Delta t} & \cif j = n_a +1  \\
+\frac{t\ks{k} - a -t_{n_a}}{\Delta t} & \cif j = n_a \\
+0.5 + \frac{t\ks{k} - b -t_{n_{b}-1}}{\Delta t} & \cif j = n_{b}-1  \\
+\frac{t_{n_b}-t\ks{k} - b}{\Delta t} & \cif j = n_b\\
+\end{cases}
+\end{equation*}
 
+\subsubsection{Backward induction}
+With the general model specification above in mind, we can discuss how the expected value function using backward induction. As discussed before, this calculates the expected value function in each state $x_k$ by moving backward in time, starting at time $t=T$ and ending in $t=0$. Starting the algorithm requires that the value of $\ev$ at time $t=T$ is defined. We assume that the terminal value of a state $x_T$ is given by some function $J_T(x_T) \;\forall x_T \in X_T$, where $X_T$. is the set of states at time $T$. One can define the value at the end of the day so that it is required that an agent returns home before time $T$ or that a specific set of activities $h_T$ is performed during the day by setting $J_T(x_T)=0$ if $l= l_\text{home}$ and $h= h_T$ and $J_T(x_T)=-\infty$ else. The backward induction solution method can now be described by the pseudo-code in Algorithm \ref{alg:backward}. Observe that it is important that $\ev$ is firstly updated in $\tau=0$ before the log-sum of travelling is calculated, as $\ev$ at the destination may be dependent on the value of $\ev$ for $\tau=0$ at the same time step.
 
-\subsubsection{Computational details}
-\label{seq:computationTime}
+%algloop{For}{End}
+\begin{algorithm}
+\caption{\label{alg:backward} Backward induction algorithm used to calculate the expected value function in all states.}
+\begin{algorithmic}[1]
+\State $\ev = \text{zeros}(N_\text{T},N_L,N_P,N_\tau,N_M,N_\amem) -\infty $
+\For{$x_T \in X_T$} 
+\State $\ev[x_T] = J_T[x_T]$
+\EndFor
 
-With the current implementation, calculating the value function in all states and thus evaluating the probability of a path once for a single individual takes between $4-10\units{s}$. Almost all ($98\%$) of the computation time is consumed by the function calculating the value function in all end-activity states when summing up the alternative trips that can be started. When excluding working hours, an example individual have 11\,h of free time left between 5:00AM and 23:00PM. The value function is evaluated on a 10\,minute grid, giving 65 grid points in which it will be evaluated. In each of these grid points, there are a total of 4 modes available for a car owner and 1\zdel 240 locations that are both states and destinations. This gives a total of $65 \cdot 4 \cdot 1\zdel 240 \cdot 1\zdel 240 \sim 4 \cdot 10^8$ links. For each of these links, one must calculate the travel time (taking $16\%$ of the time), one-stage utilities ($23\%$), obtain the future expected value function and sum this with the utility ($41\%$) and finally perform the exponent $e^{u_i + EV_j}$ for all links ($20\%$). All-in-all, this takes around 4-10\,s when using a single core on a Intel(R) Core(TM) i7-6820HQ CPU @ 2.70GHZ. The main program is written in C\# but Intel MKL has been used for vector mathematics when applicable and C++ routines has been used for other time consuming parts. As a comparison, simply performing $e^x$ in MATLAB for a vector $x$ with $10^8$ elements on the same computer takes 1\,s. 
+\State
+\For{$k \in \{N_\text{T}-1,N_\text{T}-2,\dots,0\}$} 
+\For{$m \in M,h \in \{1,2,\dots,N_h\}$,$l \in L,p \in p \in P(h) \text{ s.t } d\in L_\text{act}(P)$}
+\State
+\State $v_\text{stay} = [\;]$ 
+\For{$\tau \in \{0,1,2,\dots,\tau_{max}(p)\}$}
+\State $u = u_\text{act}(t_k,p,\tau) + (\tau==0) \cdot  u_\text{start}(l,t_k,h,p)$
+\State $\eutil = Q_{\text{stay}}{(t_k,l,m,h,p,\tau,h)} \cdot \ev[:]$
+\State $v_\text{stay}[\tau] = \exp(u + \eutil)$
+\EndFor
+\State $\ev[t_k,l,p,\tau=0,m,h] = \log\left(v_\text{stay}[0]\right)$
+\State 
+\State $v_\text{travel} = 0$ 
+\For{$\act{d} \in L ,\act{m} \in M(m),\act{p} \in P(h) \text{ s.t } d\in L_\text{act}(P)$}
+\State $u= u_\text{travel}(t_k,l,m,\act{d},\act{m}) + u_\text{change}(p,\act{p})$
+\State $\eutil = Q_{\text{travel}}(t_k,l,m,p,\amem;\act{d},\act{m},\act{p}) \cdot \ev[:]$
+\State $v_\text{travel} =v_\text{travel}+ \exp(u+\eutil)$
+\EndFor
+\State
+\For{$\tau \in \{0,1,\dots,\tau_{max}(p)\}$}
+\State $\ev[t_k,l,p,\tau,m,h]=\log\big((\tau < \tau_{max}(p))\cdot v_\text{stay}[\tau] + (\tau>0) \cdot v_\text{travel}\big)$
+\EndFor
+\State
+\EndFor
+\EndFor
+\end{algorithmic}
+\end{algorithm}
 
-As discussed above, the from-all-to-all destinations operation is currently the limiting computational factor. One possible way to speed up the program would be to sample locations. If 100 locations were sampled, the computation time could potentially decrease to $0.05\units{s/individual}$.  
-
-The program is parallelized using MPI and could potentially benefit from hundreds of cores reducing the computation time to days. A possible future solution to obtain efficient estimates and allow for nested logit or GEV formulations would be to use inefficient estimates obtained using sampling of locations or some alternative approximative or possibly biased estimation technique to find a good enough specification of the model and then finally obtain full-information estimates using a cluster. 
-
-
-
+\subsubsection{Simulating daily travel patterns}
+\begin{algorithm}
+\caption{Algorithm used to simulate a daily travel pattern}
+\begin{algorithmic}[1]
+\State $x_0 = \{t=0,l=l_{\text{home}\}$
+\State $x=[x_0]$, $a = []$, $p=0$
+\While{$t<T$} 
+\EndWhile
+\end{algorithmic}
+\end{algorithm}
 
 \subsection{Maximum likelihood estimation}
-Likelihood function
+We have so far suppressed the parameters $\theta$ from the specification of the utility functions, as well as the dependence of the individual $i_n$ that the model describes. 
+Suppose that we have observed an individual $i_n$ who have made sequences of actions $\ve{a}_n=\{a_{0,n},a_{1,n},\dots,a_{K_n,n}\}$ and reached states $\ve{x}_n=\{x_{0,n},x_{1,n},\dots,x_{K_n+1,n}}\}$. The likelihood for the observation of individual $i_n$ is then given by:
+\begin{equation*}
+    L_n(\ve{a}_n,\ve{x}_n|x_0,\theta)= \prod_{k=0}^{K_n}  P_n(a_{k,n}|x_{k,n},\theta_u)\cdot q(x_{k+1}|a_{k,n},x_{k,n},\theta_q)
+\end{equation*}
+Let $N$ observations form the set of observations $\obs_N$. The log-likelihood function for $\obs_N$ based on the conditional likelihoods becomes:
+\begin{equation*} \label{eq:cond_like}
+\bar{\LL}(\obs_N;\theta) = \sum_{n=1}^N \log \Bl L_n(\ve{a}_n,\ve{x}_n|x_{0,n},\theta)\Bh
+\end{equation*}
+If we can calculate $L_n(\ve{a}_n,\ve{x}_n|x_{0,n},\theta)$ (and its gradients) we can use any standard optimisation algorithm to find the parameter vector $\theta$ which best explains the observed behaviour. Below we will discuss two ways in which the likelihood function can be obtained, starting with the Nested Fixed Point Method (NFXP), which is the standard method for estimation of dynamic discrete choice models.
 
 \subsubsection{Estimation using NFXP}
 %TODO write better!
-In order to use \eqref{eq:vfbellman} to calculate choice probabilities or simulate choices we first need to know $\eutil$ 
-The standard way to obtain $\eutil$ following \citet{Rust87} has been to solve the equation system obtained when inserting \eqref{eq:evfbellman} into \eqref{eq:vfrust} and using value iteration to calculate $\eutil$ for each state-action pair.   
-If the number of such state-action pairs is large compared to the number of states, i.e, if there is a large number of actions available in each state, it can be beneficial from a computational perspective to instead calculate the expected value function $\ev$ in all $x$ and use this to calculate $\eutil$ on-the-fly when needed. Once $\eutil$ are known in each state, it is trivial to calculate the choice probabilities for each alternative action conditional on a specific state using \eqref{eq:pcond}. This process of estimation is called the Nested Fixed Point method (NFXP) as it involves solve $\eutil$ which is defined by a fixed point equation for each trial parameter value in the optimization process. 
-
-The standard method for estimating dynamic discrete choice models is the Nested Fixed Point Method (NFXP) \citep{RustML88}. This involves first calculating $\eutil$ and its gradients in each state of the network and then directly use \eqref{eq:pPath0} for estimation. Although possible to apply on the proposed model, the method would be extremely time consuming given the discussion on computation time in Section \ref{seq:computationTime}. If estimation would rely on calculating the value function and gradient of the value function in each state in each iteration, the computation time would likely be $0.4\cdot N_{\text{variables}} \cdot t$ per observation per iteration (as the gradient must be calculated for each variable, requiring at least the additional sum of the gradient of $u + EV$ for each variable). With $10\units{s/observation}$ to calculate $\eutil$, $70$ variables, $3\zdel 300$ observations and $100$ iterations before convergence, this would require $10 \cdot 0.4 \cdot  70 \cdot 3\zdel 300 \cdot 100 \units{s} \approx 1\zdel 000 \units{days}$ to estimate using a single core. 
-
-Methods used to speed up estimation of dynamic discrete choice models, e.g., the method proposed in \citet{aguirregabiria2002swapping}, reduces the burden of value iterations when calculating the value function. As no iteration is needed to evaluate the value function in this model, this would likely not help. Some approximative method is therefore needed.
-
+NFXP relies on using directly using \eqref{eq:pcond} to calculate the conditional choice probabilities $P_n(a_{k,n}|x_{k,n},\theta)$, and is the standard method for estimating dynamic discrete choice models since \citet{Rust87}. To obtain the choice probabilities from, \eqref{eq:pcond} one must first calculate the value of $\eutil$ in all states. As $\eutil$ depends on the parameter values, the value of $\eutil$ (and its gradients) must be updated each time the likelihood-function is calculated for a new parameter vector. Algorithm \ref{alg:backward} must thus be used to obtain $\ev$ for each individual for each trial parameter vector in an optimisation algorithm. Using Algorithm \ref{alg:backward} as an inner algorithm within the optimization algorithm is what constitutes the nested fixed-point problem in the NFXP algorithm. 
 \subsubsection{Special case: Estimation using sampling of alternatives}
 \label{sec:estSampling}
 
 % 
+The fact that $\eutil$ must be calculated using Algorithm \ref{alg:backward} for each trial parameter vector makes the NFXP algorithm computationally demanding. 
 
-As a special case, the probability for a sequence of actions according to a dynamic discrete choice model as in \eqref{eq:pcond} degenerates into an MNL model over sequences of actions \citep{fosgerau2013}. Under these conditions, it can therefore be estimated on a subset of the alternatives \citep{mcfadden78}. This equivalence occurs when: 1) each state-action $(x_{k},a_{k})$ pair deterministically gives a new state that thus can be described by a mapping $x_{k+1}=f(x_{k},a_{k})$; and 2) the scale of the error terms is the same in all states, i.e., $\mu_{x_k}=\mu$. Under these restrictions \eqref{eq:vfrust} becomes: $\eutil(x_{k},a_{k})=\ev(x_{k+1})$. Thus:
+As a special case, the probability for a sequence of actions according to a dynamic discrete choice model as in \eqref{eq:pcond} degenerates into an MNL model over sequences of actions \citep{fosgerau2013}. Under these conditions, it can therefore be estimated on a subset of action sequences \citep{mcfadden78}. This equivalence occurs when: 1) each state-action $(x_{k},a_{k})$ pair deterministically gives a new state that thus can be described by a mapping $x_{k+1}=f(x_{k},a_{k})$; and 2) $\epsilon$ is i.i.d Gumbel distributed. Under these restrictions \eqref{eq:vfrust} becomes: $\eutil(x_{k},a_{k})=\ev(x_{k+1})$. Thus:
 \begin{align}
 P(a_k|x_k) &= \frac{e^{\frac{1}{\mu}\left(\avgu(x_k,a_k) + \ev(f(x_{k+1})\right))}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu}\left(\avgu(x_k,\akt) + \ev(f(x_k,\akt))\right)}} \label{eq:MNL}\\
 &=e^{\frac{1}{\mu}\left(\avgu(a_k,x_k) + \ev(x_{k+1})- \ev(x_k)\right)}\label{eq:MNLv2}
