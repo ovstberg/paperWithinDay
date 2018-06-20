@@ -8,7 +8,7 @@ where $\eutil(x_k,a_k) $ is the expected value of the value function of the stat
 \begin{equation} \label{eq:eutil}
 \begin{aligned}
 	\eutil&(x_k,a_k)  = E_{t\ks{k+1},\amem\ks{k+1},\epsilon_{k+1}}\left[ V(x_{k+1},\epsilon_{k+1}) \mid x_k,a_k \right] \\
-	&= \int_{t'} \left( \sum_{j=1}^{N_{\amem}}q_\amem(\amem_j|t', t,\amem,\act{p}) \cdot \ev(x_{k+1}) \right)q_t(t'|t,l,\act{m},\act{d})).
+	&= \int_{t'} \left( \sum_{j=1}^{N_{\amem}}q_\amem(\amem_j|t', t,\amem,\act{p}) \cdot \ev(x_{k+1}) \right)dq_t(t'|t,l,\act{m},\act{d})).
 	\end{aligned}
 \end{equation}
 where in turn $\ev(x_k) = E_{\epsilon_k} \left[ V(x_k,\epsilon_k) \right]$.
@@ -35,7 +35,8 @@ Finding the optimal policy and calculating the choice probabilities using \eqref
 We propose to approximatively solve the problem by calculating the expected value function in a number of discrete time steps and approximating its value between these times steps using linear interpolation. The time steps will below be denoted $t_j$ and the distance between time steps is $\Delta t$, so that $t_{j+1}-t_j = \Delta t$. There are thus a total of $N_T = T/\Delta t$ time steps where the expected value function is calculated. We will continue to use $\ev(x)$ to denote approximated expected value function which is calculated at these discrete time steps. For the notations below, let $x_{k,t_j}$ specify that $t\ks{k} = t_j$. The values between these time steps is obtained by the function $g(\ev,x_k)$, and these approximate values are used when calculating an approximative solution to $\eutil(x_k,a_k)$: 
 \begin{equation} \label{eq:eutilapprox}
 \begin{aligned}
-\aeutil(x_k,a_k)= \int_{t\ks{k+1}} \left( \sum_{k=1}^{N_{\amem}}q_\amem(\amem\ks{k+1}|t\ks{k+1}, t\ks{k},\amem\ks{k},\act{p}) \cdot g(\ev,x_{k+1}) \right)q_t(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})).
+\aeutil(x_k,a_k)=
+\int_{t'} \left( \sum_{j=1}^{N_{\amem}}q_\amem(\amem_j|t', t,\amem,\act{p}) \cdot g(\ev,x_{k+1}) \right)dq_t(t'|t,l,\act{m},\act{d}))
 \end{aligned}
 \end{equation}
 If linear interpolation is used for approximation $g$ is obtained by the expected value function at the time steps $j-1$ and $j$ where $t_{j-1} \leq t\ks{k} \leq t_j $ as: 
@@ -50,15 +51,15 @@ Let $Q_{\eutil}(x_k,a_k)=Q_{\eutil}(t,l,h,\act{p},\act{m},\act{d})$ return a vec
 \paragraph{Example: Uniform travel time}
 Assume that there is no transition $\amem$ so that $q_\amem$ can be neglected in \eqref{eq:eutilapprox}. Further assume that the travel time between location $l\ks{k}$ and destination $\act{d}$ is described by a uniform random variable as:
 \begin{equation*}
-	q_{t,\text{U}}(t\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d})=\begin{cases}
-	\frac{1}{b-a} & \cif a \leq t\ks{k+1} - t\ks{k} \leq b \\
+	q_{t,\text{U}}(t'|t,l,\act{m},\act{d})=\begin{cases}
+	\frac{1}{b-a} & \cif a \leq t' - t \leq b \\
 	0 & \celse
 	\end{cases}
 \end{equation*}
 for some $a$ and $b$ such that $b> a \geq 0$. Let $n_a$ and $n_b$ denote the index of the time step before $a+t\ks{k}$ and after $b+t\ks{k}$ so that $t_{n_a} \leq a+t\ks{k} \leq t_{n_a+1}$ and $t_{n_b-1} \leq b+t\ks{k} \leq t_{n_b}$ respectively. Then:
 \begin{equation*}
 \begin{aligned}
-\aeutil(x_k,a_k)&= \int_{t\ks{k+1}} g_\text{linear}(\ev,x_{k+1,t\ks{k+1}})q_{t,\text{U}}(dt\ks{k+1}|t\ks{k},l\ks{k},\act{m},\act{d}))\\
+\aeutil(x_k,a_k)&= \int_{t'} g_\text{linear}(\ev,x_{k+1,t'})dq_{t,\text{U}}(t'|t,l,\act{m},\act{d}))\\
 &=\sum_{j=n_a}^{n_b} \beta_j \cdot \ev(x_{k+1,t_j})
 \end{aligned}
 \end{equation*}
@@ -117,7 +118,7 @@ With the general model specification above in mind, we can discuss how the expec
 \begin{algorithm}
 \caption{Algorithm used to simulate a daily travel pattern}
 \begin{algorithmic}[1]
-\State $x_0 = \{t=0,l=l_{\text{home}\}$
+\State $x_0 = \{t=0,l=l_{\text{home}} \}$
 \State $x=[x_0]$, $a = []$, $p=0$
 \While{$t<T$} 
 \EndWhile
@@ -126,7 +127,7 @@ With the general model specification above in mind, we can discuss how the expec
 
 \subsection{Maximum likelihood estimation}
 We have so far suppressed the parameters $\theta$ from the specification of the utility functions, as well as the dependence of the individual $i_n$ that the model describes. 
-Suppose that we have observed an individual $i_n$ who have made sequences of actions $\ve{a}_n=\{a_{0,n},a_{1,n},\dots,a_{K_n,n}\}$ and reached states $\ve{x}_n=\{x_{0,n},x_{1,n},\dots,x_{K_n+1,n}}\}$. The likelihood for the observation of individual $i_n$ is then given by:
+Suppose that we have observed an individual $i_n$ who have made sequences of actions $\ve{a}_n=\{a_{0,n},a_{1,n},\dots,a_{K_n,n}\}$ and reached states $\ve{x}_n=\{x_{0,n},x_{1,n},\dots,x_{K_n+1,n}\}$. The likelihood for the observation of individual $i_n$ is then given by:
 \begin{equation*}
     L_n(\ve{a}_n,\ve{x}_n|x_0,\theta)= \prod_{k=0}^{K_n}  P_n(a_{k,n}|x_{k,n},\theta_u)\cdot q(x_{k+1}|a_{k,n},x_{k,n},\theta_q)
 \end{equation*}

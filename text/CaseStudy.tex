@@ -174,7 +174,7 @@ Finally, when there is no travel time uncertainty, $t\ks{k+1}$ is simply given b
 The one-stage utility of a state-action pair was in \eqref{eq:mdponestage} dividable into four parts: the (dis)utility of travelling $utravel(t,l,m,\act{d},\act{m})$; the utility from activity participation $\uact(t,p,\atime)$; the utility representing preferences for when to start and where to perform an activity $\ustart(l,t,\amem, p)$; and a utility component for interaction between current and future purpose $\uchange(p,\act{p})$ which is left out from this case study. Below follows the specification of these two utility functions used in the case study, starting with the utility of travelling.
 \paragraph{Utility of travelling}
 The utility of travelling is given by:
-\begin{equation}
+\begin{equation} \label{eq:utravel}
 u_{trav}(t,l,m,\act{d},\act{m}) = \mc_{\act{m}} + \theta_{tt,\act{m}} \cdot \TT_{\act{m}}(t,l,\act{d}) \theta_{\cost} \cdot C_{\act{m}}(t,l,\act{d}) +\theta_{\geqfive} \dummy{\geqfive}
 \end{equation}
 where $\mc_{\act{m}}$ are mode specific constants; $\theta_{tt,\act{m}}$ are mode specific (dis)utilities for travel time  $\TT_{\act{m}}(t,l,\act{d})$ and $C_{\act{m}}(t,l,\act{d})$ denote the travel time and cost with mode $\act{m}$ at time $t$ for a trip from origin $l$ to destination $\act{d}$; and $\dummy{\geqfive}$ is a dummy indicating if the trip is done within the same zone with walk. Observe that the mode state $m$ does not influence the one-stage utility in the case-study specification.
@@ -219,7 +219,7 @@ u_{\text{start work}}(t)  = \frac{\acp_{\text{work},j}\cdot (t_{j+1}-t)+\acp_{\t
 \end{equation*}
 \paragraph{Utility of activity participation}
 The utility of activity participation is modelled as:
-\begin{equation}
+\begin{equation} \label{eq:uact}
 	\uact(t,p,\atime) = \begin{cases} 
 	\theta_{t,p} \cdot \Delta_t &\cif p \in P_{\text{freetime}} \\
 	u_\text{stay home}(t) & \cif p = p_\text{home} \\
