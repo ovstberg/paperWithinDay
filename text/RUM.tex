@@ -1,10 +1,11 @@
-In section \ref{seq:mdp} we defined an MDP consisting of a state space, an action space, transition rules and utility functions. We further assumed that individuals act as if they seek a policy which maximise the value function defined by \eqref{eq:vf}. In this section we will add an additional assumption on the distribution $q_\epsilon$ of the state variable $\epsilon$ under which it is possible to derive an analytical expression for the policy which maximise the value function. Observe that value function $V(s)$ in \eqref{eq:vf} can be defined recursively through Bellman's equation as \citep{bellman,Rust87}:
+In section \ref{seq:mdp} we defined an MDP consisting of a state space, an action space, transition rules and utility functions. We further assumed that individuals act as if they seek a policy which maximise the value function defined by \eqref{eq:vf}. Similarly to \citet{rust1987}, we have assumed that the random state variable $\epsilon_k$ is conditionally independent on the previous state and action and enters the one-stage utility additatively. With a final assumption on the $q_\epsilon$ of the state variable $\epsilon$ it is now possible to derive an expressions for the policy which maximise the value function as well choice probabilities.
+Observe that value function $V(s)$ in \eqref{eq:vf} can be defined recursively through Bellman's equation as \citep{bellman,rust1987}:
 \begin{equation} \label{eq:vfbellman}
 \begin{aligned}
 V(x_k,\epsilon_k) &= \max_{a_k} \left\{\avgu(x_k,a_k) + \epsilon_k(a_k)+ \eutil(x_k,a_k) \right\} 
 \end{aligned}
 \end{equation}
-where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. If $\eutil(x_k,a_k)$ is known for each state-action pair the optimal policy $\pi$ is, by the principle of optimality, to conditional on a state $s_k$ choose the action $a_k$ which maximise the one-stage problem in \refeq{eq:vfbellman}. $\eutil(x_k,a_k) $ is given by: 
+where $\eutil(x_k,a_k) $ is the expected value of the value function of the state reached when taking action $a_k$ in state $(x_k,\epsilon_k)$. If $\eutil(x_k,a_k)$ is known for each state-action pair, the principle of optimality states gives that the optimal policy $\pi$ is obtained by conditionally on a state $s_k$ choose the action $a_k$ which maximise the one-stage problem in \refeq{eq:vfbellman}. $\eutil(x_k,a_k) $ is given by: 
 \begin{equation} \label{eq:eutil}
 \begin{aligned}
 	\eutil&(x_k,a_k)  = E_{t\ks{k+1},\amem\ks{k+1},\epsilon_{k+1}}\left[ V(x_{k+1},\epsilon_{k+1}) \mid x_k,a_k \right] \\
@@ -24,29 +25,27 @@ With i.i.d Gumbel distributed $\epsilon_k$, the probability that an action $a_k$
 \begin{equation} \label{eq:pcond}
 P(a_k|x_k) = \frac{e^{\avgu(x_k,a_k) + \eutil(x_k,a_k)}}{\sum_{\akt \in C(x_k)}e^{\avgu(x_k,\akt) + \eutil(x_k,\akt)}}
 \end{equation} 
-Other assumptions on the distribution of $\epsilon$ is also possible which would allow for correlation structure and they can, e.g., be assumed to follow a Nested Logit (NL) or Generalised Extreme Value (GEV) distribution \citep{mai2015,mai2016method}.
+Other assumptions on the distribution of $\epsilon$ is also possible which would allow for correlation structure and they can, e.g., be assumed to follow a nested logit or generalised extreme value distribution \citep[as illustrated for the recursive logit specification by][]{mai2015,mai2016method}.
 
 
 %Continue here!
 \subsection{Solving the value function}
-Finding the optimal policy and calculating the choice probabilities using \eqref{eq:pcond} requires that the expected value function is known in each state $x_k$. The equation system consisting of \eqref{eq:eutil} and \eqref{eq:evfbellman} has a solution under regularity conditions outlined in \citet{Rust88}. In infinite horizon models, e.g., the Recursive Logit model for route choice \citep{fosgerau2013}, it is possible to revisit the same state twice and the value function in future states $s_{k+1}$ is thus dependent on the value function in the current state $s_k$. However, as the problem described here has a finite horizon and every action moves forward in time, it is possible to specify the model so that no such loops exists. The expected value function $\ev$ can therefore be calculated by starting at the terminal time step $T$ and moving backward in time. This solution method is often called backward induction. However, it cannot be used directly when time is a continuous variable as there is an infinite number of states. We therefore have to use an approximative solution, which will be discussed below.
+Finding the optimal policy and calculating the choice probabilities using \eqref{eq:pcond} requires that the expected value function is known in each state $x_k$. The equation system consisting of \eqref{eq:eutil} and \eqref{eq:evfbellman} has a solution under regularity conditions outlined in \citet{RustML88}. In infinite horizon models, e.g., the recursive logit model for route choice \citep{fosgerau2013}, it is possible to revisit the same state twice and the value function in future states $s_{k+1}$ is thus dependent on the value function in the current state $s_k$. However, as the problem described here has a finite horizon and every action moves forward in time, it is possible to specify the model so that no such loops exists. The expected value function $\ev$ can therefore be calculated by starting at the terminal time step $T$ and moving backward in time. This solution method is often called backward induction. However, it cannot be used directly when time is a continuous variable as there is an infinite number of states. We therefore have to use an approximative solution, which will be discussed below.
 
 \subsubsection{Approximation of the value function}
-We propose to approximatively solve the problem by calculating the expected value function in a number of discrete time steps and approximating its value between these times steps using linear interpolation. The time steps will below be denoted $t_j$ and the distance between time steps is $\Delta t$, so that $t_{j+1}-t_j = \Delta t$. There are thus a total of $N_T = T/\Delta t$ time steps where the expected value function is calculated. We will continue to use $\ev(x)$ to denote approximated expected value function which is calculated at these discrete time steps. For the notations below, let $x_{k,t_j}$ specify that $t\ks{k} = t_j$. The values between these time steps is obtained by the function $g(\ev,x_k)$, and these approximate values are used when calculating an approximative solution to $\eutil(x_k,a_k)$: 
+The expected value function is approximated problem by calculating its value in a number of discrete time steps and using linear approximation between these times. The time steps at which the expected value function is calculated will below be denoted $t_j$ and the distance between time steps is $\Delta t$, so that $t_{j+1}-t_j = \Delta t$. There are thus a total of $N_T = T/\Delta t$ time steps where the expected value function is calculated. We will use $\eva(x)$ to denote the approximated expected value function which is calculated at these discrete time steps. For the notations below, let $x_{k,t_j}$ specify that $t\ks{k} = t_j$. The values between these time steps is obtained by the function $g(\eva,x_k)$, and these approximate values are used when calculating an approximative solution to $\eutil(x_k,a_k)$: 
 \begin{equation} \label{eq:eutilapprox}
 \begin{aligned}
 \aeutil(x_k,a_k)=
-\int_{t'} \left( \sum_{j=1}^{N_{\amem}}q_\amem(\amem_j|t', t,\amem,\act{p}) \cdot g(\ev,x_{k+1}) \right)dq_t(t'|t,l,\act{m},\act{d}))
+\int_{t'} \left( \sum_{j=1}^{N_{\amem}}q_\amem(\amem_j|t', t,\amem,\act{p}) \cdot g(\eva,x_{k+1}) \right)dq_t(t'|t,l,\act{m},\act{d}))
 \end{aligned}
 \end{equation}
-If linear interpolation is used for approximation $g$ is obtained by the expected value function at the time steps $j-1$ and $j$ where $t_{j-1} \leq t\ks{k} \leq t_j $ as: 
+If linear interpolation is used for approximation, $g$ is obtained by the expected value function at the time steps $j-1$ and $j$ where $t_{j-1} \leq t\ks{k} \leq t_j $ as: 
 \begin{equation}\label{eq:linap2}
-g_\text{linear}(\ev,x_k) = \alpha_1 \ev(x_{k,t_j}) + \alpha_2 \ev(x_{k,t_{j+1}})
+g_\text{linear}(\eva,x_k) = \alpha_1 \eva(x_{k,t_j}) + \alpha_2 \eva(x_{k,t_{j+1}})
 \end{equation}
 where $\alpha_1 = \frac{t_{j+1}-t}{\Delta t}$ and $\alpha_2 = \frac{t-t_j}{\Delta t}$.
-With this approximation, we can give some examples on how stochastic travel time can be implemented.
-
-Let $Q_{\eutil}(x_k,a_k)=Q_{\eutil}(t,l,h,\act{p},\act{m},\act{d})$ return a vector $q$ such that $\eutil(x_k,a_k) =  q \cdot \ev$. 
+With this approximation, we can give an example of how stochastic travel time can be implemented.
 
 \paragraph{Example: Uniform travel time}
 Assume that there is no transition $\amem$ so that $q_\amem$ can be neglected in \eqref{eq:eutilapprox}. Further assume that the travel time between location $l\ks{k}$ and destination $\act{d}$ is described by a uniform random variable as:
@@ -75,15 +74,14 @@ where:
 \end{equation*}
 
 \subsubsection{Backward induction}
-With the general model specification above in mind, we can discuss how the expected value function using backward induction. As discussed before, this calculates the expected value function in each state $x_k$ by moving backward in time, starting at time $t=T$ and ending in $t=0$. Starting the algorithm requires that the value of $\ev$ at time $t=T$ is defined. We assume that the terminal value of a state $x_T$ is given by some function $J_T(x_T) \;\forall x_T \in X_T$, where $X_T$. is the set of states at time $T$. One can define the value at the end of the day so that it is required that an agent returns home before time $T$ or that a specific set of activities $h_T$ is performed during the day by setting $J_T(x_T)=0$ if $l= l_\text{home}$ and $h= h_T$ and $J_T(x_T)=-\infty$ else. The backward induction solution method can now be described by the pseudo-code in Algorithm \ref{alg:backward}. Observe that it is important that $\ev$ is firstly updated in $\tau=0$ before the log-sum of travelling is calculated, as $\ev$ at the destination may be dependent on the value of $\ev$ for $\tau=0$ at the same time step.
-
+With the general model specification above in mind, it is possible to calculate the expected value function using backward induction. As discussed before, this calculates the expected value function in each state $x_k$ by moving backward in time, starting at time $t=T$ and ending in $t=0$. Starting the algorithm requires that the value of $\eva$ at time $t=T$ is defined. We assume that the terminal value of a state $x_T$ is given by some function $J_T(x_T) \;\forall x_T \in X_T$, where $X_T$. is the set of states at time $T$. One can define the value at the end of the day so that it is required that an agent returns home before time $T$ or that a specific set of activities $h_T$ is performed during the day by setting $J_T(x_T)=0$ if $l= l_\text{home}$ and $h= h_T$ and $J_T(x_T)=-\infty$ else. The backward induction solution method can now be described by the pseudo-code in Algorithm \ref{alg:backward}. Observe that it is important that $\eva$ is firstly updated in $\tau=0$ before the log-sum of travelling is calculated, as $\eva$ at the destination may be dependent on the value of $\eva$ for $\tau=0$ at the same time step. Let $Q(x_k,a_k)=Q(t,l,h,\act{p},\act{m},\act{d})$ return a vector $q$ such that $\eutil(x_k,a_k) =  q \cdot \eva$. 
 %algloop{For}{End}
 \begin{algorithm}
 \caption{\label{alg:backward} Backward induction algorithm used to calculate the expected value function in all states.}
 \begin{algorithmic}[1]
-\State $\ev = \text{zeros}(N_\text{T},N_L,N_P,N_\tau,N_M,N_\amem) -\infty $
+\State $\eva = \text{zeros}(N_\text{T},N_L,N_P,N_\tau,N_M,N_\amem) -\infty $
 \For{$x_T \in X_T$} 
-\State $\ev[x_T] = J_T[x_T]$
+\State $\eva[x_T] = J_T[x_T]$
 \EndFor
 
 \State
@@ -93,20 +91,20 @@ With the general model specification above in mind, we can discuss how the expec
 \State $v_\text{stay} = [\;]$ 
 \For{$\tau \in \{0,1,2,\dots,\tau_{max}(p)\}$}
 \State $u = u_\text{act}(t_k,p,\tau) + (\tau==0) \cdot  u_\text{start}(l,t_k,h,p)$
-\State $\eutil = Q_{\text{stay}}{(t_k,l,m,h,p,\tau,h)} \cdot \ev[:]$
+\State $\eutil = Q_{\text{stay}}{(t_k,l,m,h,p,\tau,h)} \cdot \eva[:]$
 \State $v_\text{stay}[\tau] = \exp(u + \eutil)$
 \EndFor
-\State $\ev[t_k,l,p,\tau=0,m,h] = \log\left(v_\text{stay}[0]\right)$
+\State $\eva[t_k,l,p,\tau=0,m,h] = \log\left(v_\text{stay}[0]\right)$
 \State 
 \State $v_\text{travel} = 0$ 
 \For{$\act{d} \in L ,\act{m} \in M(m),\act{p} \in P(h) \text{ s.t } d\in L_\text{act}(P)$}
 \State $u= u_\text{travel}(t_k,l,m,\act{d},\act{m}) + u_\text{change}(p,\act{p})$
-\State $\eutil = Q_{\text{travel}}(t_k,l,m,p,\amem;\act{d},\act{m},\act{p}) \cdot \ev[:]$
+\State $\eutil = Q_{\text{travel}}(t_k,l,m,p,\amem;\act{d},\act{m},\act{p}) \cdot \eva[:]$
 \State $v_\text{travel} =v_\text{travel}+ \exp(u+\eutil)$
 \EndFor
 \State
 \For{$\tau \in \{0,1,\dots,\tau_{max}(p)\}$}
-\State $\ev[t_k,l,p,\tau,m,h]=\log\big((\tau < \tau_{max}(p))\cdot v_\text{stay}[\tau] + (\tau>0) \cdot v_\text{travel}\big)$
+\State $\eva[t_k,l,p,\tau,m,h]=\log\big((\tau < \tau_{max}(p))\cdot v_\text{stay}[\tau] + (\tau>0) \cdot v_\text{travel}\big)$
 \EndFor
 \State
 \EndFor
@@ -114,16 +112,16 @@ With the general model specification above in mind, we can discuss how the expec
 \end{algorithmic}
 \end{algorithm}
 
-\subsubsection{Simulating daily travel patterns}
-\begin{algorithm}
-\caption{Algorithm used to simulate a daily travel pattern}
-\begin{algorithmic}[1]
-\State $x_0 = \{t=0,l=l_{\text{home}} \}$
-\State $x=[x_0]$, $a = []$, $p=0$
-\While{$t<T$} 
-\EndWhile
-\end{algorithmic}
-\end{algorithm}
+%\subsubsection{Simulating daily travel patterns}
+%\begin{algorithm}
+%\caption{Algorithm used to simulate a daily travel pattern}
+%\begin{algorithmic}[1]
+%\State $x_0 = \{t=0,l=l_{\text{home}} \}$
+%\State $x=[x_0]$, $a = []$, $p=0$
+%\While{$t<T$} 
+%\EndWhile
+%\end{algorithmic}
+%\end{algorithm}
 
 \subsection{Maximum likelihood estimation}
 We have so far suppressed the parameters $\theta$ from the specification of the utility functions, as well as the dependence of the individual $i_n$ that the model describes. 
@@ -139,23 +137,22 @@ If we can calculate $L_n(\ve{a}_n,\ve{x}_n|x_{0,n},\theta)$ (and its gradients) 
 
 \subsubsection{Estimation using NFXP}
 %TODO write better!
-NFXP relies on using directly using \eqref{eq:pcond} to calculate the conditional choice probabilities $P_n(a_{k,n}|x_{k,n},\theta)$, and is the standard method for estimating dynamic discrete choice models since \citet{Rust87}. To obtain the choice probabilities from, \eqref{eq:pcond} one must first calculate the value of $\eutil$ in all states. As $\eutil$ depends on the parameter values, the value of $\eutil$ (and its gradients) must be updated each time the likelihood-function is calculated for a new parameter vector. Algorithm \ref{alg:backward} must thus be used to obtain $\ev$ for each individual for each trial parameter vector in an optimisation algorithm. Using Algorithm \ref{alg:backward} as an inner algorithm within the optimization algorithm is what constitutes the nested fixed-point problem in the NFXP algorithm. 
+NFXP relies on using directly using \eqref{eq:pcond} to calculate the conditional choice probabilities $P_n(a_{k,n}|x_{k,n},\theta)$, and is the standard method for estimating dynamic discrete choice models since \citet{rust1987}. To obtain the choice probabilities from, \eqref{eq:pcond} one must first calculate the value of $\eutil$ in all states. As $\eutil$ depends on the parameter values, the value of $\eutil$ (and its gradients) must be updated each time the likelihood-function is calculated for a new parameter vector. Algorithm \ref{alg:backward} must thus be used to obtain $\ev$ for each individual for each trial parameter vector in an optimisation algorithm. Using Algorithm \ref{alg:backward} as an inner algorithm within the optimization algorithm is what constitutes the nested fixed-point problem in the NFXP algorithm. 
 \subsubsection{Special case: Estimation using sampling of alternatives}
 \label{sec:estSampling}
+The fact that $\eutil$ must be calculated using Algorithm \ref{alg:backward} for each trial parameter vector makes the NFXP algorithm computationally demanding and further means that any parameter estimates obtained may contain bias due to the approximation used when $\eutil$ is calculated. 
+As a special case, the probability for a sequence of actions according to a dynamic discrete choice model as in \eqref{eq:pcond} degenerates into an MNL model over sequences of actions \citep{fosgerau2013}. Under these conditions, a dynamic discrete choice model can therefore be estimated on a subset of action sequences \citep{mcfadden1978}, with consistent but inefficient estimates. If sampling of alternatives is used for estimation, the approximation used for calculating $\eutil$ will not influence the parameter estimates but influence the model outcome when used for simulation. Parameters obtained using sampling of alternatives could thus be used to evaluate the aggregate bias introduced by the approximation.  
 
-% 
-The fact that $\eutil$ must be calculated using Algorithm \ref{alg:backward} for each trial parameter vector makes the NFXP algorithm computationally demanding. 
-
-As a special case, the probability for a sequence of actions according to a dynamic discrete choice model as in \eqref{eq:pcond} degenerates into an MNL model over sequences of actions \citep{fosgerau2013}. Under these conditions, it can therefore be estimated on a subset of action sequences \citep{mcfadden78}. This equivalence occurs when: 1) each state-action $(x_{k},a_{k})$ pair deterministically gives a new state that thus can be described by a mapping $x_{k+1}=f(x_{k},a_{k})$; and 2) $\epsilon$ is i.i.d Gumbel distributed. Under these restrictions \eqref{eq:vfrust} becomes: $\eutil(x_{k},a_{k})=\ev(x_{k+1})$. Thus:
+The equivalence between an MNL model over sequences and a dynamic discrete choice models occurs when: 1) each state-action $(x_{k},a_{k})$ pair deterministically gives a new state that which thus can be described by a mapping $x_{k+1}=f(x_{k},a_{k})$; and 2) $\epsilon$ is i.i.d Gumbel distributed. Under these restrictions $\eutil$ from \eqref{eq:eutil} becomes: $\eutil(x_{k},a_{k})=\ev(f(x_{k},a_{k}))$. Thus:
 \begin{align}
-P(a_k|x_k) &= \frac{e^{\frac{1}{\mu}\left(\avgu(x_k,a_k) + \ev(f(x_{k+1})\right))}}{\sum_{\akt \in C(x_k)}e^{\frac{1}{\mu}\left(\avgu(x_k,\akt) + \ev(f(x_k,\akt))\right)}} \label{eq:MNL}\\
+P(a_k|x_k) &= \frac{e^{\avgu(x_k,a_k) + \ev(f(x_{k},a_{k}))}}{\sum_{a'_{k} \in C(x_k)}e^{\avgu(x_k,a'_{k}) + \ev(f(x_k,a'_{k}))}} \label{eq:MNL}\\
 &=e^{\frac{1}{\mu}\left(\avgu(a_k,x_k) + \ev(x_{k+1})- \ev(x_k)\right)}\label{eq:MNLv2}
 \end{align}
 where \eqref{eq:evfbellman} together with \eqref{eq:MNL} gives \eqref{eq:MNLv2}. Now consider a day-path, i.e., a sequence of decisions  $\ve{a} = (a_0,...,a_{K-1})$ which starts in a state $x_0$ and traverse the states $\ve{x} = (x_1,...,x_{K})$, where the time at the terminal state $t\ks{K}=T$. The likelihood for this sequence of decisions and states is, according to \eqref{eq:MNLv2} given by:
 \begin{equation}\label{eq:pPath0}
 \begin{aligned}
-P(\ve{a},\ve{x}|x_0) = P(\ve{a}|x_0) &= \prod_{i=0}^{T-1}P(a_i|x_i) \\
-& = \prod_{i=0}^{T-1} e^{\frac{1}{\mu}\left(\avgu(a_i,x_i) + \ev(x_{i+1})-\ev(x_i)\right)} \\
+P(\ve{a},\ve{x}|x_0)
+& = \prod_{i=0}^{T-1} e^{\avgu(a_i,x_i) + \ev(x_{i+1})-\ev(x_i)} \\
 & =  e^{\sum_{k=0}^{T-1} \avgu(a_k,x_k) + \ev(x_{K})-\ev(x_0)} 
 \end{aligned}
 \end{equation}
@@ -164,12 +161,15 @@ Assume that the initial state is known and that there is a single state which is
 P(\ve{a},\ve{x}|x_0) = \frac{e^{u(\ve{a})}}{\sum\limits_{\ve{a'} \in \Agood(x_0)}e^{u(\ve{a'})} }.
 \end{equation}
 
-Estimation on a subset of the choice set involves selecting a choice set $\Ccsamp_n \subset \Cc_n$ and estimating using the conditional choice probability $P_n(\ve{a}_n|\Ccsamp_n)$ instead of the $P_n(\ve{a}_n|\Cc_n)$. A maximum likelihood estimation on a choice set $\Ccsamp$ gives consistent estimates if the correction term $\log(\bar{q}_n(\Ccsamp_n|j))$ is added to each alternative and $\bar{q}_n(\Ccsamp_n|j)$ satisfies the positive conditioning property, i.e., that if $j\in \Ccsamp_n$ and $\bar{q}_n(\Ccsamp_n|i)>0$ for some $i$, then $\bar{q}_n(\Ccsamp_n|j)>0$. This holds if $\Ccsamp_n$ is sampled from the universal choice set $\Cc_n$ and all alternatives in $\Cc_n$ have a non-zero probability of being sampled \citep{mcfadden78}. 
+Estimation on a subset of the choice set involves selecting a choice set $\Ccsamp_n \subset \Cc_n$ and estimating using the conditional choice probability $P_n(\ve{a}_n|\Ccsamp_n)$ instead of the $P_n(\ve{a}_n|\Cc_n)$. A maximum likelihood estimation on a choice set $\Ccsamp$ gives consistent estimates if the correction term $\log(\bar{q}_n(\Ccsamp_n|j))$ is added to each alternative and $\bar{q}_n(\Ccsamp_n|j)$ satisfies the positive conditioning property, i.e., that if $j\in \Ccsamp_n$ and $\bar{q}_n(\Ccsamp_n|i)>0$ for some $i$, then $\bar{q}_n(\Ccsamp_n|j)>0$. This holds if $\Ccsamp_n$ is sampled from the universal choice set $\Cc_n$ and all alternatives in $\Cc_n$ have a non-zero probability of being sampled \citep{mcfadden1978}. 
 
-One way of constructing a choice set consists of drawing $R$ alternatives with replacement from the choice set $\Cc_n$ consisting of $J_n$ alternatives, and then adding the observed choice to the choice set. The outcome of such a protocol is $({k}_{n1},{k}_{n2},\dots,{k}_{nJ})$ where ${k}_{nj}$ is the number of times alternative $j$ appears in the choice set, so that $\sum_{j=1}^J {k}_{nj} = R+1$, since the observed alternative $j$ is added once extra to the choice set. Let $q_n(i)$ denote the probability that alternative $j \in \Cc_n$ is sampled. Under this sampling protocol, the estimates are consistent if the correction term $\log(\frac{k_{n\ve{a}_n}}{q_n(\ve{a}_n)})$ is added to each alternative \citep{frejinger09}. After adding the correction term, the likelihood function to use for estimation an individual $n$ becomes:
+One way of constructing a choice set consists of drawing $R$ alternatives with replacement from the choice set $\Cc_n$ consisting of $J_n$ alternatives, and then adding the observed choice to the choice set. The outcome of such a protocol is $({k}_{n1},{k}_{n2},\dots,{k}_{nJ})$ where ${k}_{nj}$ is the number of times alternative $j$ appears in the choice set, so that $\sum_{j=1}^J {k}_{nj} = R+1$, since the observed alternative $j$ is added once extra to the choice set. Let $q_n(i)$ denote the probability that alternative $j \in \Cc_n$ is sampled. Under this sampling protocol, the estimates are consistent if the correction term $\log(\frac{k_{n\ve{a}_n}}{q_n(\ve{a}_n)})$ is added to each alternative \citep{frejinger2009}. After adding the correction term, the likelihood function to use for estimation an individual $n$ becomes:
 \begin{equation} \label{eq:cond_like_corr}
 \tilde{P}_n(\ve{a}) = \frac{e^{u(\ve{a}) + \log(\frac{k_{n\ve{a}_n}}{q_n(\ve{a}_n)})}}{\sum\limits_{\ve{a}^* \in \Cc_n} e^{u(\ve{a}^*) + \log(\frac{k_{n\ve{a}^*_n}}{q_n(\ve{a}^*_n)})}}
 \end{equation}
+
+What remains is to define a sampling protocol by which the choice set can be constructed. We propose using the true model with some previously obtained the parameter values for this purpose. This requires that the expected value function is calculated once using Algorithm \ref{alg:backward}. Once the expected value function is known, it is simple and fast to simulate alternatives, so a large choice set can easily be obtained. The parameters used for sampling will influence the efficiency of the algorithm. It is important that they are chosen so that the choices sets obtained contains sufficient variation while still resembling the observed behaviour. 
+
 %\subsection{Solving the value function}
 %When modelling daily planning, there is logical terminal time $T$ in the end of the day. We will restrict ourselves to a single feasible state $x_T$ in the end of day with $\eutil(x) = 0$. This is not a restriction per se; multiple states in the end of the day could be included by adding a link from all of these states to a common fictive terminal state $x_k$. With $\eutil(x_k)$ defined, it is possible to use backward induction to calculate $\eutil$ in all states using \refeq{eq:EV}.
 %

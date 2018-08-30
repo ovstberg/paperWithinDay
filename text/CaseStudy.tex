@@ -20,13 +20,13 @@
 \newcommand{\amemm}[1]{\amem_\text{#1}}
 \newcommand{\dummy}[1]{\delta_{#1}}
 
-This section consist of a case study where a model is specified and estimated based on the method proposed in Section \ref{seq:mdp}.
-As discussed in section XXX %TODO 
-it can be very computationally demanding to estimate a model using NFXP. We have therefore chosen to restrict this case study to the special case when there is no uncertainty in the transition of the state variables in $x_k$ and when the scale of the random state variables $\epsilon$ is the same in all $x_k$ so that $\mu(x_k)=\mu=1$. As discussed in \ref{sec:estSampling}, this special case can be estimated using sampling of alternative sequences of actions. We further use the estimates to generate statistics of, e.g., the departure time of trips. 
+This section consist of a case study where a model is specified and estimated based on the method proposed in Section \ref{seq:mdp}. 
 
+We have limited this case study to the special case when there is no uncertainty in the transition of the state variables in $x_k$ and when $\epsilon$ is i.i.d Gumbel distributed. As discussed in \ref{sec:estSampling}, this special case can be estimated using sampling of alternative sequences of actions. Limiting the case study to this special case has the benefit that the parameter estimates obtained represent the 'true' model, i.e., a model where no biasing approximations are made. These parameter values can thus be used to evaluate the bias introduced by the approximations of the value function.
+We use the estimates to generate statistics of, e.g., the departure time of trips and the number of trips used. We also simulate aggregate travel times, travel costs etc., to compare the model output with the data. 
 
 % Description of what type of behaviour we set out to model in our case study.
-In this case study, we set out to model people who work with fairly regular working hours on a day when they go to work. We assume that work is a mandatory activity as well as dropping of children at school or picking them up after school in case such activities are observed. People can have fixed working schedule, in which case the starting time for job is fixed, or flexible, in which case we assume that they are allowed to arrive between $6\unit{a.m.}$ and $10\unit{a.m.}$.
+We model individuals who work with fairly regular working hours on a day when they go to work. We assume that work is a mandatory activity as well as dropping of children at school or picking them up after school in case such activities are observed. People can have fixed working schedule, in which case the starting time for job is fixed, or flexible, in which case we assume that they are allowed to arrive between $6\unit{a.m.}$ and $10\unit{a.m.}$.
 Children can be dropped off between $6:30\unit{a.m.}$ and $12:00\unit{a.m.}$ and picked up between $12\unit{a.m.}$ and $6:30\unit{p.m.}$
 In the case study, an individual is defined by an observed sequence of actions $\ve{a}^n$ together with the following attributes:
 \begin{equation}
@@ -82,7 +82,7 @@ a_k = \begin{pmatrix}
 \act{m} \\
 \act{p}    
 \end{pmatrix}
-\subset
+\in
 \begin{Bmatrix*}[l]
 \{1,2,\dots, 1240\}, \\
 \{m_{\text{stay}},\m{car},\m{pt},\m{walk},\m{bike}\}, \\
@@ -102,7 +102,7 @@ m \\
 \amem \\
 \epsilon
 \end{pmatrix}
-\subset
+\in
 \begin{Bmatrix*}[l]
 [0,108] \\
 \{1,2,\dots, 1240\} \\
@@ -171,7 +171,7 @@ Finally, when there is no travel time uncertainty, $t\ks{k+1}$ is simply given b
 
 \subsubsection{One-stage utility functions}
 
-The one-stage utility of a state-action pair was in \eqref{eq:mdponestage} dividable into four parts: the (dis)utility of travelling $utravel(t,l,m,\act{d},\act{m})$; the utility from activity participation $\uact(t,p,\atime)$; the utility representing preferences for when to start and where to perform an activity $\ustart(l,t,\amem, p)$; and a utility component for interaction between current and future purpose $\uchange(p,\act{p})$ which is left out from this case study. Below follows the specification of these two utility functions used in the case study, starting with the utility of travelling.
+The one-stage utility of a state-action pair was in \eqref{eq:mdponestage} dividable into four parts: the (dis)utility of travelling $\utravel(t,l,m,\act{d},\act{m})$; the utility from activity participation $\uact(t,p,\atime)$; the utility representing preferences for when to start and where to perform an activity $\ustart(l,t,\amem, p)$; and a utility component for interaction between current and future purpose $\uchange(p,\act{p})$ which is left out from this case study. Below follows the specification of these two utility functions used in the case study, starting with the utility of travelling.
 \paragraph{Utility of travelling}
 The utility of travelling is given by:
 \begin{equation} \label{eq:utravel}
@@ -193,7 +193,7 @@ where $u_{\text{size}}$ models the number of opportunities that exist for each p
 \begin{equation*}
 u_{p,\text{size}}(l) =\theta_{C,p} + \theta_{p,\text{size}}\log \left( \sum_{s=1}^{s=S_p} x_{p,l,s}e^{\theta_{p,s}} \right)
 \end{equation*}
-where $S_p$ is the number of size variables for activity $p$, and the size variables $x_{p,l,s}$ can be, e.g., the number of employees in a specific sector at location $l$. Since the size utility contain an activity specific constant $\theta_{C,p}$, one of the parameters $\theta_{p,s}$ should be fixed for all activities. This also provides an alternative interpretation of the activity specific constants $\theta_{C,p}$ as scales for the size variables $x_{p,l,s}$. A complete list of size variables included for respectively activity is given in table \ref{tab:est2}. 
+where $S_p$ is the number of size variables for activity $p$, and the size variables $x_{p,l,s}$ can be, e.g., the number of employees in a specific sector at location $l$. Since the size utility contain an activity specific constant $\theta_{C,p}$, one of the parameters $\theta_{p,s}$ should be fixed for all activities. This also provides an alternative interpretation of the activity specific constants $\theta_{C,p}$ as scales for the size variables $x_{p,l,s}$. A complete list of size variables included for respectively activity is given in table \ref{tab:ustart}. 
 
 Child and work constraints are ensure that these activities are started within the opening hours of day-care and schools in the case of child activities and within the acceptable starting hours for work for the individual, so:
 \begin{equation*}
@@ -254,13 +254,13 @@ With the current implementation, calculating the value function in all states an
 With $10\units{s/observation}$ to calculate $\eutil$, $70$ variables, $3\zdel 300$ observations and $100$ iterations before convergence, this would require $10 \cdot 0.4 \cdot  70 \cdot 3\zdel 300 \cdot 100 \units{s} \approx 1\zdel 000 \units{days}$ to estimate using a single core.
 The program is parallelized using MPI and could potentially benefit from hundreds of cores reducing the computation time to days. A possible future solution to obtain efficient estimates and allow for nested logit or GEV formulations would be to use inefficient estimates obtained using sampling of locations or some alternative approximate or possibly biased estimation technique to find a good enough specification of the model and then finally obtain full-information estimates using a cluster. 
 
- As discussed above, the from-all-to-all destinations operation is currently the limiting computational factor. One possible way to speed up the program would be to sample locations. If 100 locations were sampled, the computation time could potentially decrease to $0.05\units{s/individual}$.  
+ As discussed above, the from-all-to-all destinations operation is currently the limiting computational factor. One possible way to speed up the model evaluation would be to sample locations. If 100 locations were sampled, the computation time could potentially decrease to $0.05\units{s/individual}$.  
 
 
 \subsection{Data}
 \input{text/caseStudy/Data.tex}
 
-\subsection{Estimation}
+\subsection{Estimation result}
 %TODO Discuss how estimation is done
 
 \input{text/caseStudy/EstResult.tex}

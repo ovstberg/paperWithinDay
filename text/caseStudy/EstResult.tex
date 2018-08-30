@@ -1,7 +1,7 @@
+Table \ref{tab:ustart} gives estimation result for parameters in $u_\text{start}$, Table \ref{tab:utravel} parameters for the utility to travel $u_\text{travel}$ and  Table \ref{tab:uact} gives the parameters influencing the utility obtained when participating in an activity $u_\text{act}$. Most parameters are significant and have the expected sign. Cost is negative and spending time on activities is preferred to spending time on travelling. Home time is valued higher early in the morning and late in the evening. Spending time on freetime activities is preferable to be spending time at home between 1-4pm and there is no significant difference between 5-9pm. Since not all time parameters can be identified, \param{Rec Time} is fixed, and the linear-in-time parameters should only be compared against each other. Although the choice of parameter to fix does not affect the theoretical properties of the estimates, it can impact the obtained standard deviation. When \param{PT Time} was fixed rather than \param{Rec Time}, the standard deviation of all time parameters was close to $0.006$, rather than varying between $0.001$ and $0.005$. Travel time parameters are significantly smaller than activity duration parameters, so participating in an activity is preferred to travelling. Since time parameters can only be interpreted in relation to each other, it is not possible to calculate a single value of travel time saved. A travel time saving with car that gives one minute extra at home at $6\unit{pm}$ would be valued $(\param{tt, car} - \param{5-6pm Time})/\param{cost} = 7.3\unit{SEK/minute}$.
 %\begin{landscape}
-Table \ref{tab:ustart} gives estimation result for parameters in $u_\text{start}$, Table \ref{tab:utravel} parameters for the utility to travel $u_\text{travel}$ and  Table \ref{tab:uact} gives the parameters influencing the utility obtained when participating in an activity. Most parameters are significant and have the expected sign. Cost is negative and spending time on activities is preferred to spending time on travelling. Home time is valued higher early in the morning and late in the evening. It is preferable to spend time on freetime activity than to be at home between 1-4PM and no significant difference between 5-9PM. Since not all time parameters can be identified, \param{Rec Time} is fixed, and the linear-in-time parameters can only be compared against each other. Although the choice of parameter to fix does not affect the theoretical properties of the estimates, it can impact the obtained standard deviation. When \param{PT Time} was fixed rather than \param{Rec Time}, the standard deviation of all time parameters was close to $0.006$, rather than varying between $0.001$ and $0.005$. Travel time parameters are significantly smaller than activity duration parameters, so participating in an activity is preferred to travelling. Since time parameters can only be interpreted in relation to each other, it is not possible to directly calculate the value of time. A travel time saving with car that gives one minute extra at home between $6\unit{p.m.}$ would be valued $(\param{Car Time} - \param{5-6PM Time})/\param{Cost} = 7.3\unit{SEK/minute}$.
 
-The time-specific constants for work hours seem quite large in comparison to the time parameters, but this is mainly due to the scaling of the parameters. When comparing two alternative sequence, one that arrives at work at $6\unit{a.m.}$ and arrive back home at $4\unit{p.m.}$ and one that arrives at work at $7\unit{a.m.}$ and back home at $5\unit{p.m.}$, the difference in utility per minute at work from arriving at the different times will be $(\param{Work ASC 6AM}-\param{Work ASC 7AM})/60 = -0.007$. This is greater than the difference between \param{Home 6PM} and \param{Home 7PM} but smaller than the difference between \param{Home 5PM} and \param{Home 4PM}. The difference in the valuation of time spent at home at different times of the day and the difference in the valuation of time spent at work at different times of the day will therefore both have a big importance when determining departure time to work.
+The time-specific constants for work hours seem quite large in comparison to the time parameters, but this is mainly due to the scaling of the parameters. When comparing two alternative sequence, one that arrives at work at $6\unit{am}$ and arrive back home at $4\unit{pm}$ and one that arrives at work at $7\unit{am}$ and back home at $5\unit{pm}$, the difference in utility per minute at work from arriving at the different times will be $(\param{work, 6am}-\param{work, 7am})/60 = -0.007$. This is greater than the difference between \param{home,6pm} and \param{home,7pm} but smaller than the difference between \param{home,5pm} and \param{home,4pm}. The difference in the valuation of time spent at home at different times of the day and the difference in the valuation of time spent at work at different times of the day will therefore both have a big importance when determining departure time to work.
 
 Interpreting the constants for mode and activities is not entirely straightforward. Firstly, they are all normalised by fixing \param{Home ASC} to zero. Further, the scale of the size parameters is arbitrary and obtained by fixing one of the size parameters to zero. 
 
@@ -14,7 +14,7 @@ Interpreting the constants for mode and activities is not entirely straightforwa
 \newcommand{\pe}{1.8cm}
 \newcommand{\tw}{0.7\textwidth}
 
-\begin{table}[]
+\begin{table}
     \caption{Parameters for utility of starting activity, $u_{\text{start}}$. Observe that as size-parameters enter the utility as $e^\gamma$, the t-test cannot be used to determine their significance. Population has been fixed to zero for Rec, Social and Shop wheras 'No employed Other' was fixed for Other. }
     \label{tab:ustart}
     \centering
@@ -51,7 +51,7 @@ $\theta_{\text{oe, other}}$              & & emp other.                    &    
 
 \end{table}
 
-\begin{table}[]
+\begin{table}
     \caption{Parameters for utility of travelling, $u_{\text{travel}}$, see \eqref{eq:utravel}. }
     \label{tab:utravel}
     \centering
@@ -61,24 +61,24 @@ Notation &\multicolumn{2}{c}{Parameter} & Estimate  & Rob. t-test  \\
 	\tb	\multicolumn{5}{p{\tw}}{\footnotesize\emph{Parameters common for all modes.}}  \\ \te
 $\theta_{\text{cost}}$                   & \multicolumn{2}{c}{Cost   }             &            -0.012 &               -7.4  \\
 	\tb	\multicolumn{5}{p{\tw}}{\footnotesize\emph{Mode specific parameters}}  \\ \te
-$\theta_{\text{car}}$                    & Car &  ASC                              &              -2.7 &                -26 \\
+$\theta_{\text{car}}$                    & Car &  Constant                              &              -2.7 &                -26 \\
 $\theta_{tt,\text{ car}}$                & & Time                                  &            -0.084 &                -17 \\
 \noalign{\smallskip}
-$\theta_{\text{bike}}$                   & Bike & ASC                              &              -4.2 &                -31 \\
+$\theta_{\text{bike}}$                   & Bike & Constant                              &              -4.2 &                -31 \\
 $\theta_{tt,\text{ bike}}$               & & Time                                  &            -0.057 &                -13 \\
 \noalign{\smallskip}
-$\theta_{\text{walk}}$                   & Walk & Mean                             &              -1.7 &                -17 \\
+$\theta_{\text{walk}}$                   & Walk & Constant                             &              -1.7 &                -17 \\
 $\theta_{tt,\text{ walk}}$               & & Time                                  &            -0.051 &                -24 \\
 $\theta_{\text{s.z, walk}}$              & & same zone                             &             -0.53 &               -4.1 \\
 \noalign{\smallskip}
-$\theta_{\text{pt}}$                     & PT & Mean                               &              -3.79 &                -38 \\
+$\theta_{\text{pt}}$                     & PT & Constant                               &              -3.8 &                -38 \\
 $\theta_{tt,\text{ pt}}$                 & & Time                            &            -0.038 &               -4.9 \\
-$\theta_{wait,\text{ pt}}$            & & wait time                             &            0.0041 &               0.43 
+$\theta_{wait,\text{ pt}}$            & & Wait time                             &            0.0041 &               0.43 
     \end{tabular}
 
 \end{table}
 
-\begin{table}[]
+\begin{table}
     \caption{Parameters for utility of participating in an activity, $u_{\text{act.}(t,p,\tau)}$ in \eqref{eq:uact}, and Log-likelihood value for estimates. }
     \label{tab:uact}
     \centering
@@ -86,19 +86,19 @@ $\theta_{wait,\text{ pt}}$            & & wait time                             
 Notation &\multicolumn{2}{c}{Parameter} & Estimate  & Rob. t-test  \\
 \midrule
 	\tb	\multicolumn{5}{p{\tw}}{\footnotesize\emph{Parameters for utility participating in free-time activities.}}  \\ \te
-$\theta_{t,\text{shop}}$                 & Shop & Time                             &            -0.0212 &                -15 \\
-$\theta_{t,\text{social}}$               & Social &Time                            &           0.000671 &               0.57 \\
+$\theta_{t,\text{shop}}$                 & Shop & Time                             &            -0.021 &                -15 \\
+$\theta_{t,\text{social}}$               & Social &Time                            &           0.00067 &               0.57 \\
 $\theta_{t,\text{rec.}}$                 & Recreative& Time                        &                    &                    \\
-$\theta_{t,\text{other}}$                & Other& Time                             &           -0.00856 &               -5.8 \\
+$\theta_{t,\text{other}}$                & Other& Time                             &           -0.0086 &               -5.8 \\
 	\tb	\multicolumn{5}{p{\tw}}{\footnotesize\emph{ Parameters for marginal time-of-day dependent utility of spending time at home, $u_\text{marginal stay home}(t)$.}}  \\ \te
-$\theta_{\text{home},6am}$               & Home & 6am                              &             0.0412 &                8.2 \\
-$\theta_{\text{home},7am}$               & & 7am                                   &             0.0427 &                 12 \\
-$\theta_{\text{home},8am}$               & & 8am                                   &             0.0201 &                  6 \\
-$\theta_{\text{home},9am}$               & & 9-10am                                   &             0.0149 &                2.8 \\
-$\theta_{\text{home},1pm}$               & & 1-4pm                                   &            -0.0113 &               -9.9 \\
-$\theta_{\text{home},5pm}$               & & 5-6pm                                   &            0.00364 &                3.9 \\
-$\theta_{\text{home},7pm}$               & & 7-8pm                                   &            0.00242 &                2.5 \\
-$\theta_{\text{home},9pm}$               & & 9pm                                   &             0.0195 &                 13 \\
+$\theta_{\text{home},6am}$               & Home & 6am                              &             0.041 &                8.2 \\
+$\theta_{\text{home},7am}$               & & 7am                                   &             0.043 &                 12 \\
+$\theta_{\text{home},8am}$               & & 8am                                   &             0.020 &                  6 \\
+$\theta_{\text{home},9am}$               & & 9-10am                                   &             0.015 &                2.8 \\
+$\theta_{\text{home},1pm}$               & & 1-4pm                                   &            -0.011 &               -9.9 \\
+$\theta_{\text{home},5pm}$               & & 5-6pm                                   &            0.0036 &                3.9 \\
+$\theta_{\text{home},7pm}$               & & 7-8pm                                   &            0.0024 &                2.5 \\
+$\theta_{\text{home},9pm}$               & & 9pm                                   &             0.020 &                 13 \\
 \tb	\multicolumn{5}{p{\tw}}{\footnotesize\emph{Log-likelihood goodness of fit based on sampled choice-sets}}  \\ \te
 $LL$ & -12156.4 & & &
     \end{tabular}
@@ -109,7 +109,7 @@ $LL$ & -12156.4 & & &
 
 %Parameter estimates obtained using sampling of alternatives. \param{Rec. Time} is fixed and normalize all the time-parameters. \param{Work ASC 8AM} is fixed and normalize the work constants. There is no constant for arriving home (\param{Home ASC} is fixed to zero), and this normalize mode and activity constants can be identified. 
 
-As estimation is performed using sampling of alternatives efficient estimates are not obtained. Since the number of alternatives of the universal choice set so immense, it would be possible that the obtained estimates were very inefficient or biased. When validating the estimation on simulated data with known parameters and sampling with parameters far from their true values, the estimation result was often very poor. It is also possible that the approximations used to calculate \aeutil would cause a bias when the model is used to simulate day-paths, as estimation does not take this approximation into account. To check if either of these factors influence the final result, 1000 day-paths per individual was simulated and their aggregated attributes was compared to the observed data. The resulting differences can be found in Table \ref{tab:check}. The simulated data deviates from the observed data by $0.1-1.7\%$, but relative difference over one percent is only observed for attributes small quantities (the number of other-activities are underpredicted by $0.002\unit{times/day}$, meaning 2$\%$). In absolute terms it translates to errors of $0.05\unit{min/day}$ in travel time, $0.14\unit{SEK/day}$ in travel cost and $0.005\unit{trips/day}$ per mode. We think that this remaining error is negligible in any practical applications. 
+As estimation is performed using sampling of alternatives efficient estimates are not obtained. Since the number of alternatives of the universal choice set so immense, it would be possible that the obtained estimates were very inefficient or biased. When validating the estimation on simulated data with known parameters and sampling with parameters far from their true values, the estimation result was often very poor. It is also possible that the approximations used to calculate \aeutil would cause a bias when the model is used to simulate day-paths, as estimation does not take this approximation into account. To check if either of these factors influence the final result, 1000 day-paths per individual was simulated and their aggregated attributes was compared to the observed data. The resulting differences can be found in Table \ref{tab:check}. The simulated data deviates from the observed data by $0.1-1.7\%$, but relative difference over one percent is only observed for attributes small quantities (the number of other-activities are underpredicted by $0.002\unit{times/day}$, meaning 2$\%$). In absolute terms it translates to errors of $0.05\unit{min/day}$ in travel time, $0.14\unit{SEK/day}$ in travel cost and $0.005\unit{trips/day}$ per mode. We think that this remaining error is small enough to be negligible in any practical applications. 
 
 
 \begin{table}\caption{Average simulated and observed statistics. For each individual, 1000 alternatives are sampled. That the difference is very small indicates that the linear approximation of \aeutil works well and that enough alternatives are sampled to the choice set. \label{tab:check}}
